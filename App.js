@@ -1,11 +1,23 @@
+import { useEffect, useCallback } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { Box, NativeBaseProvider, Text } from "native-base";
-import HomeScreen from "./src/Screens/HomeScreen";
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { AppLoading } from 'expo';
+import Fonts from './assets/Fonts/Fonts';
+import LoginScreen from "./src/Screens/LoginScreen";
+import RegisterScreen from "./src/Screens/RegisterScreen";
+import NotVerifyScreen from "./src/Screens/NotVerifyScreen";
 
-export default function App() {
+
+function App() {
+  
+
 	return (
 		<NativeBaseProvider>
-			<HomeScreen />
+			<RegisterScreen />
 		</NativeBaseProvider>
 	);
 }
+
+export default App;
