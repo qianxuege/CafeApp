@@ -7,6 +7,7 @@ import { AppLoading } from 'expo';
 import LoginScreen from "./src/Screens/LoginScreen";
 import RegisterScreen from "./src/Screens/RegisterScreen";
 import NotVerifyScreen from "./src/Screens/NotVerifyScreen";
+import HomeScreen from './src/Screens/HomeScreen';
 
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
 
 	return (
 		<NativeBaseProvider>
-			<RegisterScreen />
+			<HomeScreen />
 		</NativeBaseProvider>
 	);
 }
