@@ -2,6 +2,7 @@ import { useEffect, useCallback, useState, React } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { Box, NativeBaseProvider, Text } from "native-base";
 import { useFonts } from 'expo-font';
+import { Asset } from 'expo-asset';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppLoading } from 'expo';
 import LoginScreen from "./src/Screens/LoginScreen";
