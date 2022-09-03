@@ -1,20 +1,34 @@
 import {
-	Box,
-	Center,
+	Button,
 	HStack,
 	Input,
 	Pressable,
 	Image,
 	Text,
+    View
 } from "native-base";
+import { useFonts } from 'expo-font';
 import React from "react";
 import Colors from "../color";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 function HomeSearch() {
+    const [fontsLoaded] = useFonts ({
+        'Akronim-Regular': require('../../assets/Fonts/Akronim-Regular.ttf'),
+        
+      });
 	return (
 		<>
-			<HStack space={3} bg={Colors.lightGold}  height={160} w="full" px={4} py={4}  borderBottomColor={Colors.lightBlack} safeAreaTop>
+			<HStack
+				space={3}
+				bg={Colors.lightGold}
+				height={160}
+				w="full"
+				px={4}
+				py={4}
+				borderBottomColor={Colors.lightBlack}
+				safeAreaTop
+			>
 				<Pressable ml={1} top={2}>
 					<Image
 						source={require("../../assets/favicon.png")}
@@ -23,31 +37,18 @@ function HomeSearch() {
 					/>
 				</Pressable>
 
-				<Pressable ml={4} top={-5} >
-					<Text
-						fontFamily="Akronim-Regular"
-						fontSize={60}
-						color={Colors.white}
-					>
+				<Pressable ml={4} top={-5}>
+					<Text fontFamily="Akronim-Regular" fontSize={60} color={Colors.white}>
 						MENU
 					</Text>
 				</Pressable>
-				<Pressable ml={3} top={4} >
-					<Text
-						fontFamily="Akronim-Regular"
-						fontSize={48}
-						color={Colors.white}
-					>
+				<Pressable ml={3} top={4}>
+					<Text fontFamily="Akronim-Regular" fontSize={48} color={Colors.white}>
 						CART
 					</Text>
 				</Pressable>
 			</HStack>
-			<HStack
-				w="full"
-				px={2}
-				py={4}
-				alignItems="center"
-			>
+			<HStack w="full" px={2} py={4} alignItems="center">
 				<Pressable left={9} zIndex={2}>
 					<Ionicons name="search" size={24} color={Colors.deepestGray} />
 				</Pressable>
@@ -57,15 +58,51 @@ function HomeSearch() {
 					bg={Colors.white}
 					type="search"
 					height={12}
-                    paddingLeft={12}
+					paddingLeft={12}
 					borderWidth={1}
-                    borderColor={Colors.lightBlack}
+					borderColor={Colors.lightBlack}
+					fontSize={14}
+					color={Colors.deepestGray}
 					variant="unstyled"
-                    _focus={{
-                        borderColor: Colors.lightBlack,
-                    }}
-                    
+					_focus={{
+						borderColor: Colors.lightBlack,
+						backgroundColor: Colors.white,
+					}}
 				/>
+			</HStack>
+			<HStack w="full" marginBottom={5} space={4} px={6} py={0} alignItems="center">
+				<Button
+					h={10}
+                    w={117}
+					bg={Colors.darkGreen}
+                    paddingRight={6}
+                    position="relative"
+                    left="13%"
+					_text={{
+						color: Colors.white,
+						fontWeight: "bold",
+					}}
+					_pressed={{ bg: Colors.darkestGreen }}
+				>
+					Filter
+				</Button>
+                <View left={-2}><Ionicons name="filter" size={24} flex={2} color="black" /></View>
+                <Button
+					h={10}
+                    w={124}
+					bg={Colors.darkGreen}
+                    paddingRight={8}
+                    left={6}
+					_text={{
+						color: Colors.white,
+						fontWeight: "bold",
+					}}
+					_pressed={{ bg: Colors.darkestGreen }}
+				>
+					Specials
+				</Button>
+                <View left={-26}><MaterialIcons name="celebration" size={24} flex={2} color="black" /></View>
+                
 			</HStack>
 		</>
 	);
