@@ -13,46 +13,43 @@ import React from "react";
 import Colors from "../color";
 import products from "../data/Products.js";
 
-const Item = ( {name} ) => (
-	<View margin={2} backgroundColor={Colors.lightGold} overflow="visible">
-	  <Text>{name}</Text>
-	  <Image  w={40} h={40} marginX={2} resizeMode="contain" alt={name} source={require("../../assets/images/2.jpeg")} />
-	</View>
-  );
+const Item = ({ name, image }) => (
+	<Pressable
+		margin={1}
+		backgroundColor={Colors.lightGold}
+		overflow="visible"
+		width={190}
+	>
+		<Text>{name}</Text>
+		<Text>{image}</Text>
+		<Image
+			w={40}
+			h={40}
+			marginX={2}
+			resizeMode="contain"
+			alt={name}
+			source={{image}}
+		/>
+	</Pressable>
+);
 
 function HomeProducts() {
-	products.map((product) => (
-		console.log({uri: product.image})
-	))
 
-	const renderItem = ({ item }) => (
-		<Item name={item.name} />
-	  );
 
-	
+	const renderItem = ({ item }) => <Item name={item.name} image={item.image} />;
 
 	return (
-		<View flex={1}>
-			<Flex
-				flexWrap="wrap"
-				direction="row"
-				justifyContent="space-betwen"
-				px={6}
-				marginLeft={-2}
-			>
-				<FlatList 
-					data={products}
-					renderItem={renderItem}
-					keyExtractor={item => item._id}
-					horizontal={false}
-					
-					numColumns={2}
-					
-					pagingEnabled={true}
-				/>
-				{/*<Image source={require('../../assets/images/AcaiBowl.jpeg')} /> */}
-			</Flex>
-		</View>
+		<FlatList
+			marginLeft={2}	
+
+			data={products}
+			renderItem={renderItem}
+			keyExtractor={(item) => item._id}
+			horizontal={false}
+			numColumns={2}
+			scrollEnabled={true}
+			pagingEnabled={true}
+		/>
 	);
 }
 
