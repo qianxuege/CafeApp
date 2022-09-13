@@ -6,50 +6,79 @@ import {
 	Text,
 	View,
 	Box,
-	FlatList,
 } from "native-base";
-
+import { useFonts } from "expo-font";
+import { FontAwesome } from '@expo/vector-icons';
 import React from "react";
 import Colors from "../color";
 import products from "../data/Products.js";
-
-const Item = ({ name, image }) => (
-	<Pressable
-		margin={1}
-		backgroundColor={Colors.lightGold}
-		overflow="visible"
-		width={190}
-	>
-		<Text>{name}</Text>
-		<Text>{image}</Text>
-		<Image
-			w={40}
-			h={40}
-			marginX={2}
-			resizeMode="contain"
-			alt={name}
-			source={{image}}
-		/>
-	</Pressable>
-);
+import Rating from "./Rating";
 
 function HomeProducts() {
+	const [fontsLoaded] = useFonts({
+		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
+		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
+	});
 
-
-	const renderItem = ({ item }) => <Item name={item.name} image={item.image} />;
+	if (!fontsLoaded) {
+		return null;
+	}
 
 	return (
-		<FlatList
-			marginLeft={2}	
+		<ScrollView mt={1} flex={1}>
+			<Flex
+				flexWrap="wrap"
+				direction="row"
+				justifyContent="space-between"
+				px={6}
+			>
+				{products.map((product) => (
+					<Pressable
+						key={product._id}
+						w="47%"
+						bg={Colors.lightGold}
+						shadow={2}
+						pt={3}
+						my={3}
+						pb={2}
+						overflow="hidden"
+					>
+						
+							<Image
+								source={{ uri: product.image }}
+								alt={product.name}
+								w="100%"
+								h={32}
+								top={-12}
+								resizeMode="stretch"
+							/>
+						
 
-			data={products}
-			renderItem={renderItem}
-			keyExtractor={(item) => item._id}
-			horizontal={false}
-			numColumns={2}
-			scrollEnabled={true}
-			pagingEnabled={true}
-		/>
+						<Box px={4} pt={1} marginX="auto" top={-10}>
+							<Text
+								fontFamily="AmaticSC-Bold"
+								color={Colors.white}
+								fontSize={20}
+								isTruncated="true"
+							>
+								{product.name}
+							</Text>
+						</Box>
+						<Box marginX="auto" top={-11}>
+							<Text fontFamily="Bitter-Bold" color={Colors.white}>{product.calories} cal</Text>
+						</Box>
+						<Box marginX="auto" top={-11}>
+							<Text fontFamily="Bitter-Bold" color={Colors.white}>
+								${product.price}
+							</Text>
+						</Box>
+						<Box marginX="auto" top={-8}>
+							<Rating value={4} />
+						</Box>
+					</Pressable>
+				))}
+			</Flex>
+		</ScrollView>
 	);
 }
 

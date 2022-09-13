@@ -15,8 +15,14 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 function HomeSearch() {
     const [fontsLoaded] = useFonts ({
         'Akronim-Regular': require('../../assets/Fonts/Akronim-Regular.ttf'),
-        
+		'Caladea-Regular': require('../../assets/Fonts/Caladea-Regular.ttf'),
+		'Caladea-Bold': require('../../assets/Fonts/Caladea-Bold.ttf')
       });
+
+	if (!fontsLoaded) {
+		return null;
+	}
+
 	return (
 		<>
 			<HStack
@@ -37,12 +43,12 @@ function HomeSearch() {
 					/>
 				</Pressable>
 
-				<Pressable ml={4} top={-5}>
+				<Pressable ml={1} top={-5}>
 					<Text fontFamily="Akronim-Regular" fontSize={60} color={Colors.white}>
 						MENU
 					</Text>
 				</Pressable>
-				<Pressable ml={3} top={4}>
+				<Pressable ml={1} top={4}>
 					<Text fontFamily="Akronim-Regular" fontSize={48} color={Colors.white}>
 						CART
 					</Text>
@@ -70,38 +76,40 @@ function HomeSearch() {
 					}}
 				/>
 			</HStack>
-			<HStack w="full" marginBottom={5} space={4} px={6} py={0} alignItems="center">
+			<HStack w="full" marginBottom={2} space={4} px={6} py={0} alignItems="center">
 				<Button
 					h={10}
                     w={117}
 					bg={Colors.darkGreen}
                     paddingRight={6}
                     position="relative"
-                    left="13%"
+                    left="11%"
 					_text={{
 						color: Colors.white,
-						fontWeight: "bold",
+						fontFamily: "Caladea-Bold",
+						
 					}}
 					_pressed={{ bg: Colors.darkestGreen }}
 				>
 					Filter
 				</Button>
-                <View left={-2}><Ionicons name="filter" size={24} flex={2} color="black" /></View>
+                <View left={-6}><Ionicons name="filter" size={24} flex={2} color="black" /></View>
                 <Button
 					h={10}
                     w={124}
 					bg={Colors.darkGreen}
                     paddingRight={8}
-                    left={6}
+                    left={3}
 					_text={{
 						color: Colors.white,
-						fontWeight: "bold",
+						fontFamily: "Caladea-Bold",
+						
 					}}
 					_pressed={{ bg: Colors.darkestGreen }}
 				>
 					Specials
 				</Button>
-                <View left={-26}><MaterialIcons name="celebration" size={24} flex={2} color="black" /></View>
+                <View left={-34}><MaterialIcons name="celebration" size={24} flex={2} color="black" /></View>
                 
 			</HStack>
 		</>

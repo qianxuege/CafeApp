@@ -9,6 +9,7 @@ const Colors = {
     orange: "#FFCE31",
     red: "#FF0000",
     pink: "#d69b9b",
+    maroon: "#875858",
     gray: "#F4F4F4",
     subGreen: "#EEFAE6",
     deepGray: "#ececec",
