@@ -6,24 +6,32 @@ import Colors from "../color";
 function Rating(value) {
 	const size = 14;
 	const color = Colors.pink;
+    console.log(value)
+    value = value.value;
+    console.log(value)
+    value = Number(value);
+    
     function checkValue() {
-        if (value >= 6) {
-            return true;
-        }
+        console.log(typeof value)
+        console.log(value)
+        if (value >= 1) {
+           return "star";
+        }     
+        
     }
-    console.log(value);
+    
 	return (
 		<HStack space={0.4} alignItems="center">
 			<FontAwesome
-				name={checkValue ? "star" : "star-half-o"}
+				name={checkValue()}
 				size={size}
 				color={color}
 			/>
-			<FontAwesome
+			{/*<FontAwesome
 				name={value >= 2 ? "star" : value >= 1.5 ? "star-half-o" : "star-o"}
 				size={size}
 				color={color}
-			/>
+			/> 
             <FontAwesome
 				name={value >= 3 ? "star" : value >= 2.5 ? "star-half-o" : "star-o"}
 				size={size}
@@ -38,7 +46,7 @@ function Rating(value) {
 				name={value >= 5 ? "star" : value >= 4.5 ? "star-half-o" : "star-o"}
 				size={size}
 				color={color}
-			/>
+    /> */}
 
             
 
