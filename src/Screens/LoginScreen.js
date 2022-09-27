@@ -33,7 +33,7 @@ function LoginScreen() {
 				h="full"
 				position="absolute"
 				left="3"
-				top="0"
+				top="8"
 				px="6"
 				justifyContent="center"
 			>
@@ -81,13 +81,27 @@ function LoginScreen() {
 					_pressed={{
 						bg: Colors.lightGold,
 					}}
-					my={30}
+					w="50%"
+					rounded={50}
+					bg={Colors.gold}
+					size="md"
+					marginTop={10}
+					marginBottom={10}
+				>
+					LOGIN
+				</Button>
+                <Button
+					_pressed={{
+						bg: Colors.lightGold,
+					}}
+					marginBottom ={10}
+					
 					w="50%"
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
 				>
-					LOGIN
+					SIGN UP
 				</Button>
                 <Button
 					_pressed={{
@@ -99,11 +113,8 @@ function LoginScreen() {
 					bg={Colors.gold}
 					size="md"
 				>
-					SIGN UP
+					ADMIN SIGN UP
 				</Button>
-                <Pressable marginTop={4}>
-                    <Text marginLeft="8" color={Colors.deepestGray}>ADMIN SIGN UP</Text>
-                </Pressable>
 			</Box>
 		</Box>
 	);

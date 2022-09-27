@@ -33,14 +33,14 @@ function RegisterScreen() {
 				h="full"
 				position="absolute"
 				left="3"
-				top="0"
+				top="10"
 				px="6"
 				justifyContent="center"
 			>
 				<Heading
 					style={{
-						
-						fontSize: 46,
+						fontFamily: "Akronim-Regular",
+						fontSize: 50,
 						color: "#BD9E1E",
 						paddingTop: 20,
 						marginBottom: 10,
@@ -48,7 +48,7 @@ function RegisterScreen() {
 				>
 					SIGN UP
 				</Heading>
-				<VStack space={5} pt="6">
+				<VStack space={5} pt="6" >
                     {/* USERNAME */}
                     <Input
 						InputLeftElement={
@@ -97,7 +97,8 @@ function RegisterScreen() {
 					_pressed={{
 						bg: Colors.lightGold,
 					}}
-					my={30}
+					marginTop={10}
+					marginBottom={10}
 					w="50%"
 					rounded={50}
 					bg={Colors.gold}
@@ -109,7 +110,7 @@ function RegisterScreen() {
 					_pressed={{
 						bg: Colors.lightGold,
 					}}
-					
+					marginBottom={10}
 					w="50%"
 					rounded={50}
 					bg={Colors.gold}
@@ -118,9 +119,18 @@ function RegisterScreen() {
 					ADMIN SIGN UP
 				</Button>
                 
-                <Pressable marginTop={4}>
-                    <Text marginLeft="8" color={Colors.deepestGray} marginTop="5" >LOGIN</Text>
-                </Pressable>
+                <Button
+					_pressed={{
+						bg: Colors.lightGreen,
+					}}
+					
+					w="50%"
+					rounded={50}
+					bg={Colors.darkGreen}
+					size="md"
+				>
+					LOGIN
+				</Button>
 			</Box>
 		</Box>
 	);

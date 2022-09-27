@@ -35,7 +35,7 @@ function HomeSearch() {
 				borderBottomColor={Colors.lightBlack}
 				safeAreaTop
 			>
-				<Pressable ml={1} top={2}>
+				<Pressable ml={1} top={0} left={2}>
 					<Image
 						source={require("../../assets/favicon.png")}
 						size="md"
@@ -43,12 +43,12 @@ function HomeSearch() {
 					/>
 				</Pressable>
 
-				<Pressable ml={1} top={-5}>
+				<Pressable ml={1} top={-5} left={2}>
 					<Text fontFamily="Akronim-Regular" fontSize={60} color={Colors.white}>
 						MENU
 					</Text>
 				</Pressable>
-				<Pressable ml={1} top={4}>
+				<Pressable ml={1} top={4} left={2}>
 					<Text fontFamily="Akronim-Regular" fontSize={48} color={Colors.white}>
 						CART
 					</Text>

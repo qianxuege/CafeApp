@@ -73,7 +73,7 @@ function HomeProducts() {
 							</Text>
 						</Box>
 						<Box marginX="auto" top={-8}>
-							<Rating value="4" />
+							<Rating value={product.rating} />
 						</Box>
 					</Pressable>
 				))}

@@ -12,12 +12,12 @@ const Colors = {
     maroon: "#875858",
     gray: "#F4F4F4",
     subGreen: "#EEFAE6",
-    deepGray: "#ececec",
+    deepGray: "#d4d4d4",
     deepestGray: "#6b6b6b",
     blue: "#3887F9",
     underline: "#E5E5E5",
     paypal: "#FF8730",
-    deepGold: "#B09134",
+    deepGold: "#c9b578",
     yellowGold: "#dcbf68",
     lightGold: "#DCC88C"
 

@@ -11,42 +11,46 @@ function Rating(value) {
     console.log(value)
     value = Number(value);
     
-    function checkValue() {
+    function checkValue(i) {
         console.log(typeof value)
         console.log(value)
-        if (value >= 1) {
+        if (value >= i) {
            return "star";
-        }     
+        } else if (value >= i-0.5) {
+			return "star-half-o";
+		} else {
+			return "star-o";
+		}   
         
     }
     
 	return (
 		<HStack space={0.4} alignItems="center">
 			<FontAwesome
-				name={checkValue()}
+				name={checkValue(1)}
 				size={size}
 				color={color}
 			/>
-			{/*<FontAwesome
-				name={value >= 2 ? "star" : value >= 1.5 ? "star-half-o" : "star-o"}
+			<FontAwesome
+				name={checkValue(2)}
 				size={size}
 				color={color}
 			/> 
             <FontAwesome
-				name={value >= 3 ? "star" : value >= 2.5 ? "star-half-o" : "star-o"}
+				name={checkValue(3)}
 				size={size}
 				color={color}
 			/>
             <FontAwesome
-				name={value >= 4 ? "star" : value >= 3.5 ? "star-half-o" : "star-o"}
+				name={checkValue(4)}
 				size={size}
 				color={color}
 			/>
             <FontAwesome
-				name={value >= 5 ? "star" : value >= 4.5 ? "star-half-o" : "star-o"}
+				name={checkValue(5)}
 				size={size}
 				color={color}
-    /> */}
+    />
 
             
 
