@@ -1,10 +1,10 @@
 import React from "react";
 import { Button } from 'native-base';
 
-function Buttons({ mt, bg, bgp, color, children, onPress }) {
+function Buttons({ mt, bg, bgp, color, children, onPress, w }) {
 	return (
 		<Button
-			w="full"
+			width={w}
 			h={55}
 			mt={mt}
 			rounded="full"

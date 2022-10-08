@@ -11,73 +11,27 @@ import RegisterScreen from "./src/Screens/RegisterScreen";
 import NotVerifyScreen from "./src/Screens/NotVerifyScreen";
 import HomeScreen from './src/Screens/HomeScreen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import SingleProductScreen from './src/Screens/SingleProductScreen';
+import NavBar from './src/Components/NavBar';
 
 
 
-/*function cacheImages(images) {
-  return images.map(image => {
-    if (typeof image === 'string') {
-      return Image.prefetch(image);
-    } else {
-      return Asset.fromModule(image).downloadAsync();
-    }
+
+function App() {
+  const [fontsLoaded] = useFonts ({
+    'Akronim-Regular': require('./assets/Fonts/Akronim-Regular.ttf'),
+    'Bitter-Bold': require("./assets/Fonts/Bitter-Bold.ttf"),
+    'Bitter-Regular': require("./assets/Fonts/Bitter-Regular.ttf"),
+    'AmaticSC-Bold': require("./assets/Fonts/AmaticSC-Bold.ttf"),
+    "Caveat-SemiBold": require("./assets/Fonts/Caveat-SemiBold.ttf")
   });
-} */
-
-
-  function cacheImages(images) {
-    return images.map((image) => {
-      if (typeof image === "string") {
-        return Image.prefetch(image);
-      } else {
-        return Asset.fromModule(image).downloadAsync();
-      }
-    });
-  }
-  
-  function cacheFonts(fonts) {
-    return fonts.map((font) => Font.loadAsync(font));
-  }
-  
-  function App() {
-    const [appIsReady, setAppIsReady] = useState(false);
-  
-    // Load any resources or data that you need prior to rendering the app
-    useEffect(() => {
-      async function loadResourcesAndDataAsync() {
-        try {
-          SplashScreen.preventAutoHideAsync();
-  
-          const imageAssets = cacheImages([
-            "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
-            require("./assets/images/AcaiBowl.jpeg"),
-          ]);
-  
-          const fontAssets = cacheFonts([FontAwesome.font]);
-  
-          await Promise.all([...imageAssets, ...fontAssets]);
-        } catch (e) {
-          // You might want to provide this error information to an error reporting service
-          console.warn(e);
-        } finally {
-          setAppIsReady(true);
-          SplashScreen.hideAsync();
-        }
-      }
-  
-      loadResourcesAndDataAsync();
-    }, []);
-  
-    if (!appIsReady) {
-      return null;
-    }
+    
   
   
-
-
 	return (
 		<NativeBaseProvider>
-			<HomeScreen />
+      <NavBar />
+			<SingleProductScreen />
 		</NativeBaseProvider>
 	);
 }
