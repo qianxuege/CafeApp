@@ -9,10 +9,10 @@ import {
 	Pressable,
 	Button,
 	Center,
-    VStack,
-    FormControl,
-    Select,
-    CheckIcon,
+	VStack,
+	FormControl,
+	Select,
+	CheckIcon,
 } from "native-base";
 import { useFonts } from "expo-font";
 import React, { useState } from "react";
@@ -20,6 +20,7 @@ import Colors from "../color";
 import Rating from "../Components/Rating";
 import NumericInput from "react-native-numeric-input";
 import { FontAwesome } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import Review from "../Components/Review";
 
@@ -57,6 +58,20 @@ function SingleProductScreen() {
 					resizeMode="cover"
 					marginBottom={2}
 				/>
+				<Center
+					position="absolute"
+					top={370}
+					right="2%"
+					rounded="full"
+					backgroundColor={Colors.white}
+					padding={2}
+				>
+					<MaterialIcons
+						name="bookmark-outline"
+						size={30}
+						color={Colors.gold}
+					/>
+				</Center>
 				<Box marginLeft={6}>
 					<Text
 						my={2}
@@ -70,7 +85,7 @@ function SingleProductScreen() {
 						<View style={styles.tagsView}>
 							<Text style={styles.tags}>dairy-free</Text>
 						</View>
-                        <View style={styles.tagsView}>
+						<View style={styles.tagsView}>
 							<Text style={styles.tags}>vegeterian</Text>
 						</View>
 					</HStack>
@@ -88,7 +103,14 @@ function SingleProductScreen() {
 							<Rating value={4} />
 						</Pressable>
 					</HStack>
-					<HStack space={2} alignItems="center" my={3}>
+					<Pressable>
+						<Center mt={6} left={-6}>
+							<Text style={styles.heading2} color={Colors.deepGold} isTruncated>
+								----------- Additional Info -----------
+							</Text>
+						</Center>
+					</Pressable>
+					{/* <HStack space={2} alignItems="center" my={3}>
 						<NumericInput
 							value={value.value}
 							onChange={(value) => setValue({ value })}
@@ -105,25 +127,28 @@ function SingleProductScreen() {
 							leftButtonBackgroundColor={Colors.lightGold}
 						/>
 						<Spacer />
-                       {/* add _pressed for the add to cart */}
+                        add _pressed for the add to cart 
 						<Pressable right={10}>
-							<HStack space={2} alignItems="baseline">
-                            <FontAwesome name="cart-plus" size={28} color="black" />
-                            <Text>ADD TO CART</Text>
+							<HStack space={2} alignItems="center">
+                            <MaterialIcons name="bookmark-outline" size={24} color="black" />
+                            <Text>ADD TO SAVED</Text>
                             </HStack>
 						</Pressable>
-					</HStack>
+					</HStack> */}
 
-                    <Box mt={6}>
-                        <Text style={styles.heading2} >Calories</Text>
-                        <Text style={styles.paragraph}>300 cal</Text>
-                    </Box>
-                    <Box mt={6}>
-                        <Text style={styles.heading2}>Ingredients</Text>
-                        <Text style={styles.paragraph}>Acai berries, coconut flakes, Banana, ........., ............., ..........., ............x</Text>
-                    </Box>
-                    {/* Need a place for users to input rating */}
-                    <Review />
+					<Box mt={6}>
+						<Text style={styles.heading2}>Calories</Text>
+						<Text style={styles.paragraph}>300 cal</Text>
+					</Box>
+					<Box mt={6}>
+						<Text style={styles.heading2}>Ingredients</Text>
+						<Text style={styles.paragraph}>
+							Acai berries, coconut flakes, Banana, ........., .............,
+							...
+						</Text>
+					</Box>
+					{/* rating */}
+					<Review />
 				</Box>
 			</ScrollView>
 		</Box>
@@ -135,8 +160,8 @@ const styles = StyleSheet.create({
 		width: 80,
 		alignItems: "center",
 		borderRadius: 2,
-        borderWidth: 1,
-        borderColor: Colors.morandiPink,
+		borderWidth: 1,
+		borderColor: Colors.morandiPink,
 		padding: 2,
 		marginBottom: 5,
 		backgroundColor: Colors.morandiPink,
@@ -146,15 +171,15 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: Colors.darkPink,
 	},
-    heading2: {
-        fontFamily: "Bitter-Regular",
-        fontSize: 20,
-    },
-    paragraph: {
-        left: 10,
-        fontFamily: "AmaticSC-Bold",
-        fontSize: 16,
-    }
+	heading2: {
+		fontFamily: "Bitter-Regular",
+		fontSize: 20,
+	},
+	paragraph: {
+		left: 10,
+		fontFamily: "AmaticSC-Bold",
+		fontSize: 18,
+	},
 });
 
 export default SingleProductScreen;

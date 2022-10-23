@@ -17,7 +17,7 @@ export default function Review() {
 					<FormControl.Label
 						_text={{
 							fontSize: "18px",
-							fontFamily: "AmaticSC-Bold"
+							fontFamily: "AmaticSC-Bold",
 						}}
 					>
 						Rating
@@ -30,13 +30,13 @@ export default function Review() {
 						py={3}
 						placeholder="Choose Rate"
 						fontFamily="Bitter-Regular"
-                        fontSize={12}
+						fontSize={12}
 						_selectedItem={{
 							bg: Colors.morandiGreen,
 							endIcon: <CheckIcon size={6} />,
 						}}
 						selectedValue={ratings}
-						onValueChange={(e) => setRatings(e)}
+						onValueChange={(event) => setRatings(event)}
 					>
 						<Select.Item label="1 - Extremely Bad" value="1" />
 						<Select.Item label="2 - Bad" value="2" />
@@ -45,7 +45,14 @@ export default function Review() {
 						<Select.Item label="5 - Delicious" value="5" />
 					</Select>
 				</FormControl>
-                <Buttons bg={Colors.deepGold} color={Colors.white} bgp={Colors.lightGold} w="90%">SUBMIT</Buttons>
+				<Buttons
+					bg={Colors.deepGold}
+					color={Colors.white}
+					bgp={Colors.lightGold}
+					w="90%"
+				>
+					SUBMIT
+				</Buttons>
 			</VStack>
 		</Box>
 	);

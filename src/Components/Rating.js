@@ -6,14 +6,10 @@ import Colors from "../color";
 function Rating(value) {
 	const size = 14;
 	const color = Colors.pink;
-    console.log(value)
     value = value.value;
-    console.log(value)
     value = Number(value);
     
     function checkValue(i) {
-        console.log(typeof value)
-        console.log(value)
         if (value >= i) {
            return "star";
         } else if (value >= i-0.5) {

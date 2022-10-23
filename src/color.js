@@ -24,6 +24,7 @@ const Colors = {
     deepGold: "#c9b578",
     yellowGold: "#dcbf68",
     lightGold: "#DCC88C",
+    morandiGold: "#fbebbc",
     deepestGold: "#b09134"
 
 };

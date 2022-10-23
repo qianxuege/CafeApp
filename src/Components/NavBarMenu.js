@@ -42,7 +42,7 @@ function NavBar() {
 				</Pressable>
 				<Pressable ml={1} top={4} left={2}>
 					<Text fontFamily="Akronim-Regular" fontSize={48} color={Colors.white}>
-						CART
+						SAVED
 					</Text>
 				</Pressable>
 			</HStack>
