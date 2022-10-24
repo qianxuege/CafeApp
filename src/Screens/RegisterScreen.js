@@ -14,7 +14,7 @@ import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
 
-function RegisterScreen() {
+function RegisterScreen({navigation}) {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
@@ -103,6 +103,7 @@ function RegisterScreen() {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
+					onPress={() => navigation.navigate("Bottom")}
 				>
 					SIGN UP
 				</Button>
@@ -128,6 +129,7 @@ function RegisterScreen() {
 					rounded={50}
 					bg={Colors.darkGreen}
 					size="md"
+					onPress={() => navigation.navigate("Login")}
 				>
 					LOGIN
 				</Button>

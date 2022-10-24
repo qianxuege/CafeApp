@@ -7,9 +7,11 @@ import {
 import React from "react";
 import { useFonts } from 'expo-font';
 import Colors from "../color";
+import { useNavigation } from "@react-navigation/native";
 
 function NavBar() {
-    const [fontsLoaded] = useFonts ({
+    const navigation = useNavigation();
+	const [fontsLoaded] = useFonts ({
         'Akronim-Regular': require('../../assets/Fonts/Akronim-Regular.ttf'),
       });
 
@@ -23,7 +25,7 @@ function NavBar() {
 				height={160}
 				w="full"
 				px={4}
-				py={4}
+				py={2}
 				borderBottomColor={Colors.lightBlack}
 				safeAreaTop
 			>
@@ -40,7 +42,7 @@ function NavBar() {
 						MENU
 					</Text>
 				</Pressable>
-				<Pressable ml={1} top={4} left={2}>
+				<Pressable ml={1} top={4} left={2} onPress={() => navigation.navigate("Cart")}>
 					<Text fontFamily="Akronim-Regular" fontSize={48} color={Colors.white}>
 						SAVED
 					</Text>

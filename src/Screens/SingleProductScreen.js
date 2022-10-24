@@ -19,13 +19,17 @@ import React, { useState } from "react";
 import Colors from "../color";
 import Rating from "../Components/Rating";
 import NumericInput from "react-native-numeric-input";
-import { FontAwesome } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import Review from "../Components/Review";
+import NavBarMenu from "../Components/NavBarMenu";
+import { useNavigation } from "@react-navigation/native";
+import products from "../data/Products";
 
-function SingleProductScreen() {
-	const [value, setValue] = useState(0);
+function SingleProductScreen({ route }) {
+	const navigation = useNavigation();
+	const product = route.params;
+	// const [value, setValue] = useState(0);
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
@@ -39,8 +43,22 @@ function SingleProductScreen() {
 
 	//use FlatList for tags and ingredients, see react native documentation for ex
 
+	// const RenderTags = () => {
+	// 	console.log(product.tags.length);
+
+	// 	for (let i = 0; i < product.tags.length; i++) {
+	// 		console.log(i);
+	// 		return (
+	// 			<View style={styles.tagsView}>
+	// 				<Text style={styles.tags}>{product.tags[i]}</Text>
+	// 			</View>
+	// 		)
+	// 	}
+	// };
+
 	return (
 		<Box flex={1} top={0}>
+			<NavBarMenu />
 			<ScrollView
 				top={0}
 				margin="auto"
@@ -49,7 +67,7 @@ function SingleProductScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				<Image
-					source={require("../../assets/images/1.jpeg")}
+					source={{ uri: product.image }}
 					top={0}
 					alt="Image"
 					margin="auto"
@@ -58,20 +76,12 @@ function SingleProductScreen() {
 					resizeMode="cover"
 					marginBottom={2}
 				/>
-				<Center
-					position="absolute"
-					top={370}
-					right="2%"
-					rounded="full"
-					backgroundColor={Colors.white}
-					padding={2}
-				>
-					<MaterialIcons
-						name="bookmark-outline"
-						size={30}
-						color={Colors.gold}
-					/>
-				</Center>
+				<Pressable position="absolute" top={370} right="2%">
+					<Center rounded="full" backgroundColor={Colors.white} padding={2}>
+						<FontAwesome name="heart" size={24} color={Colors.pink} />
+						{/* <FontAwesome name="heart-o" size={24} color={Colors.pink} /> */}
+					</Center>
+				</Pressable>
 				<Box marginLeft={6}>
 					<Text
 						my={2}
@@ -79,15 +89,20 @@ function SingleProductScreen() {
 						fontSize={52}
 						color={Colors.black}
 					>
-						Acai Bowl
+						{product.name}
 					</Text>
 					<HStack space={2} overflow="scroll">
-						<View style={styles.tagsView}>
-							<Text style={styles.tags}>dairy-free</Text>
-						</View>
-						<View style={styles.tagsView}>
+						{product.tags.map((tag) => {
+							return (
+								<View style={styles.tagsView} key={Math.random() * 20}>
+									<Text style={styles.tags}>{tag}</Text>
+								</View>
+							);
+						})}
+
+						{/* <View style={styles.tagsView}>
 							<Text style={styles.tags}>vegeterian</Text>
-						</View>
+						</View> */}
 					</HStack>
 					<HStack alignItems="baseline" space={2} w="full">
 						<Text
@@ -96,11 +111,11 @@ function SingleProductScreen() {
 							fontWeight="bold"
 							color={Colors.deepestGray}
 						>
-							$11.00
+							${product.price}
 						</Text>
 						<Spacer />
 						<Pressable right={10}>
-							<Rating value={4} />
+							<Rating value={product.rating} />
 						</Pressable>
 					</HStack>
 					<Pressable>
@@ -138,14 +153,11 @@ function SingleProductScreen() {
 
 					<Box mt={6}>
 						<Text style={styles.heading2}>Calories</Text>
-						<Text style={styles.paragraph}>300 cal</Text>
+						<Text style={styles.paragraph}>{product.calories} cal</Text>
 					</Box>
 					<Box mt={6}>
 						<Text style={styles.heading2}>Ingredients</Text>
-						<Text style={styles.paragraph}>
-							Acai berries, coconut flakes, Banana, ........., .............,
-							...
-						</Text>
+						<Text style={styles.paragraph}>{product.ingredients}</Text>
 					</Box>
 					{/* rating */}
 					<Review />

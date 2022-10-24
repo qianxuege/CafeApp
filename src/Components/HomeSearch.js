@@ -11,6 +11,8 @@ import { useFonts } from 'expo-font';
 import React from "react";
 import Colors from "../color";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import NavBarMenu from "../Components/NavBarMenu";
 
 function HomeSearch() {
     const [fontsLoaded] = useFonts ({
@@ -25,35 +27,7 @@ function HomeSearch() {
 
 	return (
 		<>
-			<HStack
-				space={3}
-				bg={Colors.lightGold}
-				height={160}
-				w="full"
-				px={4}
-				py={4}
-				borderBottomColor={Colors.lightBlack}
-				safeAreaTop
-			>
-				<Pressable ml={1} top={0} left={2}>
-					<Image
-						source={require("../../assets/favicon.png")}
-						size="md"
-						alt="favicon"
-					/>
-				</Pressable>
-
-				<Pressable ml={1} top={-5} left={2}>
-					<Text fontFamily="Akronim-Regular" fontSize={60} color={Colors.white}>
-						MENU
-					</Text>
-				</Pressable>
-				<Pressable ml={1} top={4} left={2}>
-					<Text fontFamily="Akronim-Regular" fontSize={48} color={Colors.white}>
-						CART
-					</Text>
-				</Pressable>
-			</HStack>
+			<NavBarMenu />
 			<HStack w="full" px={2} py={4} alignItems="center">
 				<Pressable left={9} zIndex={2}>
 					<Ionicons name="search" size={24} color={Colors.deepestGray} />
@@ -80,36 +54,36 @@ function HomeSearch() {
 				<Button
 					h={10}
                     w={117}
-					bg={Colors.darkGreen}
+					bg={Colors.morandiGreen}
                     paddingRight={6}
                     position="relative"
-                    left="11%"
+                    left="15%"
 					_text={{
-						color: Colors.white,
-						fontFamily: "Caladea-Bold",
+						color: Colors.black,
+						fontFamily: "Caladea-Regular",
 						
 					}}
-					_pressed={{ bg: Colors.darkestGreen }}
+					_pressed={{ bg: Colors.darkGreen }}
 				>
 					Filter
 				</Button>
-                <View left={-6}><Ionicons name="filter" size={24} flex={2} color="black" /></View>
+                <View left={0}><Ionicons name="filter" size={22} flex={2} color={Colors.deepestGray} /></View>
                 <Button
 					h={10}
                     w={124}
-					bg={Colors.darkGreen}
+					bg={Colors.morandiGreen}
                     paddingRight={8}
-                    left={3}
+                    left={7}
 					_text={{
-						color: Colors.white,
-						fontFamily: "Caladea-Bold",
+						color: Colors.black,
+						fontFamily: "Caladea-Regular",
 						
 					}}
-					_pressed={{ bg: Colors.darkestGreen }}
+					_pressed={{ bg: Colors.darkGreen }}
 				>
 					Specials
 				</Button>
-                <View left={-34}><MaterialIcons name="celebration" size={24} flex={2} color="black" /></View>
+                <View left={-26} top={-1}><MaterialIcons name="celebration" size={22} flex={2} color={Colors.deepestGray} /></View>
                 
 			</HStack>
 		</>
