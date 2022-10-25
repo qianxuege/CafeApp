@@ -17,8 +17,16 @@ import CartScreen from "./src/Screens/CartScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BottomNav from "./src/Navigations/BottomNav";
+//import { firebase } from "./firebase";
+//import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+require('firebase/compat/auth');
+//import { auth } from "firebase/app";
 
 
+const Stack = createNativeStackNavigator();
 
 function App() {
 	const [fontsLoaded] = useFonts({
@@ -28,11 +36,33 @@ function App() {
 		"AmaticSC-Bold": require("./assets/Fonts/AmaticSC-Bold.ttf"),
 		"Caveat-SemiBold": require("./assets/Fonts/Caveat-SemiBold.ttf"),
 	});
-  if (!fontsLoaded) {
+	if (!fontsLoaded) {
 		return null;
 	}
 
-  const Stack = createNativeStackNavigator();
+	// const [initializing, setInitializing] = useState(true);
+	// const [user, setUser] = useState();
+
+	// //Handle user state changes
+	// function onAuthStateChanged(user) {
+	// 	setUser(user);
+	// 	if (initializing) {
+  //     setInitializing(false);
+  //   } 
+	// }
+
+	// useEffect(() => {
+	// 	const subscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+	// 	return subscriber;
+	// }, []);
+
+	// if (initializing) return null;
+
+  // if (!user) {
+  //   return (
+      
+  //   )
+  // }
 
 	return (
 		<NativeBaseProvider>
@@ -40,19 +70,17 @@ function App() {
 				<StatusBar />
 				<Stack.Navigator
 					initialRouteName="Login"
-					screenOptions={{ 
-            headerShown: false, 
-          }}
+					screenOptions={{
+						headerShown: false,
+					}}
 				>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Saved" component={CartScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Single" component={SingleProductScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Bottom" component={BottomNav} />
-          
-          
-        </Stack.Navigator>
+					<Stack.Screen name="Login" component={LoginScreen} />
+					<Stack.Screen name="Saved" component={CartScreen} />
+					<Stack.Screen name="Register" component={RegisterScreen} />
+					<Stack.Screen name="Single" component={SingleProductScreen} />
+					<Stack.Screen name="Home" component={HomeScreen} />
+					<Stack.Screen name="Bottom" component={BottomNav} />
+				</Stack.Navigator>
 			</NavigationContainer>
 		</NativeBaseProvider>
 	);
