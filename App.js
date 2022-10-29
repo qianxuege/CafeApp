@@ -35,6 +35,7 @@ function App() {
 		"Bitter-Regular": require("./assets/Fonts/Bitter-Regular.ttf"),
 		"AmaticSC-Bold": require("./assets/Fonts/AmaticSC-Bold.ttf"),
 		"Caveat-SemiBold": require("./assets/Fonts/Caveat-SemiBold.ttf"),
+    "Caladea-BoldItalic": require("./assets/Fonts/Caladea-BoldItalic.ttf"),
 	});
 	if (!fontsLoaded) {
 		return null;
@@ -63,6 +64,8 @@ function App() {
       
   //   )
   // }
+
+
 
 	return (
 		<NativeBaseProvider>

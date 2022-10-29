@@ -8,16 +8,40 @@ import {
 	Button,
     Pressable,
 } from "native-base";
-import React from "react";
+import React, { useState } from "react";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import firebase from "../../firebase";
+import { Auth } from "firebase/auth";
 
 
 function RegisterScreen({navigation}) {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	<firebase />
+
+	const handleSignUp = () => {
+		const auth = getAuth();
+		createUserWithEmailAndPassword(auth, email, password)
+			.then((userCredential) => {
+				// Signed in
+				const user = userCredential.user;
+				console.log(user.email);
+				// ...
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorMessage);
+				// ..
+			});
+	};
 	return (
 		<Box flex={1} bg={Colors.black}>
 			<Image
@@ -46,7 +70,7 @@ function RegisterScreen({navigation}) {
 						marginBottom: 10,
 					}}
 				>
-					SIGN UP
+					REGISTER
 				</Heading>
 				<VStack space={5} pt="6" >
                     {/* USERNAME */}
@@ -72,6 +96,8 @@ function RegisterScreen({navigation}) {
 						}
 						variant="underlined"
 						placeholder="user@gmail.com"
+						value={email}
+						onChangeText={(text) => setEmail(text)}
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
@@ -85,6 +111,8 @@ function RegisterScreen({navigation}) {
 						variant="underlined"
 						type="password"
 						placeholder="*********"
+						value={password}
+						onChangeText={(text) => setPassword(text)}
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
@@ -103,9 +131,9 @@ function RegisterScreen({navigation}) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={() => navigation.navigate("Bottom")}
+					onPress={handleSignUp}
 				>
-					SIGN UP
+					REGISTER
 				</Button>
                 <Button
 					_pressed={{
@@ -117,7 +145,7 @@ function RegisterScreen({navigation}) {
 					bg={Colors.gold}
 					size="md"
 				>
-					ADMIN SIGN UP
+					ADMIN REGISTER
 				</Button>
                 
                 <Button

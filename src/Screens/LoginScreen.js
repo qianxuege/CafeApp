@@ -21,27 +21,27 @@ function LoginScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	// const [email, setEmail] = useState("");
+	// const [password, setPassword] = useState("");
 
-	<firebase />
+	// <firebase />
 
-	const handleSignUp = () => {
-		const auth = getAuth();
-		createUserWithEmailAndPassword(auth, email, password)
-			.then((userCredential) => {
-				// Signed in
-				const user = userCredential.user;
-				console.log(user.email);
-				// ...
-			})
-			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.log(errorMessage);
-				// ..
-			});
-	};
+	// const handleSignUp = () => {
+	// 	const auth = getAuth();
+	// 	createUserWithEmailAndPassword(auth, email, password)
+	// 		.then((userCredential) => {
+	// 			// Signed in
+	// 			const user = userCredential.user;
+	// 			console.log(user.email);
+	// 			// ...
+	// 		})
+	// 		.catch((error) => {
+	// 			const errorCode = error.code;
+	// 			const errorMessage = error.message;
+	// 			console.log(errorMessage);
+	// 			// ..
+	// 		});
+	// };
 
 	return (
 		<Box flex={1} bg={Colors.black}>
@@ -81,8 +81,8 @@ function LoginScreen({ navigation }) {
 						}
 						variant="underlined"
 						placeholder="user@gmail.com"
-						value={email}
-						onChangeText={(text) => setEmail(text)}
+						// value={email}
+						// onChangeText={(text) => setEmail(text)}
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
@@ -96,8 +96,8 @@ function LoginScreen({ navigation }) {
 						variant="underlined"
 						type="password"
 						placeholder="*********"
-						value={password}
-						onChangeText={(text) => setPassword(text)}
+						// value={password}
+						// onChangeText={(text) => setPassword(text)}
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
@@ -108,15 +108,15 @@ function LoginScreen({ navigation }) {
 					/>
 				</VStack>
 				<Button
+					marginTop={10}
+					marginBottom={10}
 					_pressed={{
-						bg: Colors.lightGold,
+						bg: Colors.lightGreen,
 					}}
 					w="50%"
 					rounded={50}
-					bg={Colors.gold}
+					bg={Colors.darkGreen}
 					size="md"
-					marginTop={10}
-					marginBottom={10}
 					onPress={() => navigation.navigate("Bottom")}
 				>
 					LOGIN
@@ -130,10 +130,9 @@ function LoginScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					// onPress={() => navigation.navigate("Register")}
-					onPress={handleSignUp}
+					onPress={() => navigation.navigate("Register")}
 				>
-					Register
+					REGISTER
 				</Button>
 				<Button
 					_pressed={{
@@ -145,7 +144,7 @@ function LoginScreen({ navigation }) {
 					size="md"
 					// onPress={() => navigation.navigate("Register")}
 				>
-					ADMIN SIGN UP
+					ADMIN REGISTER
 				</Button>
 			</Box>
 		</Box>
