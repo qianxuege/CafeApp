@@ -17,6 +17,7 @@ import {
 import { useFonts } from "expo-font";
 import React, { useState } from "react";
 import Colors from "../color";
+import Heart from "../Components/Heart";
 import Rating from "../Components/Rating";
 import NumericInput from "react-native-numeric-input";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -76,11 +77,14 @@ function SingleProductScreen({ route }) {
 					resizeMode="cover"
 					marginBottom={2}
 				/>
-				<Pressable position="absolute" top={370} right="2%">
+
+				{/* <Pressable position="absolute" top={370} right="2%">
 					<Center rounded="full" backgroundColor={Colors.white} padding={2}>
 						<FontAwesome name="heart" size={24} color={Colors.pink} />
-						{/* <FontAwesome name="heart-o" size={24} color={Colors.pink} /> */}
 					</Center>
+				</Pressable> */}
+				<Pressable position="absolute" top={370} right="2%">
+					<Heart param={product.saved} size={24}/>
 				</Pressable>
 				<Box marginLeft={6}>
 					<Text

@@ -4,6 +4,7 @@ import {
 	Center,
 	FormControl,
 	Input,
+	KeyboardAvoidingView,
 	NativeBaseProvider,
 	ScrollView,
 	Text,
@@ -35,7 +36,7 @@ const Inputs = [
 	},
 ];
 
-function ProfileScreen() {
+function ProfileScreen({navigation}) {
 	const [fontsLoaded] = useFonts({
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
 		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
@@ -67,15 +68,15 @@ function ProfileScreen() {
 							>
 								{i.label}
 							</FormControl.Label>
-							<Input
-								style={styles.input}
-								type={i.type}
-								width="95%"
-								_focus={{
-									borderBottomColor: Colors.darkestGreen,
-									borderWidth: 1,
-								}}
-							/>
+								<Input
+									style={styles.input}
+									type={i.type}
+									width="95%"
+									_focus={{
+										borderBottomColor: Colors.darkestGreen,
+										borderWidth: 1,
+									}}
+								/>
 						</FormControl>
 					))}
 					<Box alignItems="center" width="80" left={-2}>
@@ -95,7 +96,9 @@ function ProfileScreen() {
 						>
 							Confirm Changes
 						</Button>
-						<Text style={styles.or} marginBottom={3}>OR</Text>
+						<Text style={styles.or} marginBottom={3}>
+							OR
+						</Text>
 						<Button
 							width="100%"
 							height={55}
@@ -107,8 +110,9 @@ function ProfileScreen() {
 								fontSize: 16,
 								fontFamily: "Bitter-Regular",
 							}}
-							_pressed={{ bg: Colors.lightGreen, }}
-							marginBottom={3}
+							_pressed={{ bg: Colors.lightGreen }}
+							marginBottom={20}
+							onPress={() => navigation.navigate("Login")}
 						>
 							LOG OUT
 						</Button>

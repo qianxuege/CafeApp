@@ -43,7 +43,7 @@ function ProfielTop() {
 
 			<Center marginTop={0}>
 				<Text fontFamily="Akronim-Regular" fontSize={36} color={Colors.white}>
-					User ABCD
+					User A
 				</Text>
 			</Center>
 		</Box>

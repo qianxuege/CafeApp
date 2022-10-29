@@ -46,7 +46,7 @@ function Rating(value) {
 				name={checkValue(5)}
 				size={size}
 				color={color}
-    />
+    		/>
 
             
 

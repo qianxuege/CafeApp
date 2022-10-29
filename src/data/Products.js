@@ -9,6 +9,7 @@ const products = [
         price: 10,
         rating: 5,
         numReviews: 4,
+        saved: true,
     },
     {
         _id: "2",
@@ -20,6 +21,7 @@ const products = [
         price: 8,
         rating: 4.5,
         numReviews: 5,
+        saved: true,
     },
     {
         _id: "3",
@@ -31,6 +33,7 @@ const products = [
         price: 9,
         rating: 5,
         numReviews: 6,
+        saved: false,
     },
     {
         _id: "4",
@@ -42,6 +45,7 @@ const products = [
         price: 6,
         rating: 4,
         numReviews: 6,
+        saved: true,
     },
     {
         _id: "5",
@@ -53,6 +57,7 @@ const products = [
         price: 9,
         rating: 5,
         numReviews: 6,
+        saved: true,
     },
     {
         _id: "6",
@@ -64,6 +69,7 @@ const products = [
         price: 9,
         rating: 5,
         numReviews: 7,
+        saved: false,
     },
     {
         _id: "7",
@@ -75,6 +81,7 @@ const products = [
         price: 7,
         rating: 4,
         numReviews: 6,
+        saved: true,
     },
     {
         _id: "8",
@@ -86,6 +93,7 @@ const products = [
         price: 7,
         rating: 4,
         numReviews: 6,
+        saved: true,
     },
 
 ]

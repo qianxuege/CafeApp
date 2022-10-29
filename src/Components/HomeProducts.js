@@ -8,27 +8,47 @@ import {
 	Box,
 	Center,
 } from "native-base";
+import { RefreshControl } from "react-native";
 import { useFonts } from "expo-font";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import Colors from "../color";
 import products from "../data/Products.js";
 import Rating from "./Rating";
+import Heart from "./Heart";
 import { useNavigation } from "@react-navigation/native";
 
+
 function HomeProducts() {
-	const navigation = useNavigation()
+	const navigation = useNavigation();
 	const [fontsLoaded] = useFonts({
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
 		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
 	});
 
+	const wait = (timeout) => {
+		return new Promise((resolve) => setTimeout(resolve, timeout));
+	};
+	const [refreshing, setRefreshing] = React.useState(false);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		wait(2000).then(() => setRefreshing(false));
+	}, []);
+
 	if (!fontsLoaded) {
 		return null;
 	}
+	
 
 	return (
-		<ScrollView mt={1} flex={1}>
+		<ScrollView
+			mt={1}
+			flex={1}
+			refreshControl={
+				<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+			}
+		>
 			<Flex
 				flexWrap="wrap"
 				direction="row"
@@ -37,7 +57,9 @@ function HomeProducts() {
 			>
 				{products.map((product) => (
 					<Pressable
-						onPress={() => {navigation.navigate("Single", product)}}
+						onPress={() => {
+							navigation.navigate("Single", product);
+						}}
 						key={product._id}
 						w="47%"
 						bg={Colors.lightGold}
@@ -55,11 +77,15 @@ function HomeProducts() {
 							top={-12}
 							resizeMode="stretch"
 						/>
-						<Pressable position="absolute" top="50%" right="3%">
+						{/* <Pressable position="absolute" top="50%" right="3%">
 							<Center rounded="full" backgroundColor={Colors.white} padding={2}>
 								<FontAwesome name="heart-o" size={18} color={Colors.pink} />
-								{/* <FontAwesome name="heart-o" size={24} color={Colors.pink} /> */}
+								<FontAwesome name="heart-o" size={24} color={Colors.pink} />
 							</Center>
+						</Pressable> */}
+
+						<Pressable position="absolute" top="50%" right="3%">
+							<Heart param={product.saved} size={18} />
 						</Pressable>
 
 						<Box px={4} pt={1} marginX="auto" top={-10}>
