@@ -5,9 +5,9 @@ import {
 	Pressable,
 	Image,
 	Text,
-    View
+	View,
 } from "native-base";
-import { useFonts } from 'expo-font';
+import { useFonts } from "expo-font";
 import React, { useEffect, useState } from "react";
 import Colors from "../color";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -19,76 +19,73 @@ import CustomizedData from "../data/CustomizedData";
 import { convertAbsoluteToRem } from "native-base/lib/typescript/theme/tools";
 
 function HomeSearch() {
-    const [fontsLoaded] = useFonts ({
-        'Akronim-Regular': require('../../assets/Fonts/Akronim-Regular.ttf'),
-		'Caladea-Regular': require('../../assets/Fonts/Caladea-Regular.ttf'),
-		'Caladea-Bold': require('../../assets/Fonts/Caladea-Bold.ttf')
-      });
+	const [fontsLoaded] = useFonts({
+		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
+		"Caladea-Regular": require("../../assets/Fonts/Caladea-Regular.ttf"),
+		"Caladea-Bold": require("../../assets/Fonts/Caladea-Bold.ttf"),
+	});
 
-	const [word, setWord] = useState('');
+	const [word, setWord] = useState("");
 	const [uniqueFilteredId, setUniqeFilteredId] = useState([]);
 	const [customizedData, setCustomizedData] = useState(CustomizedData);
 
-	if (!fontsLoaded) {
-		return null;
-	}
+	
 
 	let filteredId = [];
 	let singleFilteredId = [];
 	let newArray;
 
-	// useEffect(() => {
-	// 	setCalculation(() => count * 2);
-	//   }, [count]);
+	
 
 	const search = (word) => {
 		console.log(word);
-		
-		const filteredName = products.filter(item => item.name.includes(word));
-		const filteredTags = products.filter(item => item.tags.includes(word));
-		const filteredIngredients = products.filter(item => item.ingredients.includes(word));
-		filteredName.forEach(food => filteredId.push(food._id));
-		filteredTags.forEach(food => filteredId.push(food._id));
-		filteredIngredients.forEach(food => filteredId.push(food._id));
-		
+
+		const filteredName = products.filter((item) => item.name.includes(word));
+		const filteredTags = products.filter((item) => item.tags.includes(word));
+		const filteredIngredients = products.filter((item) =>
+			item.ingredients.includes(word)
+		);
+		filteredName.forEach((food) => filteredId.push(food._id));
+		filteredTags.forEach((food) => filteredId.push(food._id));
+		filteredIngredients.forEach((food) => filteredId.push(food._id));
+
 		//to filter out duplicates
 		singleFilteredId = filteredId.filter((element, index) => {
 			return filteredId.indexOf(element) === index;
 		});
 
-		console.log(singleFilteredId);
-		
-		//setUniqeFilteredId(singleFilteredId);
+		//console.log(singleFilteredId);
+
+		setUniqeFilteredId(singleFilteredId);
 
 		//console.log(uniqueFilteredId)
-		
 
-		singleFilteredId.map((uniqueId)=> {
-		 	newArray = products.filter(item => item._id == uniqueId);
-			console.log(newArray)
-			setCustomizedData(...newArray[1]);
-			console.log(customizedData);
-		 	// I want to add the filtered arrays onto the Customized Data.
-		})
-		
+		// singleFilteredId.map((uniqueId) => {
+		// 	newArray = products.filter((item) => item._id == uniqueId);
+		// 	console.log(newArray);
+		// 	setCustomizedData(...newArray[1]);
+		// 	console.log(customizedData);
+		// 	// I want to add the filtered arrays onto the Customized Data.
+		// });
+
 		//console.log(CustomizedData);
 
 		// setCustomizedData(newArray);
 
 		// console.log(CustomizedData);
 
-		
-		
-		
-
-		
 		//console.log(products.filter(item => item._id == 1 ));
-		
 	};
 
-	
+	useEffect(() => {
+		setCustomizedData(uniqueFilteredId);
+	}, [uniqueFilteredId]);
 
-	
+	console.log(customizedData);
+
+	if (!fontsLoaded) {
+		return null;
+	}
 
 	return (
 		<>
@@ -115,46 +112,64 @@ function HomeSearch() {
 					}}
 					value={word}
 					onChangeText={(text) => setWord(text)}
-					
 				/>
 			</HStack>
-			<HStack w="full" marginBottom={2} space={4} px={6} py={0} alignItems="center">
+			<HStack
+				w="full"
+				marginBottom={2}
+				space={4}
+				px={6}
+				py={0}
+				alignItems="center"
+			>
 				<Button
 					h={10}
-                    w={117}
+					w={117}
 					bg={Colors.morandiGreen}
-                    paddingRight={6}
-                    position="relative"
-                    left="15%"
+					paddingRight={6}
+					position="relative"
+					left="15%"
 					_text={{
 						color: Colors.black,
 						fontFamily: "Caladea-Regular",
-						
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
-					onPress={() => {search(word)}}
-					
+					onPress={() => {
+						search(word)
+					}}
 				>
 					Filter
 				</Button>
-                <View left={0}><Ionicons name="filter" size={22} flex={2} color={Colors.deepestGray} /></View>
-                <Button
+				<View left={0}>
+					<Ionicons
+						name="filter"
+						size={22}
+						flex={2}
+						color={Colors.deepestGray}
+					/>
+				</View>
+				<Button
 					h={10}
-                    w={124}
+					w={124}
 					bg={Colors.morandiGreen}
-                    paddingRight={8}
-                    left={7}
+					paddingRight={8}
+					left={7}
 					_text={{
 						color: Colors.black,
 						fontFamily: "Caladea-Regular",
-						
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
 				>
 					Specials
 				</Button>
-                <View left={-26} top={-1}><MaterialIcons name="celebration" size={22} flex={2} color={Colors.deepestGray} /></View>
-                
+				<View left={-26} top={-1}>
+					<MaterialIcons
+						name="celebration"
+						size={22}
+						flex={2}
+						color={Colors.deepestGray}
+					/>
+				</View>
 			</HStack>
 		</>
 	);
