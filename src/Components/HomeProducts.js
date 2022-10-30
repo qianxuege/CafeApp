@@ -47,7 +47,7 @@ function HomeProducts() {
 
 	let filteredId = [];
 	let singleFilteredId = [];
-	let newArray;
+	let newArray = [];
 
 	
 
@@ -75,19 +75,27 @@ function HomeProducts() {
 		console.log(uniqueFilteredId)
 
 		singleFilteredId.map((uniqueId) => {
-		 	newArray = products.filter((item) => item._id == uniqueId);
+		 	newArray.push( products.filter((item) => item._id == uniqueId));
 		 	console.log(newArray);
-		 //	setCustomizedData((oldArray) => [...oldArray, newArray]);
-		// 	console.log(customizedData);
+			//setWord('chicken')
+			 
+			//setCustomizedData((oldArray) => [...oldArray, newArray]);
+			
+		 	
+		 	//console.log(customizedData);
 		// 	// I want to add the filtered arrays onto the Customized Data.
 		 });
 
-		setCustomizedData(products.filter(item => item._id== 2 || item._id == 3 || item._id == 8));
-		console.log(customizedData);
+		console.log(newArray);
+		setFinalData(newArray.flat());
+		
+			
+		//}));
+		//console.log(customizedData);
 
 		// setCustomizedData(newArray);
 
-		// console.log(CustomizedData);
+		//console.log(CustomizedData);
 
 		//console.log(products.filter(item => item._id == 1 ));
 	};
@@ -107,9 +115,7 @@ function HomeProducts() {
 		setFinalData(products);
 	}, []);
 
-	useEffect(() => {
-		setFinalData(customizedData);
-	}, [word]);
+	 
 
 	if (!fontsLoaded) {
 		return null;
