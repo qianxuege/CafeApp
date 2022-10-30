@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
+import AdminHomeScreen from "../Screens/AdminHomeScreen";
 import CartScreen from "../Screens/CartScreen";
 import HomeScreen from "../Screens/HomeScreen";
 import SingleProductScreen from "../Screens/SingleProductScreen";
@@ -17,6 +18,8 @@ const StackNav = () => {
             <Stack.Screen name="Home" component={HomeScreen}/>
             <Stack.Screen name="Single" component={SingleProductScreen}/>
             <Stack.Screen name="Cart" component={CartScreen}/>
+
+            <Stack.Screen name="AdminUpload" component={AdminHomeScreen}/>
         </Stack.Navigator>
     );
 };

@@ -16,6 +16,7 @@ import { StyleSheet } from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import firebase from "../../firebase";
 import { Auth } from "firebase/auth";
+import StackNav from "../Navigations/StackNav";
 
 function LoginScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
@@ -142,9 +143,9 @@ function LoginScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					// onPress={() => navigation.navigate("Register")}
+					onPress={() => navigation.navigate("AdminUpload")}
 				>
-					ADMIN REGISTER
+					ADMIN LOGIN
 				</Button>
 			</Box>
 		</Box>

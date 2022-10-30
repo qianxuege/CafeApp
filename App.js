@@ -22,6 +22,7 @@ import BottomNav from "./src/Navigations/BottomNav";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import AdminHomeScreen from "./src/Screens/AdminHomeScreen";
 require('firebase/compat/auth');
 //import { auth } from "firebase/app";
 
@@ -83,6 +84,7 @@ function App() {
 					<Stack.Screen name="Single" component={SingleProductScreen} />
 					<Stack.Screen name="Home" component={HomeScreen} />
 					<Stack.Screen name="Bottom" component={BottomNav} />
+          <Stack.Screen name="AdminUpload" component={AdminHomeScreen}/>
 				</Stack.Navigator>
 			</NavigationContainer>
 		</NativeBaseProvider>

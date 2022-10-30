@@ -11,6 +11,7 @@ const Colors = {
     orange: "#FFCE31",
     milk: "#f2f0e4",
     red: "#FF0000",
+    darkRed: "#b83636",
     darkPink: "#926868",
     pink: "#d69b9b",
     morandiPink: "#e3c2c2",
