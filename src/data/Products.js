@@ -3,13 +3,14 @@ const products = [
         _id: "1",
         name: "Acai Bowl",
         image:"https://yeahthatskosher.com/wp-content/uploads/2021/06/Sobol-Kosher-Acai-Bowls-Hewlett-Fruit-Granola-Coconut.jpg",
-        tags: ["vegeterian", "healthy", "fruits", "sweet"],
+        tags: ["dairy-free", "healthy", "fruits", "sweet"],
         ingredients: "acai berries, coconut flakes, ...",
         calories: 270,
         price: 10,
         rating: 5,
         numReviews: 4,
         saved: true,
+        location: "snack bar",
     },
     {
         _id: "2",
@@ -22,6 +23,7 @@ const products = [
         rating: 4.5,
         numReviews: 5,
         saved: true,
+        location: "sandwich station",
     },
     {
         _id: "3",
@@ -34,6 +36,7 @@ const products = [
         rating: 5,
         numReviews: 6,
         saved: false,
+        location: "sandwich station",
     },
     {
         _id: "4",
@@ -46,6 +49,7 @@ const products = [
         rating: 4,
         numReviews: 6,
         saved: true,
+        location: "grill",
     },
     {
         _id: "5",
@@ -58,6 +62,7 @@ const products = [
         rating: 5,
         numReviews: 6,
         saved: true,
+        location: "sandwich station",
     },
     {
         _id: "6",
@@ -70,18 +75,20 @@ const products = [
         rating: 5,
         numReviews: 7,
         saved: false,
+        location: "sandwich station",
     },
     {
         _id: "7",
         name: "Simple Green Salad",
         image: "https://www.kitchensanctuary.com/wp-content/uploads/2021/06/Simple-Green-Salad-with-Vinaigrette-Square-FS-3241.jpg",
-        tags: ["healthy", "vegetable", "bread", "savory"],
+        tags: ["healthy", "vegan", "dairy-free", "savory"],
         ingredients: "vegetable, flour, tomatoes, ...",
         calories: 200,
         price: 7,
         rating: 4,
         numReviews: 6,
         saved: true,
+        location: "sandwich station",
     },
     {
         _id: "8",
@@ -94,6 +101,7 @@ const products = [
         rating: 4,
         numReviews: 6,
         saved: true,
+        location: "sandwich station",
     },
 
 ]

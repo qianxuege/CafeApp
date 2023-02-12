@@ -27,6 +27,7 @@ function RegisterScreen({navigation}) {
 	<firebase />
 
 	const handleSignUp = () => {
+		console.log("signup");
 		const auth = getAuth();
 		createUserWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
@@ -79,13 +80,14 @@ function RegisterScreen({navigation}) {
 							<Ionicons name="person-circle" size={28} color="#4e954e" />
 						}
 						variant="underlined"
-						placeholder="John Doe"
+						placeholder="FirstName LastName"
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
 						placeholderTextColor="#4e954e"
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
+						autoCapitalize="none"
 					/>
 
 
@@ -97,13 +99,14 @@ function RegisterScreen({navigation}) {
 						variant="underlined"
 						placeholder="user@gmail.com"
 						value={email}
-						onChangeText={(text) => setEmail(text)}
+						onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
 						placeholderTextColor="#4e954e"
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
+						autoCapitalize="none"
 					/>
 					{/* PASSWORD */}
 					<Input
@@ -119,6 +122,7 @@ function RegisterScreen({navigation}) {
 						placeholderTextColor="#4e954e"
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
+						autoCapitalize="none"
 					/>
 				</VStack>
 				<Button

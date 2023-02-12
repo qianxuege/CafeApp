@@ -56,7 +56,7 @@ const AdminHomeScreen = ({ route }) => {
 
 				<Center marginTop={0}>
 					<Text fontFamily="Akronim-Regular" fontSize={36} color={Colors.white}>
-						userA@gmail.com
+						admin@gmail.com
 					</Text>
 				</Center>
 			</Box>

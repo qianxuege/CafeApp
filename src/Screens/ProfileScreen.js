@@ -16,6 +16,9 @@ import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
 import { StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
+import { getAuth, signOut } from "firebase/auth";
+
+
 
 const Inputs = [
 	{
@@ -36,6 +39,10 @@ const Inputs = [
 	},
 ];
 
+
+
+
+
 function ProfileScreen({navigation}) {
 	const [fontsLoaded] = useFonts({
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
@@ -44,6 +51,20 @@ function ProfileScreen({navigation}) {
 		"Caladea-Regular": require("../../assets/Fonts/Caladea-Regular.ttf"),
 	});
 
+	<firebase />
+
+	function logOut(){
+		//console.log("logout");
+		const auth = getAuth();
+		//console.log(auth.currentUser);
+		signOut(auth).then(() => {
+			// Sign-out successful.
+			navigation.navigate("Login");
+		  }).catch((error) => {
+			// An error happened.
+		  });
+	}
+	
 	if (!fontsLoaded) {
 		return null;
 	}
@@ -76,6 +97,7 @@ function ProfileScreen({navigation}) {
 										borderBottomColor: Colors.darkestGreen,
 										borderWidth: 1,
 									}}
+									autoCapitalize="none"
 								/>
 						</FormControl>
 					))}
@@ -112,7 +134,7 @@ function ProfileScreen({navigation}) {
 							}}
 							_pressed={{ bg: Colors.lightGreen }}
 							marginBottom={20}
-							onPress={() => navigation.navigate("Login")}
+							onPress={() => logOut()}
 						>
 							LOG OUT
 						</Button>

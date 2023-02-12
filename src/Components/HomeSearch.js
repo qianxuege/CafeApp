@@ -42,6 +42,7 @@ function HomeSearch() {
 				</Pressable>
 				<Input
 					placeholder="Type In A Filter"
+					autoCapitalize="none"
 					w="85%"
 					bg={Colors.white}
 					type="search"

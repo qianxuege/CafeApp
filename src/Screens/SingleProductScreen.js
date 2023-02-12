@@ -84,7 +84,7 @@ function SingleProductScreen({ route }) {
 					</Center>
 				</Pressable> */}
 				<Pressable position="absolute" top={370} right="2%">
-					<Heart param={product.saved} size={24}/>
+					<Heart param={product.saved} size={24} />
 				</Pressable>
 				<Box marginLeft={6}>
 					<Text
@@ -154,6 +154,11 @@ function SingleProductScreen({ route }) {
                             </HStack>
 						</Pressable>
 					</HStack> */}
+
+					<Box mt={6}>
+						<Text style={styles.heading2}>Location</Text>
+						<Text style={styles.paragraph}>{product.location}</Text>
+					</Box>
 
 					<Box mt={6}>
 						<Text style={styles.heading2}>Calories</Text>

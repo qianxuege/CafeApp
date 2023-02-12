@@ -13,6 +13,7 @@ import { useFonts } from "expo-font";
 import Colors from "../color";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { getAuth } from "firebase/auth";
 
 function ProfielTop() {
 	const navigation = useNavigation();
@@ -24,6 +25,9 @@ function ProfielTop() {
 	if (!fontsLoaded) {
 		return null;
 	}
+
+	const auth = getAuth();
+
 	return (
 		<Box
 			space={3}
@@ -43,7 +47,7 @@ function ProfielTop() {
 
 			<Center marginTop={0}>
 				<Text fontFamily="Akronim-Regular" fontSize={36} color={Colors.white}>
-					userA@gmail.com
+					{auth.currentUser.email}
 				</Text>
 			</Center>
 		</Box>

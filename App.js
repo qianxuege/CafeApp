@@ -37,6 +37,7 @@ function App() {
 		"AmaticSC-Bold": require("./assets/Fonts/AmaticSC-Bold.ttf"),
 		"Caveat-SemiBold": require("./assets/Fonts/Caveat-SemiBold.ttf"),
     "Caladea-BoldItalic": require("./assets/Fonts/Caladea-BoldItalic.ttf"),
+    "Caladea-Regular": require("./assets/Fonts/Caladea-Regular.ttf"),
 	});
 	if (!fontsLoaded) {
 		return null;

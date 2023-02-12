@@ -13,36 +13,42 @@ import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import firebase from "../../firebase";
 import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
+
+
 
 function LoginScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
-	// const [email, setEmail] = useState("");
-	// const [password, setPassword] = useState("");
 
-	// <firebase />
 
-	// const handleSignUp = () => {
-	// 	const auth = getAuth();
-	// 	createUserWithEmailAndPassword(auth, email, password)
-	// 		.then((userCredential) => {
-	// 			// Signed in
-	// 			const user = userCredential.user;
-	// 			console.log(user.email);
-	// 			// ...
-	// 		})
-	// 		.catch((error) => {
-	// 			const errorCode = error.code;
-	// 			const errorMessage = error.message;
-	// 			console.log(errorMessage);
-	// 			// ..
-	// 		});
-	// };
+	<firebase />
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	function logIn() {
+		const auth = getAuth();
+		console.log("works");
+		signInWithEmailAndPassword(auth, email, password)
+			.then((userCredential) => {
+				// Signed in
+				const user = userCredential.user;
+				console.log(user.email);
+				navigation.navigate("Bottom");
+				// ...
+			})
+		
+			.catch(function(error) {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorCode);
+				console.log("Check your login credentials or register a new account!");
+			});
+	}
 
 	return (
 		<Box flex={1} bg={Colors.black}>
@@ -82,14 +88,16 @@ function LoginScreen({ navigation }) {
 						}
 						variant="underlined"
 						placeholder="user@gmail.com"
-						// value={email}
-						// onChangeText={(text) => setEmail(text)}
+						value={email}
+						onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
+						
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
 						placeholderTextColor="#4e954e"
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
+						autoCapitalize="none"
 					/>
 					{/* PASSWORD */}
 					<Input
@@ -97,8 +105,8 @@ function LoginScreen({ navigation }) {
 						variant="underlined"
 						type="password"
 						placeholder="*********"
-						// value={password}
-						// onChangeText={(text) => setPassword(text)}
+						value={password}
+						onChangeText={(text) => setPassword(text)}
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
@@ -106,8 +114,10 @@ function LoginScreen({ navigation }) {
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
 						secureTextEntry
+						autoCapitalize="none"
 					/>
 				</VStack>
+				<Box>
 				<Button
 					marginTop={10}
 					marginBottom={10}
@@ -118,10 +128,11 @@ function LoginScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.darkGreen}
 					size="md"
-					onPress={() => navigation.navigate("Bottom")}
+					onPress= {() => logIn()}
 				>
 					LOGIN
 				</Button>
+				</Box>
 				<Button
 					_pressed={{
 						bg: Colors.lightGold,
