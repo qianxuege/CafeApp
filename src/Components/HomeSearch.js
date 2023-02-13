@@ -11,7 +11,7 @@ import {
 import { useFonts } from "expo-font";
 import React, { useEffect, useState } from "react";
 import Colors from "../color";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import NavBarMenu from "../Components/NavBarMenu";
 import { SearchBar } from "react-native-screens";
@@ -25,7 +25,7 @@ function HomeSearch() {
 		"Caladea-Bold": require("../../assets/Fonts/Caladea-Bold.ttf"),
 	});
 
-	const [word, setWord] = useState("");
+	const [search, setSearch] = useState("");
 	
 
 	if (!fontsLoaded) {
@@ -57,15 +57,20 @@ function HomeSearch() {
 						borderColor: Colors.pink,
 						backgroundColor: Colors.white,
 					}}
-					value={word}
-					onChangeText={(text) => setWord(text)}
+					value={search}
+					onChangeText={(text) => setSearch(text)}
 				/>
+				
+				<Pressable right={9}>
+					<Feather name="x" size={24} color={Colors.deepestGray} />
+				</Pressable>
 			</HStack>
+			{console.log(search)}
 			
 		</>
 	);
 }
 
-export const word = "chicken";
+//export const search = word;
 
 export default HomeSearch;

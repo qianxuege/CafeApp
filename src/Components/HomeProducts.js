@@ -8,7 +8,8 @@ import {
 	Box,
 	Center,
 	HStack,
-	Button
+	Button,
+	Input
 } from "native-base";
 import { RefreshControl } from "react-native";
 import { useFonts } from "expo-font";
@@ -18,18 +19,21 @@ import Colors from "../color";
 import products from "../data/Products.js";
 import Rating from "./Rating";
 import Heart from "./Heart";
+import NavBarMenu from "../Components/NavBarMenu";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import CustomizedData from "../data/CustomizedData";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
-//import { word } from "./HomeSearch";
 
 
 function HomeProducts() {
 	const navigation = useNavigation();
 	const [fontsLoaded] = useFonts({
+		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
 		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
+		"Caladea-Regular": require("../../assets/Fonts/Caladea-Regular.ttf"),
+		"Caladea-Bold": require("../../assets/Fonts/Caladea-Bold.ttf"),
 	});
 
 	const wait = (timeout) => {
@@ -41,10 +45,8 @@ function HomeProducts() {
 	const [uniqueFilteredId, setUniqeFilteredId] = useState([]);
 	const [customizedData, setCustomizedData] = useState(CustomizedData);
 	const [finalData, setFinalData] = useState(products);
-	const [isPressed, setIsPressed] = useState(false);
-	const [isFullHeart, setIsFullHeart] = useState();
-
 	
+
 
 	let filteredId = [];
 	let singleFilteredId = [];
@@ -63,21 +65,20 @@ function HomeProducts() {
 		filteredName.forEach((food) => filteredId.push(food._id));
 		filteredTags.forEach((food) => filteredId.push(food._id));
 		filteredIngredients.forEach((food) => filteredId.push(food._id));
+		//filteredId is an array that consists of products that contain the word (may have duplicates)
 
 		//to filter out duplicates
 		singleFilteredId = filteredId.filter((element, index) => {
 			return filteredId.indexOf(element) === index;
 		});
 
-		//console.log(singleFilteredId);
+		//console.log(singleFilteredId); //singleFilteredId consists of id of products with the word, without duplicates
 
-		setUniqeFilteredId(singleFilteredId);
-
-		console.log(uniqueFilteredId)
+		setUniqeFilteredId(singleFilteredId);  //now uniqueFilteredId == singleFilteredId
 
 		singleFilteredId.map((uniqueId) => {
 		 	newArray.push( products.filter((item) => item._id == uniqueId));
-		 	console.log(newArray);
+		 	//console.log(newArray);
 			//setWord('chicken')
 			 
 			//setCustomizedData((oldArray) => [...oldArray, newArray]);
@@ -87,7 +88,7 @@ function HomeProducts() {
 		// 	// I want to add the filtered arrays onto the Customized Data.
 		 });
 
-		console.log(newArray);
+		//console.log(newArray);
 		setFinalData(newArray.flat());
 		
 			
@@ -100,6 +101,14 @@ function HomeProducts() {
 
 		//console.log(products.filter(item => item._id == 1 ));
 	};
+
+	const resetFilter = () => {
+		newArray = [];
+		setFinalData(products);
+		let currentIds = [];
+		finalData.forEach((item) => currentIds.push(item._id));
+		//console.log(currentIds);
+	}
 
 	//useEffect(() => {
 	//	setCustomizedData(uniqueFilteredId);
@@ -139,6 +148,37 @@ function HomeProducts() {
 
 	return (
 		<>
+		<NavBarMenu />
+			<HStack w="full" px={2} py={4} alignItems="center">
+				<Pressable left={9} zIndex={2}>
+					<Ionicons name="search" size={24} color={Colors.deepestGray} />
+				</Pressable>
+				<Input
+					placeholder="Type In A Filter"
+					autoCapitalize="none"
+					w="85%"
+					bg={Colors.white}
+					type="search"
+					height={12}
+					paddingLeft={12}
+					borderWidth={1}
+					borderColor={Colors.lightBlack}
+					fontSize={14}
+					color={Colors.deepestGray}
+					variant="unstyled"
+					_focus={{
+						borderColor: Colors.pink,
+						backgroundColor: Colors.white,
+					}}
+					value={word}
+					onChangeText={(text) => setWord(text)}
+					clearTextOnFocus
+				/>
+				
+				<Pressable right={9}>
+					<Feather name="x" size={24} color={Colors.deepestGray} />
+				</Pressable>
+			</HStack>
 		<HStack
 				w="full"
 				marginBottom={2}
@@ -160,8 +200,7 @@ function HomeProducts() {
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
 					onPress={() => {
-						setWord('chicken');
-						search(word);
+						search(word)
 					}}
 				>
 					Filter
@@ -185,16 +224,14 @@ function HomeProducts() {
 						fontFamily: "Caladea-Regular",
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
+					onPress={() => {
+						resetFilter()
+					}}
 				>
-					Specials
+					Reset Filter
 				</Button>
 				<View left={-26} top={-1}>
-					<MaterialIcons
-						name="celebration"
-						size={22}
-						flex={2}
-						color={Colors.deepestGray}
-					/>
+					<Feather name="x" size={24} color={Colors.deepestGray} />
 				</View>
 			</HStack>
 		

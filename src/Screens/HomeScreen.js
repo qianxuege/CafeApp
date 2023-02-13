@@ -9,7 +9,7 @@ function HomeScreen() {
     
     return (
         <Box flex={1} bg={Colors.white} w="100%">
-            <HomeSearch />
+            {/* <HomeSearch /> */}
             <HomeProducts />
         </Box>
     );
