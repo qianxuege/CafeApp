@@ -7,13 +7,14 @@ import {
 	Input,
 	Button,
 	Pressable,
+	Alert,
 } from "native-base";
 import React, { useState } from "react";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { AuthErrorCodes, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import firebase from "../../firebase";
 import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
@@ -29,10 +30,12 @@ function LoginScreen({ navigation }) {
 	<firebase />
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [errorText, setErrorText] = useState("");
 
 	function logIn() {
-		const auth = getAuth();
 		console.log("works");
+		const auth = getAuth();
+		
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				// Signed in
@@ -41,13 +44,12 @@ function LoginScreen({ navigation }) {
 				navigation.navigate("Bottom");
 				// ...
 			})
-		
 			.catch(function(error) {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.log(errorCode);
-				console.log("Check your login credentials or register a new account!");
+				const errorMessage = `Error: ${error.code}`;
+				setErrorText(errorMessage);
 			});
+		
+			
 	}
 
 	return (
@@ -132,6 +134,7 @@ function LoginScreen({ navigation }) {
 				>
 					LOGIN
 				</Button>
+					<Text width="100%" color={Colors.red} top="-20">{errorText}</Text>
 				</Box>
 				<Button
 					_pressed={{

@@ -16,23 +16,16 @@ import { useFonts } from "expo-font";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "../color";
 import { SwipeListView } from "react-native-swipe-list-view";
+import { useFocusEffect } from "@react-navigation/native";
+//the screen for saved items
 
 const wait = (timeout) => {
 	return new Promise((resolve) => setTimeout(resolve, timeout));
 };
-const saved = products.filter((food) => food.saved);
+let saved = products.filter((food) => food.saved);
+//console.log(saved);
 
 
-function deleteSaved(i) {
-	//i = index of the current food item in saved
-	saved[i].saved = false; //Will delete the item from the saved list
-	let iProducts = saved[i]._id - 1; //because the id starts from 1, need to -1 to get to index
-	products[iProducts].saved = false;
-	console.log(products[iProducts].saved);
-
-	//console.log(saved[i].saved);
-	//console.log(products[2].saved);
-}
 
 // Cart Item
 const renderItems = (data) => (
@@ -64,7 +57,45 @@ const renderItems = (data) => (
 	</Pressable>
 );
 
-// Hidden
+
+
+const CartItems = () => {
+	const [fontsLoaded] = useFonts({
+		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
+		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
+		"Bitter-Regular": require("../../assets/Fonts/Bitter-Regular.ttf"),
+	});
+	const [refreshing, setRefreshing] = React.useState(false);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		saved = products.filter((food) => food.saved);
+		wait(2000).then(() => setRefreshing(false));
+	}, []);
+
+	//Will refresh once the screen is in focus: 
+	//(when it first renders and when user returns to this screen from another screen)
+	useFocusEffect(
+		React.useCallback(() => {
+		 onRefresh();
+		}, [])
+	  );
+
+	function deleteSaved(i) {
+		//i = index of the current food item in saved
+		saved[i].saved = false; //Will delete the item from the saved list
+		let iProducts = saved[i]._id - 1; //because the id starts from 1, need to -1 to get to index
+		products[iProducts].saved = false;
+		//saved = products.filter((food) => food.saved);
+		onRefresh()
+		console.log(saved);
+		
+	
+		//console.log(saved[i].saved);
+		//console.log(products[2].saved);
+	};
+
+	// Hidden
 const hiddenItems = (data) => (
 	<Pressable
 		roundedTopRight={10}
@@ -83,19 +114,6 @@ const hiddenItems = (data) => (
 		</Box>
 	</Pressable>
 );
-
-const CartItems = () => {
-	const [fontsLoaded] = useFonts({
-		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
-		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
-		"Bitter-Regular": require("../../assets/Fonts/Bitter-Regular.ttf"),
-	});
-	const [refreshing, setRefreshing] = React.useState(false);
-
-	const onRefresh = React.useCallback(() => {
-		setRefreshing(true);
-		wait(2000).then(() => setRefreshing(false));
-	}, []);
 	return (
 		<Box>
 			<SwipeListView

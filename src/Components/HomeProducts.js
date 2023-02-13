@@ -18,7 +18,7 @@ import Colors from "../color";
 import products from "../data/Products.js";
 import Rating from "./Rating";
 import Heart from "./Heart";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import CustomizedData from "../data/CustomizedData";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
@@ -41,7 +41,8 @@ function HomeProducts() {
 	const [uniqueFilteredId, setUniqeFilteredId] = useState([]);
 	const [customizedData, setCustomizedData] = useState(CustomizedData);
 	const [finalData, setFinalData] = useState(products);
-
+	const [isPressed, setIsPressed] = useState(false);
+	const [isFullHeart, setIsFullHeart] = useState();
 
 	
 
@@ -108,18 +109,31 @@ function HomeProducts() {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
-		wait(2000).then(() => setRefreshing(false));
+		wait(1000).then(() => setRefreshing(false));
 	}, []);
 
 	useEffect(() => {
 		setFinalData(products);
 	}, []);
 
-	 
+	//Will refresh once the screen is in focus: 
+	//(when it first renders and when user returns to this screen from another screen)
+	useFocusEffect(
+		React.useCallback(() => {
+		 onRefresh();
+		}, [])
+	  );
 
 	if (!fontsLoaded) {
 		return null;
 	}
+
+	// const changeHeart = (heart) => {
+	// 	heart==true? heart = false: heart = true;
+	// 	onRefresh();
+	// 	return heart;
+	// }
+
 
 	
 
@@ -226,8 +240,13 @@ function HomeProducts() {
 							</Center>
 						</Pressable> */}
 
-						<Pressable position="absolute" top="50%" right="3%">
+						<Pressable position="absolute" top="50%" right="3%" onPress={() => {
+							product.saved==true? product.saved=false: product.saved=true;
+							onRefresh();
+						}}>
 							<Heart param={product.saved} size={18} />
+							
+							
 						</Pressable>
 
 						<Box px={4} pt={1} marginX="auto" top={-10}>
