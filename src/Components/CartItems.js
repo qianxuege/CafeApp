@@ -16,7 +16,7 @@ import { useFonts } from "expo-font";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "../color";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 //the screen for saved items
 
 const wait = (timeout) => {
@@ -24,6 +24,7 @@ const wait = (timeout) => {
 };
 let saved = products.filter((food) => food.saved);
 //console.log(saved);
+
 
 
 
@@ -66,11 +67,12 @@ const CartItems = () => {
 		"Bitter-Regular": require("../../assets/Fonts/Bitter-Regular.ttf"),
 	});
 	const [refreshing, setRefreshing] = React.useState(false);
+	const navigation = useNavigation();
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		saved = products.filter((food) => food.saved);
-		wait(2000).then(() => setRefreshing(false));
+		wait(1000).then(() => setRefreshing(false));
 	}, []);
 
 	//Will refresh once the screen is in focus: 
@@ -88,7 +90,7 @@ const CartItems = () => {
 		products[iProducts].saved = false;
 		//saved = products.filter((food) => food.saved);
 		onRefresh()
-		console.log(saved);
+		//console.log(saved);
 		
 	
 		//console.log(saved[i].saved);
@@ -128,7 +130,7 @@ const hiddenItems = (data) => (
 				}
 			/>
 
-			<Center my={10}>
+<Center my={10}>
 				<Button
 					width="80%"
 					height={55}
@@ -140,6 +142,9 @@ const hiddenItems = (data) => (
 						fontSize: 16,
 					}}
 					_pressed={{ bg: Colors.lightGold }}
+					onPress={() => {
+						navigation.navigate("Main");
+					}}
 				>
 					View Menu
 				</Button>

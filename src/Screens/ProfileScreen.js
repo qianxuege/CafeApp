@@ -11,12 +11,13 @@ import {
 	View,
 	VStack,
 } from "native-base";
-import React from "react";
+import React, { useState } from "react";
 import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
 import { StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, updatePassword } from "firebase/auth";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 
@@ -51,7 +52,44 @@ function ProfileScreen({navigation}) {
 		"Caladea-Regular": require("../../assets/Fonts/Caladea-Regular.ttf"),
 	});
 
+	const [refreshing, setRefreshing] = React.useState(false);
+	const [newPassword, setNewPassword] = useState("");
+	const [message, setMessage] = useState("");
+
 	<firebase />
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+		  setRefreshing(false);
+		}, 1000);
+	  }, []);
+
+	  useFocusEffect(
+		React.useCallback(() => {
+		 onRefresh();
+		 setNewPassword("");
+		 setMessage("");
+		}, [])
+	  );
+
+	function changePassword() {
+		const auth = getAuth();
+		const user = auth.currentUser;
+		console.log(newPassword);
+		updatePassword(user, newPassword).then(() => {
+			// Update successful.
+			setMessage(`Update successful. New password is ${newPassword}`);
+			//console.log(message);
+			
+		  }).catch((error) => {
+			// An error ocurred
+			//need to check if the two passwords are the same
+			setMessage(`You have an error: ${error.code}`);
+			//console.log(message);
+		  });
+		
+	}
 
 	function logOut(){
 		//console.log("logout");
@@ -62,6 +100,7 @@ function ProfileScreen({navigation}) {
 			navigation.navigate("Login");
 		  }).catch((error) => {
 			// An error happened.
+			console.log(error.code);
 		  });
 	}
 	
@@ -98,6 +137,9 @@ function ProfileScreen({navigation}) {
 										borderWidth: 1,
 									}}
 									autoCapitalize="none"
+									onChangeText={(text) => {
+										i.type=="password"? setNewPassword(text) : null
+									}}
 								/>
 						</FormControl>
 					))}
@@ -115,9 +157,11 @@ function ProfileScreen({navigation}) {
 							}}
 							_pressed={{ bg: Colors.deepGold }}
 							marginBottom={3}
+							onPress={()=> {changePassword()}}
 						>
 							Confirm Changes
 						</Button>
+						<Text>{message}</Text>
 						<Text style={styles.or} marginBottom={3}>
 							OR
 						</Text>

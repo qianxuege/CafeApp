@@ -85,7 +85,7 @@ function App() {
 					<Stack.Screen name="Single" component={SingleProductScreen} />
 					<Stack.Screen name="Home" component={HomeScreen} />
 					<Stack.Screen name="Bottom" component={BottomNav} />
-          <Stack.Screen name="AdminUpload" component={AdminHomeScreen}/>
+        			<Stack.Screen name="AdminUpload" component={AdminHomeScreen}/>
 				</Stack.Navigator>
 			</NavigationContainer>
 		</NativeBaseProvider>

@@ -9,7 +9,8 @@ import {
 	Pressable,
 	Alert,
 } from "native-base";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {RefreshControl} from "react-native";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,8 @@ import { AuthErrorCodes, getAuth, signInWithEmailAndPassword } from "firebase/au
 import firebase from "../../firebase";
 import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
+import { useFocusEffect } from "@react-navigation/native";
+import { UserInfo } from "firebase-admin/lib/auth/user-record";
 
 
 
@@ -26,30 +29,42 @@ function LoginScreen({ navigation }) {
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
 
-
 	<firebase />
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [errorText, setErrorText] = useState("");
+	const [refreshing, setRefreshing] = React.useState(false);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+		  setRefreshing(false);
+		}, 1000);
+	  }, []);
+
+	// useFocusEffect(
+	// 	React.useCallback(() => {
+	// 	 onRefresh();
+	// 	}, [])
+	//   );
 
 	function logIn() {
 		console.log("works");
 		const auth = getAuth();
-		
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				// Signed in
 				const user = userCredential.user;
-				console.log(user.email);
+				setEmail("");
+				setPassword("");
+				setErrorText("");
 				navigation.navigate("Bottom");
 				// ...
 			})
 			.catch(function(error) {
 				const errorMessage = `Error: ${error.code}`;
 				setErrorText(errorMessage);
-			});
-		
-			
+			});	
 	}
 
 	return (

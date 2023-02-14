@@ -11,9 +11,8 @@ import {
 	Button,
 	Input
 } from "native-base";
-import { RefreshControl } from "react-native";
+import { RefreshControl, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
-import { FontAwesome } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import Colors from "../color";
 import products from "../data/Products.js";
@@ -21,9 +20,7 @@ import Rating from "./Rating";
 import Heart from "./Heart";
 import NavBarMenu from "../Components/NavBarMenu";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import CustomizedData from "../data/CustomizedData";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
 
 function HomeProducts() {
@@ -39,11 +36,11 @@ function HomeProducts() {
 	const wait = (timeout) => {
 		return new Promise((resolve) => setTimeout(resolve, timeout));
 	};
-	const [refreshing, setRefreshing] = React.useState(false);
+	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
 
 	const [word, setWord] = useState('');
 	const [uniqueFilteredId, setUniqeFilteredId] = useState([]);
-	const [customizedData, setCustomizedData] = useState(CustomizedData);
+	//const [customizedData, setCustomizedData] = useState(CustomizedData);
 	const [finalData, setFinalData] = useState(products);
 	
 
@@ -57,7 +54,7 @@ function HomeProducts() {
 	const search = (word) => {
 		console.log(word);
 
-		const filteredName = products.filter((item) => item.name.includes(word));
+		const filteredName = products.filter((item) => item.name.toLocaleLowerCase().includes(word));
 		const filteredTags = products.filter((item) => item.tags.includes(word));
 		const filteredIngredients = products.filter((item) =>
 			item.ingredients.includes(word)
@@ -72,54 +69,35 @@ function HomeProducts() {
 			return filteredId.indexOf(element) === index;
 		});
 
-		//console.log(singleFilteredId); //singleFilteredId consists of id of products with the word, without duplicates
+		//singleFilteredId consists of id of products with the word, without duplicates
 
 		setUniqeFilteredId(singleFilteredId);  //now uniqueFilteredId == singleFilteredId
 
 		singleFilteredId.map((uniqueId) => {
 		 	newArray.push( products.filter((item) => item._id == uniqueId));
-		 	//console.log(newArray);
-			//setWord('chicken')
 			 
 			//setCustomizedData((oldArray) => [...oldArray, newArray]);
 			
 		 	
-		 	//console.log(customizedData);
-		// 	// I want to add the filtered arrays onto the Customized Data.
+
 		 });
 
-		//console.log(newArray);
 		setFinalData(newArray.flat());
 		
-			
-		//}));
-		//console.log(customizedData);
-
-		// setCustomizedData(newArray);
-
-		//console.log(CustomizedData);
-
-		//console.log(products.filter(item => item._id == 1 ));
 	};
 
 	const resetFilter = () => {
 		newArray = [];
 		setFinalData(products);
-		let currentIds = [];
-		finalData.forEach((item) => currentIds.push(item._id));
-		//console.log(currentIds);
+		setWord("");
 	}
-
-	//useEffect(() => {
-	//	setCustomizedData(uniqueFilteredId);
-	//}, [uniqueFilteredId]);
-
-	//console.log(customizedData);
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
-		wait(1000).then(() => setRefreshing(false));
-	}, []);
+		setTimeout(() => {
+		  setRefreshing(false);
+		}, 1000);
+	  }, []);
 
 	useEffect(() => {
 		setFinalData(products);
@@ -136,13 +114,6 @@ function HomeProducts() {
 	if (!fontsLoaded) {
 		return null;
 	}
-
-	// const changeHeart = (heart) => {
-	// 	heart==true? heart = false: heart = true;
-	// 	onRefresh();
-	// 	return heart;
-	// }
-
 
 	
 
@@ -171,13 +142,14 @@ function HomeProducts() {
 						backgroundColor: Colors.white,
 					}}
 					value={word}
-					onChangeText={(text) => setWord(text)}
+					onChangeText={(text) => setWord(text.toLocaleLowerCase())}
 					clearTextOnFocus
 				/>
-				
-				<Pressable right={9}>
+				<Box right={10}>
+				<TouchableOpacity  onPress={() => setWord("")}>
 					<Feather name="x" size={24} color={Colors.deepestGray} />
-				</Pressable>
+				</TouchableOpacity>
+				</Box>
 			</HStack>
 		<HStack
 				w="full"
@@ -217,7 +189,7 @@ function HomeProducts() {
 					h={10}
 					w={124}
 					bg={Colors.morandiGreen}
-					paddingRight={8}
+					paddingRight={4}
 					left={7}
 					_text={{
 						color: Colors.black,
@@ -230,9 +202,7 @@ function HomeProducts() {
 				>
 					Reset Filter
 				</Button>
-				<View left={-26} top={-1}>
-					<Feather name="x" size={24} color={Colors.deepestGray} />
-				</View>
+				
 			</HStack>
 		
 		<ScrollView

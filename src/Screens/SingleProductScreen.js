@@ -38,6 +38,15 @@ function SingleProductScreen({ route }) {
 		"Caveat-SemiBold": require("../../assets/Fonts/Caveat-SemiBold.ttf"),
 	});
 
+	const [refreshing, setRefreshing] = React.useState(false);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+		  setRefreshing(false);
+		}, 1000);
+	  }, []);
+
 	if (!fontsLoaded) {
 		return null;
 	}
@@ -83,7 +92,10 @@ function SingleProductScreen({ route }) {
 						<FontAwesome name="heart" size={24} color={Colors.pink} />
 					</Center>
 				</Pressable> */}
-				<Pressable position="absolute" top={370} right="2%">
+				<Pressable position="absolute" top={370} right="2%" onPress={() => {
+							product.saved==true? product.saved=false: product.saved=true;
+							onRefresh();
+						}}>
 					<Heart param={product.saved} size={24} />
 				</Pressable>
 				<Box marginLeft={6}>
