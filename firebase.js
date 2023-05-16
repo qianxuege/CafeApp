@@ -2,7 +2,8 @@
 //import * as firebase from "firebase/compat/app";
 import firebase from 'firebase/compat/app';
 require('firebase/auth');
-import { initializeApp, getApps } from "firebase/app"
+import { initializeApp, getApps } from "firebase/app";
+import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore"
 import { getAuth } from "firebase/auth"
 import 'firebase/compat/auth';
@@ -33,11 +34,12 @@ const firebaseConfig = {
 //     app = firebase.app()
 // }
 
-const app = initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
+const storage = getStorage(app);
 
-const db = getFirestore(app)
-const auth = getAuth(app)
+const db = getFirestore(app);
+const auth = getAuth(app);
 
 
 
