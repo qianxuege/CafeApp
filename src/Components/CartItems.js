@@ -22,8 +22,9 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 const wait = (timeout) => {
 	return new Promise((resolve) => setTimeout(resolve, timeout));
 };
+
 let saved = products.filter((food) => food.saved);
-//console.log(saved);
+
 
 
 

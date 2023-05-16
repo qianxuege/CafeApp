@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { getAuth } from "firebase/auth";
 
-function ProfielTop() {
+function ProfileTop() {
 	const navigation = useNavigation();
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
@@ -54,4 +54,4 @@ function ProfielTop() {
 	);
 }
 
-export default ProfielTop;
+export default ProfileTop;

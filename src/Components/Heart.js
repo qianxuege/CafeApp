@@ -16,11 +16,10 @@ const heart = (param) => {
             return "heart-o";
         }
     }
-
   return (
     <Center rounded="full" backgroundColor={Colors.white} padding={2}>
 		<FontAwesome name={checkValue()} size={size} color={Colors.pink} />
-	</Center>
+	  </Center>
   )
 }
 

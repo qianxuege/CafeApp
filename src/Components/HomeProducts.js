@@ -65,7 +65,7 @@ function HomeProducts() {
 		//filteredId is an array that consists of products that contain the word (may have duplicates)
 
 		//to filter out duplicates
-		singleFilteredId = filteredId.filter((element, index) => {
+		singleFilteredId = filteredId.filter((element, index) => { //element is the current value, index is the index
 			return filteredId.indexOf(element) === index;
 		});
 

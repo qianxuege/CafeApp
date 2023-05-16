@@ -49,7 +49,6 @@ function LoginScreen({ navigation }) {
 	//   );
 
 	function logIn() {
-		console.log("works");
 		const auth = getAuth();
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
