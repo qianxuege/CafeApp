@@ -5,6 +5,8 @@ import {
 	TouchableOpacity,
 	Keyboard,
 	ImagePickerIOS,
+    Platform,
+    ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import {
@@ -18,6 +20,9 @@ import {
 	Button,
 	Input,
 } from "native-base";
+import ImagePicker from 'react-native-image-crop-picker';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import { firebase } from "../../firebase";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
@@ -30,10 +35,33 @@ function AdminUploadScreen({ route }) {
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"Caladea-BoldItalic": require("../../assets/Fonts/Caladea-BoldItalic.ttf"),
 	});
+    const [image, setImage] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
 	if (!fontsLoaded) {
 		return null;
 	}
+
+    const choosePhotoFromLibrary = () => {
+        ImagePicker.openPicker({
+          width: 1200,
+          height: 780,
+          cropping: true,
+        }).then((image) => {
+          console.log(image);
+          const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+          setImage(imageUri);
+        });
+      };
+
+    //   const uploadImage = async () => {
+    //     if( image == null ) {
+    //       return null;
+    //     }
+    //     const uploadUri = image;
+    //     let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+
+
 	return (
 		<>
 			<Box flex={1} top={0}>
@@ -45,7 +73,8 @@ function AdminUploadScreen({ route }) {
 					showsVerticalScrollIndicator={false}
 				>
 					<Center h={280} marginBottom={2}>
-						<FontAwesome name="image" size={208} color={Colors.deepGray} />
+						<FontAwesome name="image" size={208} color={Colors.deepGray} onPress={choosePhotoFromLibrary}> </FontAwesome>
+                        {image != null ? <Image source={{uri: image}} /> : null}
 					</Center>
 
 					{/* <Image
