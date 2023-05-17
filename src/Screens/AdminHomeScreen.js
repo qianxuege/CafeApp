@@ -4,7 +4,6 @@ import {
 	TextInput,
 	TouchableOpacity,
 	Keyboard,
-	ImagePickerIOS,
 } from "react-native";
 import React, { useState } from "react";
 import {
