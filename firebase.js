@@ -8,6 +8,7 @@ import { getFirestore } from "firebase/firestore"
 import { getAuth } from "firebase/auth"
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import "firebase/storage";
 
 
 //import { getAnalytics } from "firebase/analytics";
