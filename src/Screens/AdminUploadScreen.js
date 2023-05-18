@@ -8,12 +8,14 @@ import {
 	StyleSheet,
 	RefreshControl,
 	TouchableOpacity,
+	Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Button, Input } from "native-base";
 import Colors from "../color";
 import { useFonts } from "expo-font";
-import { getStorage, ref } from "firebase/storage";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
 
 const AdminUploadScreen = () => {
 	const [fontsLoaded] = useFonts({
@@ -25,12 +27,13 @@ const AdminUploadScreen = () => {
 	//const [filename, setFilename] = useState("");
 	const [btn, setBtn] = useState(false);
 	const [refreshing, setRefreshing] = React.useState(false);
+	const [uploading, setUploading] = useState(false);
+	const [transferred, setTransferred] = useState(0);
 
 	// Get a reference to the storage service, which is used to create references in the storage bucket
 	const storage = getStorage();
 
-	// Create a storage reference from the storage service
-	const storageRef = ref(storage);
+
 
 	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
@@ -43,7 +46,7 @@ const AdminUploadScreen = () => {
 
 		console.log(result);
 
-		if (!result.canceled) {
+		if (!result.cancelled) {
 			setImage(result.uri);
 		}
 	};
@@ -53,25 +56,36 @@ const AdminUploadScreen = () => {
 		const uploadUri = image;
 		let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
 		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_");
+		//let filename = uploadUri.substring(uploadUri.lastIndexOf('/'+1));
 		let filename = fname.concat(imageEnding);
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
-		console.log(fname);
-		console.log(filename);
+		
+		setUploading(true);
+		
+		try {
+			// Create a storage reference from the storage service
+	// Upload file and metadata to the object 'images/mountains.jpg'
+			const storageRef = ref(storage, 'images/' + filename);
+			const uploadTask = uploadBytesResumable(storageRef);
+
+			setUploading(false);
+			await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+				console.log('File available at', downloadURL);
+			  });
+			Alert.alert(
+				"Image uploaded!",
+				"Your image has been uploaded to the Firebase Cloud Storage successfully!"
+			);
+		} catch(e) {
+			console.log(e);
+		}
+
+		
+		setImage(null);
+
 	};
 
-	// useEffect(() => {
-	// 	setTimeout(() => {
-	// 	  setFilename(() => foodname.toLocaleLowerCase().replace(/\s/g, "_"));
-	// 	  //setBtn(false);
-	// 	}, 1000);
-	//   }, [filename]);
-
-	// const onRefresh = React.useCallback(() => {
-	// 	setRefreshing(true);
-	// 	setTimeout(() => {
-	// 	  setRefreshing(false);
-	// 	}, 1000);
-	//   }, []);
+	
 
 	return (
 		<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
