@@ -36,7 +36,7 @@ function AdminTop() {
 				safeAreaTop
 			>
 				<Center>
-					<Circle bg={Colors.darkRed} size="86px">
+					<Circle bg={Colors.darkPink} size="86px">
 						<Ionicons name="ios-person" size={36} color={Colors.white} />
 					</Circle>
 				</Center>

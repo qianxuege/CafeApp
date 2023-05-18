@@ -11,7 +11,7 @@ import {
 	Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Button, Input } from "native-base";
+import { Button, Input, ScrollView } from "native-base";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -27,6 +27,11 @@ const AdminUploadScreen = () => {
 	});
 	const [image, setImage] = useState(null);
 	const [foodname, setFoodname] = useState("");
+	const [tags, setTags] = useState("");
+	const [ingredients, setIngredients] = useState("");
+	const [price, setPrice] = useState("");
+	const [calories, setCalories] = useState("");
+
 	//const [filename, setFilename] = useState("");
 	const [btn, setBtn] = useState(false);
 	const [refreshing, setRefreshing] = React.useState(false);
@@ -77,10 +82,6 @@ const AdminUploadScreen = () => {
 
 		setUploading(true);
 		try {
-			// await firebase
-			// 	.storage()
-			// 	.ref(storage, "images/" + filename)
-			// 	.putFile(uploadUri);
 			const storageRef = ref(storage, "images/" + filename);
 			const result = await uploadBytes(storageRef, blob);
 
@@ -95,40 +96,24 @@ const AdminUploadScreen = () => {
 			);
 
 			return await getDownloadURL(storageRef);
-
 			
 		} catch (e) {
 			console.log(e);
 		}
 
-		
-
-		// try {
-		// 	// Create a storage reference from the storage service
-		// 	// Upload file and metadata to the object 'images/mountains.jpg'
-		// 	const storageRef = ref(storage, "images/" + filename);
-		// 	const uploadTask = uploadBytesResumable(storageRef);
-
-		// 	setUploading(false);
-		// 	await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-		// 		console.log("File available at", downloadURL);
-		// 	});
-		// 	Alert.alert(
-		// 		"Image uploaded!",
-		// 		"Your image has been uploaded to the Firebase Cloud Storage successfully!"
-		// 	);
-		// } catch (e) {
-		// 	console.log(e);
-		// }
-
 		setImage(null);
 	};
 
 	return (
-		<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+		<ScrollView top={0}
+		margin="auto"
+		width="100%"
+		bg={Colors.white}
+		contentContainerStyle={{alignItems: "center", paddingBottom: 500}}
+		showsVerticalScrollIndicator={false}>
 			<TouchableOpacity onPress={pickImage}>
 				{image != null ? (
-					<Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+					<Image source={{ uri: image }} style={{ width: 200, height: 200, margin: 15 }} />
 				) : (
 					<Image
 						source={{
@@ -149,9 +134,79 @@ const AdminUploadScreen = () => {
 				color={Colors.darkPink}
 				placeholderTextColor={Colors.gray}
 				paddingLeft="3"
+				marginY={2}
 				borderColor={Colors.morandiPink}
 				backgroundColor={Colors.morandiPink}
 				_focus={{ bg: Colors.morandiPink }}
+				autoCapitalize="none"
+			/>
+			<Input
+				variant="filled"
+				placeholder="Enter Price"
+				value={price}
+				onChangeText={(text) => setPrice(text)}
+				w="92%"
+				fontSize="16"
+				fontFamily="Bitter-Regular"
+				color={Colors.darkPink}
+				placeholderTextColor={Colors.gray}
+				paddingLeft="3"
+				marginY={2}
+				borderColor={Colors.morandiPink}
+				backgroundColor={Colors.morandiPink}
+				_focus={{ bg: Colors.morandiPink }}
+				keyboardType="numeric"
+			/>
+			<Input
+				variant="filled"
+				placeholder="Enter Tags: breakfast, sweet, etc ..."
+				value={tags}
+				onChangeText={(text) => setTags(text)}
+				w="92%"
+				fontSize="16"
+				fontFamily="Bitter-Regular"
+				color={Colors.darkPink}
+				placeholderTextColor={Colors.gray}
+				paddingLeft="3"
+				marginY={2}
+				borderColor={Colors.morandiPink}
+				backgroundColor={Colors.morandiPink}
+				_focus={{ bg: Colors.morandiPink }}
+				autoCapitalize="none"
+			/>
+			<Input
+				variant="filled"
+				placeholder="Enter Ingredients"
+				value={ingredients}
+				onChangeText={(text) => setIngredients(text)}
+				w="92%"
+				fontSize="16"
+				fontFamily="Bitter-Regular"
+				color={Colors.darkPink}
+				placeholderTextColor={Colors.gray}
+				paddingLeft="3"
+				marginY={2}
+				borderColor={Colors.morandiPink}
+				backgroundColor={Colors.morandiPink}
+				_focus={{ bg: Colors.morandiPink }}
+				autoCapitalize="none"
+			/>
+			<Input
+				variant="filled"
+				placeholder="Enter Estimated Calories"
+				value={calories}
+				onChangeText={(text) => setCalories(text)}
+				w="92%"
+				fontSize="16"
+				fontFamily="Bitter-Regular"
+				color={Colors.darkPink}
+				placeholderTextColor={Colors.gray}
+				paddingLeft="3"
+				marginY={2}
+				borderColor={Colors.morandiPink}
+				backgroundColor={Colors.morandiPink}
+				_focus={{ bg: Colors.morandiPink }}
+				keyboardType="numeric"
 			/>
 			<Button
 				_pressed={{
@@ -168,7 +223,7 @@ const AdminUploadScreen = () => {
 			>
 				Add Food Item
 			</Button>
-		</View>
+		</ScrollView>
 	);
 };
 
