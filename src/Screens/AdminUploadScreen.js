@@ -17,8 +17,8 @@ import { useFonts } from "expo-font";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import uuid from "react-native-uuid";
 import "firebase/storage";
-//import firebase from "firebase/app";
-import firebase from "firebase/compat";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const AdminUploadScreen = () => {
 	const [fontsLoaded] = useFonts({
@@ -86,17 +86,30 @@ const AdminUploadScreen = () => {
 			const result = await uploadBytes(storageRef, blob);
 
 			// We're done with the blob, close and release it
+			console.log(blob);
 			blob.close();
 
 			setUploading(false);
+
+			// Add a new document in collection "cities"
+			await setDoc(doc(db, "foodItems", foodname), {
+				name: foodname,
+				price: price,
+				tags: tags,
+				ingredients: ingredients,
+				calories: calories,
+			});
+
+			
 
 			Alert.alert(
 				"Image uploaded!",
 				"Your image has been uploaded to the Firebase Cloud Storage successfully!"
 			);
 
-			return await getDownloadURL(storageRef);
-			
+			//return await getDownloadURL(storageRef);
+			console.log(storageRef);
+			console.log(getDownloadURL(storageRef));
 		} catch (e) {
 			console.log(e);
 		}
@@ -105,15 +118,20 @@ const AdminUploadScreen = () => {
 	};
 
 	return (
-		<ScrollView top={0}
-		margin="auto"
-		width="100%"
-		bg={Colors.white}
-		contentContainerStyle={{alignItems: "center", paddingBottom: 500}}
-		showsVerticalScrollIndicator={false}>
+		<ScrollView
+			top={0}
+			margin="auto"
+			width="100%"
+			bg={Colors.white}
+			contentContainerStyle={{ alignItems: "center", paddingBottom: 500 }}
+			showsVerticalScrollIndicator={false}
+		>
 			<TouchableOpacity onPress={pickImage}>
 				{image != null ? (
-					<Image source={{ uri: image }} style={{ width: 200, height: 200, margin: 15 }} />
+					<Image
+						source={{ uri: image }}
+						style={{ width: 200, height: 200, margin: 15 }}
+					/>
 				) : (
 					<Image
 						source={{
