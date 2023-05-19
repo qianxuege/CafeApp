@@ -19,6 +19,8 @@ import uuid from "react-native-uuid";
 import "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import LocationPicker from "../Components/LocationPicker";
+import { foodLocation } from "../Components/LocationPicker";
 
 const AdminUploadScreen = () => {
 	const [fontsLoaded] = useFonts({
@@ -31,6 +33,7 @@ const AdminUploadScreen = () => {
 	const [ingredients, setIngredients] = useState("");
 	const [price, setPrice] = useState("");
 	const [calories, setCalories] = useState("");
+	const [location, setLocation] = useState("");
 
 	//const [filename, setFilename] = useState("");
 	const [btn, setBtn] = useState(false);
@@ -86,7 +89,7 @@ const AdminUploadScreen = () => {
 			const result = await uploadBytes(storageRef, blob);
 
 			// We're done with the blob, close and release it
-			console.log(blob);
+			//console.log(blob);
 			blob.close();
 
 			setUploading(false);
@@ -98,6 +101,7 @@ const AdminUploadScreen = () => {
 				tags: tags,
 				ingredients: ingredients,
 				calories: calories,
+				location: location,
 			});
 
 			
@@ -107,9 +111,9 @@ const AdminUploadScreen = () => {
 				"Your image has been uploaded to the Firebase Cloud Storage successfully!"
 			);
 
-			//return await getDownloadURL(storageRef);
-			console.log(storageRef);
-			console.log(getDownloadURL(storageRef));
+			return await getDownloadURL(storageRef);
+			//console.log(storageRef);
+			
 		} catch (e) {
 			console.log(e);
 		}
@@ -226,6 +230,12 @@ const AdminUploadScreen = () => {
 				_focus={{ bg: Colors.morandiPink }}
 				keyboardType="numeric"
 			/>
+			<LocationPicker />
+			<Button onPress={() => {
+				console.log(foodLocation)
+			}}>
+
+			</Button>
 			<Button
 				_pressed={{
 					bg: Colors.lightGreen,
