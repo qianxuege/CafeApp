@@ -24,8 +24,8 @@ const AdminMenuScreen = () => {
 	
     return(
         <Box backgroundColor={Colors.darkGreen} margin={10} height={300} width="90%">
-            <Image source={{uri: "https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png"}} alt="chosen image" style={{ height: 200}}/>
-            <Button> </Button>
+            <Image source={{uri: imagesrc}} alt="chosen image" style={{ width: 400, height: 300}} resizeMode="cover"/>
+            <Button onPress={() => {getImage()}}> </Button>
         </Box>
         
     )
