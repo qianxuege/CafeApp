@@ -21,6 +21,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import LocationPicker from "../Components/LocationPicker";
 import { foodLocation } from "../Components/LocationPicker";
+import AdminMenuScreen from "./AdminMenuScreen";
 
 const AdminUploadScreen = () => {
 	const [fontsLoaded] = useFonts({
@@ -232,7 +233,7 @@ const AdminUploadScreen = () => {
 			/>
 			<LocationPicker />
 			<Button onPress={() => {
-				console.log(foodLocation)
+				console.log(foodLocation) //couldn't get foodLocation from the component.
 			}}>
 
 			</Button>
@@ -251,6 +252,7 @@ const AdminUploadScreen = () => {
 			>
 				Add Food Item
 			</Button>
+			<AdminMenuScreen />
 		</ScrollView>
 	);
 };

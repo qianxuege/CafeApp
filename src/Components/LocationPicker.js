@@ -9,7 +9,7 @@ const LocationPicker = () => {
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"Caladea-BoldItalic": require("../../assets/Fonts/Caladea-BoldItalic.ttf"),
 	});
-    const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState(null);
 	const [items, setItems] = useState([
 		{ label: "Grill station", value: "grill station" },
@@ -19,14 +19,14 @@ const LocationPicker = () => {
 		{ label: "Snack Shack", value: "snack shack" },
 	]);
 
-    
+	const foodLocation = value;
 
-    if (!fontsLoaded) {
+	if (!fontsLoaded) {
 		return null;
 	}
 
 	return (
-		<Box width="92%" >
+		<Box width="92%">
 			<DropDownPicker
 				open={open}
 				value={value}
@@ -36,26 +36,32 @@ const LocationPicker = () => {
 				setItems={setItems}
 				theme="LIGHT"
 				multiple={false}
-                listMode="SCROLLVIEW"
+				listMode="SCROLLVIEW"
 				mode="BADGE"
-				badgeDotColors={[
-					"#ffd700",
-                    "#90ee90",
-                    "#800000",
-                    "#006400",
-                    "#ffc0cb"
-				]}
-                style={{borderColor: Colors.morandiPink, backgroundColor: Colors.morandiPink, marginVertical: 9}}
-                textStyle={{
-                    fontSize: 16, fontFamily: "Bitter-Regular", color: Colors.gray
-                  }}
-                  onChangeValue={() => {
-                    //foodLocation(value)
-                    //console.log(foodLocation);
-                  }}
+				badgeDotColors={["#ffd700", "#90ee90", "#800000", "#006400", "#ffc0cb"]}
+				style={{
+					borderColor: Colors.morandiPink,
+					backgroundColor: Colors.morandiPink,
+				}}
+				dropDownContainerStyle={{
+					backgroundColor: Colors.morandiPink,
+					borderColor: Colors.lightBlack,
+				}}
+				textStyle={{
+					fontSize: 16,
+					fontFamily: "Bitter-Regular",
+					color: Colors.gray,
+				}}
+				labelStyle={{
+					color: Colors.darkPink,
+					backgroundColor: Colors.morandiPink,
+				}}
+				onChangeValue={() => {
+					//foodLocation(value)
+					//console.log(foodLocation);
+				}}
 			/>
 		</Box>
-        
 	);
 };
 
@@ -64,11 +70,8 @@ const LocationPicker = () => {
 // export const foodLocation = (param) => {
 //     let location = param;
 //     //console.log(param)
-//     return (
-//         {location}
-//     ) 
-        
-    
+//     return "hot meal"
+
 // }
 
 export default LocationPicker;
