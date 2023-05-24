@@ -3,8 +3,11 @@ import DropDownPicker from "react-native-dropdown-picker";
 import Colors from "../color";
 import { useState } from "react";
 import { useFonts } from "expo-font";
+import "firebase/storage";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
-const LocationPicker = () => {
+const LocationPicker = (param) => {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"Caladea-BoldItalic": require("../../assets/Fonts/Caladea-BoldItalic.ttf"),
@@ -18,8 +21,19 @@ const LocationPicker = () => {
 		{ label: "Salad station", value: "salad station" },
 		{ label: "Snack Shack", value: "snack shack" },
 	]);
+    const foodname = param.param;
+    //console.log(foodname);
 
 	const foodLocation = value;
+
+    const getLocation = async () => {
+        await setDoc(doc(db, "foodItems", foodname), {
+            location: value,
+        });
+        console.log(value);
+    }
+
+    
 
 	if (!fontsLoaded) {
 		return null;
@@ -57,7 +71,7 @@ const LocationPicker = () => {
 					backgroundColor: Colors.morandiPink,
 				}}
 				onChangeValue={() => {
-					//foodLocation(value)
+					getLocation()
 					//console.log(foodLocation);
 				}}
 			/>

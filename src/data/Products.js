@@ -40,7 +40,7 @@ const products = [
     },
     {
         _id: "4",
-        name: "Grilled Cheese Sandwich",
+        name: "Grilled Cheese",
         image: "https://natashaskitchen.com/wp-content/uploads/2021/08/Grilled-Cheese-Sandwich-SQ.jpg",
         tags: ["unhealthy", "cheese", "bread", "savory"],
         ingredients: "cheese, flour, eggs, ...",

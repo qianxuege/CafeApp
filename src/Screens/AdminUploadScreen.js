@@ -110,7 +110,7 @@ const AdminUploadScreen = () => {
 				tags: tags.toLowerCase().split(", "),
 				ingredients: ingredients.toLowerCase().split(", "),
 				calories: calories,
-				location: location,
+				//location: location,
 			});
 
 			const docRef = doc(db, "foodItems", foodname);
@@ -248,7 +248,7 @@ const AdminUploadScreen = () => {
 				_focus={{ bg: Colors.morandiPink }}
 				keyboardType="numeric"
 			/>
-			<LocationPicker />
+			<LocationPicker param={foodname} />
 			<Button onPress={() => {
 				console.log(foodLocation) //couldn't get foodLocation from the component.
 			}}>
