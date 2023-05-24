@@ -17,7 +17,7 @@ import { useFonts } from "expo-font";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import uuid from "react-native-uuid";
 import "firebase/storage";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import LocationPicker from "../Components/LocationPicker";
 import { foodLocation } from "../Components/LocationPicker";
@@ -61,6 +61,15 @@ const AdminUploadScreen = () => {
 		}
 	};
 
+	const reset = async () => {
+		setFoodname("");
+		setCalories("");
+		setIngredients("");
+		setTags("");
+		setPrice("");
+		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
+	}
+
 	const uploadImage = async () => {
 		let uri = image;
 		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
@@ -93,27 +102,35 @@ const AdminUploadScreen = () => {
 			//console.log(blob);
 			blob.close();
 
-			setUploading(false);
 
 			// Add a new document in collection "cities"
 			await setDoc(doc(db, "foodItems", foodname), {
 				name: foodname,
 				price: price,
-				tags: tags,
-				ingredients: ingredients,
+				tags: tags.toLowerCase().split(", "),
+				ingredients: ingredients.toLowerCase().split(", "),
 				calories: calories,
 				location: location,
 			});
 
-			
+			const docRef = doc(db, "foodItems", foodname);
+			const docSnap = await getDoc(docRef);
+
+			if (docSnap.exists()) {
+				console.log("Document data:", docSnap.data());
+			  } else {
+				// docSnap.data() will be undefined in this case
+				console.log("No such document!");
+			  }
+			  
+			setUploading(false);
 
 			Alert.alert(
 				"Image uploaded!",
 				"Your image has been uploaded to the Firebase Cloud Storage successfully!"
 			);
 
-			return await getDownloadURL(storageRef);
-			//console.log(storageRef);
+			return await reset();
 			
 		} catch (e) {
 			console.log(e);
