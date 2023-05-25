@@ -11,7 +11,8 @@ import {
 	Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Button, Input, ScrollView } from "native-base";
+import DropDownPicker from "react-native-dropdown-picker";
+import { Button, Input, ScrollView, Box } from "native-base";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -34,7 +35,17 @@ const AdminUploadScreen = () => {
 	const [ingredients, setIngredients] = useState("");
 	const [price, setPrice] = useState("");
 	const [calories, setCalories] = useState("");
-	const [location, setLocation] = useState("");
+
+	//for Location Picker
+	const [open, setOpen] = useState(false);
+	const [location, setLocation] = useState(null);
+	const [items, setItems] = useState([
+		{ label: "Grill station", value: "grill station" },
+		{ label: "Sandwich station", value: "sandwich station" },
+		{ label: "Hot meal", value: "hot meal" },
+		{ label: "Salad station", value: "salad station" },
+		{ label: "Snack Shack", value: "snack shack" },
+	]);
 
 	//const [filename, setFilename] = useState("");
 	const [btn, setBtn] = useState(false);
@@ -67,6 +78,7 @@ const AdminUploadScreen = () => {
 		setIngredients("");
 		setTags("");
 		setPrice("");
+		setLocation("");
 		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
 	}
 
@@ -110,7 +122,7 @@ const AdminUploadScreen = () => {
 				tags: tags.toLowerCase().split(", "),
 				ingredients: ingredients.toLowerCase().split(", "),
 				calories: calories,
-				//location: location,
+				location: location,
 			});
 
 			const docRef = doc(db, "foodItems", foodname);
@@ -248,12 +260,42 @@ const AdminUploadScreen = () => {
 				_focus={{ bg: Colors.morandiPink }}
 				keyboardType="numeric"
 			/>
-			<LocationPicker param={foodname} />
-			<Button onPress={() => {
-				console.log(foodLocation) //couldn't get foodLocation from the component.
-			}}>
-
-			</Button>
+			<Box width="92%" margin={2}>
+			<DropDownPicker
+				open={open}
+				value={location}
+				items={items}
+				setOpen={setOpen}
+				setValue={setLocation}
+				setItems={setItems}
+				theme="LIGHT"
+				multiple={false}
+				listMode="SCROLLVIEW"
+				mode="BADGE"
+				badgeDotColors={["#ffd700", "#90ee90", "#800000", "#006400", "#ffc0cb"]}
+                maxHeight={200}
+				dropDownDirection="TOP"
+                style={{
+					borderColor: Colors.morandiPink,
+					backgroundColor: Colors.morandiPink,
+				}}
+				dropDownContainerStyle={{
+					backgroundColor: Colors.morandiPink,
+					borderColor: Colors.morandiPink,
+				}}
+				textStyle={{
+					fontSize: 16,
+					fontFamily: "Bitter-Regular",
+					color: Colors.gray,
+				}}
+				labelStyle={{
+					color: Colors.darkPink,
+					backgroundColor: Colors.morandiPink,
+				}}
+				
+			/>
+		</Box>
+			
 			<Button
 				_pressed={{
 					bg: Colors.lightGreen,
@@ -269,7 +311,7 @@ const AdminUploadScreen = () => {
 			>
 				Add Food Item
 			</Button>
-			<AdminMenuScreen />
+
 		</ScrollView>
 	);
 };

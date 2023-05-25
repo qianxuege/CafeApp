@@ -4,7 +4,7 @@ import Colors from "../color";
 import { useState } from "react";
 import { useFonts } from "expo-font";
 import "firebase/storage";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const LocationPicker = (param) => {
@@ -13,7 +13,7 @@ const LocationPicker = (param) => {
 		"Caladea-BoldItalic": require("../../assets/Fonts/Caladea-BoldItalic.ttf"),
 	});
 	const [open, setOpen] = useState(false);
-	const [value, setValue] = useState(null);
+	const [location, setLocation] = useState(null);
 	const [items, setItems] = useState([
 		{ label: "Grill station", value: "grill station" },
 		{ label: "Sandwich station", value: "sandwich station" },
@@ -27,10 +27,10 @@ const LocationPicker = (param) => {
 	const foodLocation = value;
 
     const getLocation = async () => {
-        await setDoc(doc(db, "foodItems", foodname), {
+        await updateDoc(doc(db, "foodItems", foodname), {
             location: value,
         });
-        console.log(value);
+        
     }
 
     
@@ -43,23 +43,25 @@ const LocationPicker = (param) => {
 		<Box width="92%">
 			<DropDownPicker
 				open={open}
-				value={value}
+				value={location}
 				items={items}
 				setOpen={setOpen}
-				setValue={setValue}
+				setValue={setLocation}
 				setItems={setItems}
 				theme="LIGHT"
 				multiple={false}
 				listMode="SCROLLVIEW"
 				mode="BADGE"
 				badgeDotColors={["#ffd700", "#90ee90", "#800000", "#006400", "#ffc0cb"]}
-				style={{
+				zIndex={1000}
+                maxHeight={200}
+                style={{
 					borderColor: Colors.morandiPink,
 					backgroundColor: Colors.morandiPink,
 				}}
 				dropDownContainerStyle={{
 					backgroundColor: Colors.morandiPink,
-					borderColor: Colors.lightBlack,
+					borderColor: Colors.morandiPink,
 				}}
 				textStyle={{
 					fontSize: 16,
@@ -72,7 +74,7 @@ const LocationPicker = (param) => {
 				}}
 				onChangeValue={() => {
 					getLocation()
-					//console.log(foodLocation);
+					console.log(foodLocation);
 				}}
 			/>
 		</Box>
