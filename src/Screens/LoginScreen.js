@@ -171,7 +171,7 @@ function LoginScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={() => navigation.navigate("AdminUpload")}
+					onPress={() => navigation.navigate("AdminBottom")}
 				>
 					ADMIN LOGIN
 				</Button>

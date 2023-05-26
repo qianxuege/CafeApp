@@ -10,6 +10,7 @@ import {
 	TouchableOpacity,
 	Alert,
 } from "react-native";
+import Spinner from 'react-native-loading-spinner-overlay';
 import * as ImagePicker from "expo-image-picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Button, Input, ScrollView, Box } from "native-base";
@@ -35,6 +36,7 @@ const AdminUploadScreen = () => {
 	const [ingredients, setIngredients] = useState("");
 	const [price, setPrice] = useState("");
 	const [calories, setCalories] = useState("");
+	//const [uuid, setUuid] = useState("");
 
 	//for Location Picker
 	const [open, setOpen] = useState(false);
@@ -89,6 +91,7 @@ const AdminUploadScreen = () => {
 		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_");
 		//let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
 		let filename = fname.concat(imageEnding);
+		let uniqueId = uuid.v4();
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
 
 		const blob = await new Promise((resolve, reject) => {
@@ -123,6 +126,7 @@ const AdminUploadScreen = () => {
 				ingredients: ingredients.toLowerCase().split(", "),
 				calories: calories,
 				location: location,
+				uuid: uniqueId,
 			});
 
 			const docRef = doc(db, "foodItems", foodname);
@@ -160,6 +164,7 @@ const AdminUploadScreen = () => {
 			contentContainerStyle={{ alignItems: "center", paddingBottom: 500 }}
 			showsVerticalScrollIndicator={false}
 		>
+			<Spinner visible={uploading}/>
 			<TouchableOpacity onPress={pickImage}>
 				{image != null ? (
 					<Image
