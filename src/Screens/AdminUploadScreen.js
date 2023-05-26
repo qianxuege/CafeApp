@@ -10,7 +10,7 @@ import {
 	TouchableOpacity,
 	Alert,
 } from "react-native";
-import Spinner from 'react-native-loading-spinner-overlay';
+import Spinner from "react-native-loading-spinner-overlay";
 import * as ImagePicker from "expo-image-picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Button, Input, ScrollView, Box } from "native-base";
@@ -19,7 +19,15 @@ import { useFonts } from "expo-font";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import uuid from "react-native-uuid";
 import "firebase/storage";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+	doc,
+	getDoc,
+	setDoc,
+	query,
+	where,
+	collection,
+	getDocs,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import LocationPicker from "../Components/LocationPicker";
 import { foodLocation } from "../Components/LocationPicker";
@@ -82,16 +90,23 @@ const AdminUploadScreen = () => {
 		setPrice("");
 		setLocation("");
 		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
-	}
+	};
 
 	const uploadImage = async () => {
+		let nameArr = foodname.split(" ");
+		for (let i = 0; i < nameArr.length; i++) {
+			nameArr[i] = nameArr[i].charAt(0).toUpperCase() + nameArr[i].slice(1);
+		}
+		let newFoodName = nameArr.join(" ");
+		//newFoodName = foodname but with first letter of each word capitalized
 		let uri = image;
 		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
 		let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
-		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_");
+		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_"); // fname = foodname with no spaces
 		//let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
 		let filename = fname.concat(imageEnding);
 		let uniqueId = uuid.v4();
+		
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
 
 		const blob = await new Promise((resolve, reject) => {
@@ -108,51 +123,87 @@ const AdminUploadScreen = () => {
 			xhr.send(null);
 		});
 
-		setUploading(true);
+		const foodRef = collection(db, "foodItems");
+
 		try {
-			const storageRef = ref(storage, "images/" + filename);
-			const result = await uploadBytes(storageRef, blob);
-
-			// We're done with the blob, close and release it
-			//console.log(blob);
-			blob.close();
-
-
-			// Add a new document in collection "cities"
-			await setDoc(doc(db, "foodItems", foodname), {
-				name: foodname,
-				price: price,
-				tags: tags.toLowerCase().split(", "),
-				ingredients: ingredients.toLowerCase().split(", "),
-				calories: calories,
-				location: location,
-				uuid: uniqueId,
+			const q = query(foodRef, where("name", "==", newFoodName));
+			console.log(q);
+			const querySnapshot = await getDocs(q);
+			querySnapshot.forEach((doc) => {
+				// doc.data() is never undefined for query doc snapshots
+				console.log(doc.id, " => ", doc.data());
 			});
-
-			const docRef = doc(db, "foodItems", foodname);
-			const docSnap = await getDoc(docRef);
-
-			if (docSnap.exists()) {
-				console.log("Document data:", docSnap.data());
-			  } else {
-				// docSnap.data() will be undefined in this case
-				console.log("No such document!");
-			  }
-			  
-			setUploading(false);
-
-			Alert.alert(
-				"Image uploaded!",
-				"Your image has been uploaded to the Firebase Cloud Storage successfully!"
-			);
-
-			return await reset();
-			
-		} catch (e) {
-			console.log(e);
+		} catch (error) {
+			console.log(error);
 		}
+		// 	if (q != null) {
+		// 		Alert.alert(
+		// 			"ERROR",
+		// 			"The entered food name exists in the database. Continue to proceed would overwrite the data! Click cancel and change the food name if needed!",
+		// 			[
+		// 				{
+		// 					text: "Cancel",
+		// 					onPress: () => {
+		// 						return;
+		// 					},
+		// 					style: "cancel",
+		// 				},
+		// 				{ text: "OK", onPress: () => uploadData() },
+		// 			]
+		// 		);
+		// 	}
+		// 	return;
+		// } catch (error) {
+		// 	console.log(error);
+		// }
 
-		setImage(null);
+		const uploadData = async () => {
+			setUploading(true);
+
+			try {
+				const storageRef = ref(storage, "images/" + filename);
+				const result = await uploadBytes(storageRef, blob);
+
+				// We're done with the blob, close and release it
+				//console.log(blob);
+				blob.close();
+
+				// Add a new document in collection "cities"
+				await setDoc(doc(db, "foodItems", fname), {
+					name: newFoodName,
+					price: price,
+					tags: tags.toLowerCase().split(", "),
+					ingredients: ingredients.toLowerCase().split(", "),
+					calories: calories,
+					location: location,
+					uuid: uniqueId,
+				});
+
+				const docRef = doc(db, "foodItems", foodname);
+				const docSnap = await getDoc(docRef);
+
+				if (docSnap.exists()) {
+					//console.log("Document data:", docSnap.data());
+				} else {
+					// docSnap.data() will be undefined in this case
+					//console.log("No such document!");
+				}
+
+				setUploading(false);
+
+				Alert.alert(
+					"Image uploaded!",
+					"Your image has been uploaded to the Firebase Cloud Storage successfully!"
+				);
+
+				return await reset();
+			} catch (e) {
+				console.log(e);
+			}
+
+			setImage(null);
+		};
+		await uploadData();
 	};
 
 	return (
@@ -164,7 +215,7 @@ const AdminUploadScreen = () => {
 			contentContainerStyle={{ alignItems: "center", paddingBottom: 500 }}
 			showsVerticalScrollIndicator={false}
 		>
-			<Spinner visible={uploading}/>
+			<Spinner visible={uploading} />
 			<TouchableOpacity onPress={pickImage}>
 				{image != null ? (
 					<Image
@@ -266,41 +317,46 @@ const AdminUploadScreen = () => {
 				keyboardType="numeric"
 			/>
 			<Box width="92%" margin={2}>
-			<DropDownPicker
-				open={open}
-				value={location}
-				items={items}
-				setOpen={setOpen}
-				setValue={setLocation}
-				setItems={setItems}
-				theme="LIGHT"
-				multiple={false}
-				listMode="SCROLLVIEW"
-				mode="BADGE"
-				badgeDotColors={["#ffd700", "#90ee90", "#800000", "#006400", "#ffc0cb"]}
-                maxHeight={200}
-				dropDownDirection="TOP"
-                style={{
-					borderColor: Colors.morandiPink,
-					backgroundColor: Colors.morandiPink,
-				}}
-				dropDownContainerStyle={{
-					backgroundColor: Colors.morandiPink,
-					borderColor: Colors.morandiPink,
-				}}
-				textStyle={{
-					fontSize: 16,
-					fontFamily: "Bitter-Regular",
-					color: Colors.gray,
-				}}
-				labelStyle={{
-					color: Colors.darkPink,
-					backgroundColor: Colors.morandiPink,
-				}}
-				
-			/>
-		</Box>
-			
+				<DropDownPicker
+					open={open}
+					value={location}
+					items={items}
+					setOpen={setOpen}
+					setValue={setLocation}
+					setItems={setItems}
+					theme="LIGHT"
+					multiple={false}
+					listMode="SCROLLVIEW"
+					mode="BADGE"
+					badgeDotColors={[
+						"#ffd700",
+						"#90ee90",
+						"#800000",
+						"#006400",
+						"#ffc0cb",
+					]}
+					maxHeight={200}
+					dropDownDirection="TOP"
+					style={{
+						borderColor: Colors.morandiPink,
+						backgroundColor: Colors.morandiPink,
+					}}
+					dropDownContainerStyle={{
+						backgroundColor: Colors.morandiPink,
+						borderColor: Colors.morandiPink,
+					}}
+					textStyle={{
+						fontSize: 16,
+						fontFamily: "Bitter-Regular",
+						color: Colors.gray,
+					}}
+					labelStyle={{
+						color: Colors.darkPink,
+						backgroundColor: Colors.morandiPink,
+					}}
+				/>
+			</Box>
+
 			<Button
 				_pressed={{
 					bg: Colors.lightGreen,
@@ -316,7 +372,6 @@ const AdminUploadScreen = () => {
 			>
 				Add Food Item
 			</Button>
-
 		</ScrollView>
 	);
 };
