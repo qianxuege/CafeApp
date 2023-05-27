@@ -75,7 +75,7 @@ const AdminUploadScreen = () => {
 			quality: 1,
 		});
 
-		console.log(result);
+		//console.log(result);
 
 		if (!result.cancelled) {
 			setImage(result.uri);
@@ -98,6 +98,7 @@ const AdminUploadScreen = () => {
 			nameArr[i] = nameArr[i].charAt(0).toUpperCase() + nameArr[i].slice(1);
 		}
 		let newFoodName = nameArr.join(" ");
+		console.log(newFoodName);
 		//newFoodName = foodname but with first letter of each word capitalized
 		let uri = image;
 		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
@@ -106,7 +107,7 @@ const AdminUploadScreen = () => {
 		//let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
 		let filename = fname.concat(imageEnding);
 		let uniqueId = uuid.v4();
-		
+
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
 
 		const blob = await new Promise((resolve, reject) => {
@@ -127,8 +128,27 @@ const AdminUploadScreen = () => {
 
 		try {
 			const q = query(foodRef, where("name", "==", newFoodName));
-			console.log(q);
+			console.log(newFoodName);
 			const querySnapshot = await getDocs(q);
+			console.log(querySnapshot.docs.length);
+
+			if (querySnapshot.docs.length != 0) {
+				Alert.alert(
+					"ERROR",
+					"The entered food name exists in the database. Continue to proceed would overwrite the data! Click cancel and change the food name if needed!",
+					[
+						{
+							text: "Cancel",
+							onPress: () => {
+								return;
+							},
+							style: "cancel",
+						},
+						{ text: "OK", onPress: () => uploadData },
+					]
+				);
+			}
+			return;
 			querySnapshot.forEach((doc) => {
 				// doc.data() is never undefined for query doc snapshots
 				console.log(doc.id, " => ", doc.data());
@@ -136,6 +156,7 @@ const AdminUploadScreen = () => {
 		} catch (error) {
 			console.log(error);
 		}
+
 		// 	if (q != null) {
 		// 		Alert.alert(
 		// 			"ERROR",
@@ -157,7 +178,7 @@ const AdminUploadScreen = () => {
 		// 	console.log(error);
 		// }
 
-		const uploadData = async () => {
+		const uploadData = async() => {
 			setUploading(true);
 
 			try {
@@ -179,14 +200,14 @@ const AdminUploadScreen = () => {
 					uuid: uniqueId,
 				});
 
-				const docRef = doc(db, "foodItems", foodname);
+				const docRef = doc(db, "foodItems", fname);
 				const docSnap = await getDoc(docRef);
 
 				if (docSnap.exists()) {
-					//console.log("Document data:", docSnap.data());
+					console.log("Document data:", docSnap.data());
 				} else {
 					// docSnap.data() will be undefined in this case
-					//console.log("No such document!");
+					console.log("No such document!");
 				}
 
 				setUploading(false);
