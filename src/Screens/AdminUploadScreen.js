@@ -108,9 +108,9 @@ const AdminUploadScreen = () => {
 
 		try {
 			const q = query(foodRef, where("name", "==", newFoodName));
-			console.log(newFoodName);
+			//console.log(newFoodName);
 			const querySnapshot = await getDocs(q);
-			console.log(querySnapshot.docs.length);
+			//console.log(querySnapshot.docs.length);
 
 			if (querySnapshot.docs.length != 0) {
 				Alert.alert(
@@ -146,7 +146,7 @@ const AdminUploadScreen = () => {
 			nameArr[i] = nameArr[i].charAt(0).toUpperCase() + nameArr[i].slice(1);
 		}
 		let newFoodName = nameArr.join(" ");
-		console.log(newFoodName);
+		//console.log(newFoodName);
 		//newFoodName = foodname but with first letter of each word capitalized
 		let uri = image;
 		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
@@ -172,26 +172,7 @@ const AdminUploadScreen = () => {
 			xhr.send(null);
 		});
 
-		// 	if (q != null) {
-		// 		Alert.alert(
-		// 			"ERROR",
-		// 			"The entered food name exists in the database. Continue to proceed would overwrite the data! Click cancel and change the food name if needed!",
-		// 			[
-		// 				{
-		// 					text: "Cancel",
-		// 					onPress: () => {
-		// 						return;
-		// 					},
-		// 					style: "cancel",
-		// 				},
-		// 				{ text: "OK", onPress: () => uploadData() },
-		// 			]
-		// 		);
-		// 	}
-		// 	return;
-		// } catch (error) {
-		// 	console.log(error);
-		// }
+		
 
 		const uploadData = async () => {
 			setUploading(true);
