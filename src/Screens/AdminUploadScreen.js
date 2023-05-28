@@ -92,6 +92,54 @@ const AdminUploadScreen = () => {
 		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
 	};
 
+	const checkDuplicates = async () => {
+		let nameArr = foodname.split(" ");
+		for (let i = 0; i < nameArr.length; i++) {
+			nameArr[i] = nameArr[i].charAt(0).toUpperCase() + nameArr[i].slice(1);
+		}
+		let newFoodName = nameArr.join(" ");
+		let uri = image;
+		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
+		let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
+		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_"); // fname = foodname with no spaces
+		let filename = fname.concat(imageEnding);
+
+		const foodRef = collection(db, "foodItems");
+
+		try {
+			const q = query(foodRef, where("name", "==", newFoodName));
+			console.log(newFoodName);
+			const querySnapshot = await getDocs(q);
+			console.log(querySnapshot.docs.length);
+
+			if (querySnapshot.docs.length != 0) {
+				Alert.alert(
+					"ERROR",
+					"The entered food name exists in the database. Continue to proceed would overwrite the data! Click 'ok' if wish to proceed.",
+					[
+						{
+							text: "Cancel",
+							onPress: () => {
+								return;
+							},
+							style: "cancel",
+						},
+						{ text: "OK", onPress: () => uploadImage() },
+					]
+				);
+			} else {
+				uploadImage();
+			}
+			
+			querySnapshot.forEach((doc) => {
+				// doc.data() is never undefined for query doc snapshots
+				console.log(doc.id, " => ", doc.data());
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	const uploadImage = async () => {
 		let nameArr = foodname.split(" ");
 		for (let i = 0; i < nameArr.length; i++) {
@@ -124,39 +172,6 @@ const AdminUploadScreen = () => {
 			xhr.send(null);
 		});
 
-		const foodRef = collection(db, "foodItems");
-
-		try {
-			const q = query(foodRef, where("name", "==", newFoodName));
-			console.log(newFoodName);
-			const querySnapshot = await getDocs(q);
-			console.log(querySnapshot.docs.length);
-
-			if (querySnapshot.docs.length != 0) {
-				Alert.alert(
-					"ERROR",
-					"The entered food name exists in the database. Continue to proceed would overwrite the data! Click cancel and change the food name if needed!",
-					[
-						{
-							text: "Cancel",
-							onPress: () => {
-								return;
-							},
-							style: "cancel",
-						},
-						{ text: "OK", onPress: () => uploadData },
-					]
-				);
-			}
-			return;
-			querySnapshot.forEach((doc) => {
-				// doc.data() is never undefined for query doc snapshots
-				console.log(doc.id, " => ", doc.data());
-			});
-		} catch (error) {
-			console.log(error);
-		}
-
 		// 	if (q != null) {
 		// 		Alert.alert(
 		// 			"ERROR",
@@ -178,7 +193,7 @@ const AdminUploadScreen = () => {
 		// 	console.log(error);
 		// }
 
-		const uploadData = async() => {
+		const uploadData = async () => {
 			setUploading(true);
 
 			try {
@@ -388,7 +403,7 @@ const AdminUploadScreen = () => {
 				bg={Colors.morandiGreen}
 				size="md"
 				onPress={() => {
-					uploadImage();
+					checkDuplicates();
 				}}
 			>
 				Add Food Item
