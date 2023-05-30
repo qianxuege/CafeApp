@@ -70,9 +70,9 @@ const AdminBottomNav = () => {
 					tabBarIcon: ({ focused }) => (
 						<Center>
 							{focused ? (
-								<Ionicons name="heart" size={24} color={Colors.black} />
+								<Ionicons name="menu" size={28} color={Colors.black} />
 							) : (
-								<Ionicons name="heart" size={24} color={Colors.deepestGray} />
+								<Ionicons name="menu" size={28} color={Colors.deepestGray} />
 							)}
 						</Center>
 					),
