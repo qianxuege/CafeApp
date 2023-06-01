@@ -27,6 +27,8 @@ import {
 	where,
 	collection,
 	getDocs,
+	updateDoc,
+	serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import LocationPicker from "../Components/LocationPicker";
@@ -44,6 +46,7 @@ const AdminUploadScreen = () => {
 	const [ingredients, setIngredients] = useState("");
 	const [price, setPrice] = useState("");
 	const [calories, setCalories] = useState("");
+	const [uuid, setUuid] = useState();
 	//const [uuid, setUuid] = useState("");
 
 	//for Location Picker
@@ -150,11 +153,13 @@ const AdminUploadScreen = () => {
 		//newFoodName = foodname but with first letter of each word capitalized
 		let uri = image;
 		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
-		let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
+		//let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
 		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_"); // fname = foodname with no spaces
 		//let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
-		let filename = fname.concat(imageEnding);
-		let uniqueId = uuid.v4();
+		//let filename = fname.concat(imageEnding);
+		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
+		//let uniqueId = uuid.v4();
+		//setUuid(uniqueId);
 
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
 
@@ -172,31 +177,43 @@ const AdminUploadScreen = () => {
 			xhr.send(null);
 		});
 
+		const metadata = {
+			foodItem: newFoodName,
+		  };
+
 		
 
 		const uploadData = async () => {
 			setUploading(true);
 
 			try {
-				const storageRef = ref(storage, "images/" + filename);
-				const result = await uploadBytes(storageRef, blob);
+				const storageRef = ref(storage, "GHS/images/" + filename);
+				const result = await uploadBytes(storageRef, blob, metadata);
 
 				// We're done with the blob, close and release it
 				//console.log(blob);
 				blob.close();
 
+				//console.log(uuid);
+
+				const docRef = doc(db, "GHS", "Users", "foodItems", fname);
+
 				// Add a new document in collection "cities"
-				await setDoc(doc(db, "foodItems", fname), {
+				await setDoc(docRef, {
 					name: newFoodName,
 					price: price,
 					tags: tags.toLowerCase().split(", "),
 					ingredients: ingredients.toLowerCase().split(", "),
 					calories: calories,
 					location: location,
-					uuid: uniqueId,
+					//uuid: uuid.v4(),
 				});
 
-				const docRef = doc(db, "foodItems", fname);
+				const updateTimestamp = await updateDoc(docRef, {
+					timestamp: serverTimestamp()
+				});
+
+				//const docRef = doc(db, "foodItems", uniqueId);
 				const docSnap = await getDoc(docRef);
 
 				if (docSnap.exists()) {
@@ -384,7 +401,7 @@ const AdminUploadScreen = () => {
 				bg={Colors.morandiGreen}
 				size="md"
 				onPress={() => {
-					checkDuplicates();
+					uploadImage();
 				}}
 			>
 				Add Food Item
