@@ -46,8 +46,7 @@ const AdminUploadScreen = () => {
 	const [ingredients, setIngredients] = useState("");
 	const [price, setPrice] = useState("");
 	const [calories, setCalories] = useState("");
-	const [uuid, setUuid] = useState();
-	//const [uuid, setUuid] = useState("");
+	const [imagesrc, setImagesrc] = useState("");
 
 	//for Location Picker
 	const [open, setOpen] = useState(false);
@@ -92,6 +91,7 @@ const AdminUploadScreen = () => {
 		setTags("");
 		setPrice("");
 		setLocation("");
+		setImagesrc("");
 		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
 	};
 
@@ -100,14 +100,15 @@ const AdminUploadScreen = () => {
 		for (let i = 0; i < nameArr.length; i++) {
 			nameArr[i] = nameArr[i].charAt(0).toUpperCase() + nameArr[i].slice(1);
 		}
-		let newFoodName = nameArr.join(" ");
+		let newFoodName = nameArr.join(" "); //returns capitalized food name
 		let uri = image;
 		const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
-		let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
+		//let imageEnding = uploadUri.substring(uploadUri.lastIndexOf("."));
 		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_"); // fname = foodname with no spaces
-		let filename = fname.concat(imageEnding);
+		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1); //this is the filename for the image
+		//let filename = fname.concat(imageEnding);
 
-		const foodRef = collection(db, "foodItems");
+		const foodRef = collection(db, "GHS", "Users", "foodItems");
 
 		try {
 			const q = query(foodRef, where("name", "==", newFoodName));
@@ -118,7 +119,7 @@ const AdminUploadScreen = () => {
 			if (querySnapshot.docs.length != 0) {
 				Alert.alert(
 					"ERROR",
-					"The entered food name exists in the database. Continue to proceed would overwrite the data! Click 'ok' if wish to proceed.",
+					"The entered food name exists in the database. Click 'ok' if wish to proceed.",
 					[
 						{
 							text: "Cancel",
@@ -133,7 +134,7 @@ const AdminUploadScreen = () => {
 			} else {
 				uploadImage();
 			}
-			
+
 			querySnapshot.forEach((doc) => {
 				// doc.data() is never undefined for query doc snapshots
 				console.log(doc.id, " => ", doc.data());
@@ -157,11 +158,16 @@ const AdminUploadScreen = () => {
 		let fname = foodname.toLocaleLowerCase().replace(/\s/g, "_"); // fname = foodname with no spaces
 		//let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
 		//let filename = fname.concat(imageEnding);
-		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
-		//let uniqueId = uuid.v4();
+		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1); //this is the filename for the image
+		let uniqueId = uuid.v4();
+		//console.log(uniqueId);
 		//setUuid(uniqueId);
 
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
+
+		const metadata = {
+			foodItem: newFoodName,
+		};
 
 		const blob = await new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
@@ -177,11 +183,18 @@ const AdminUploadScreen = () => {
 			xhr.send(null);
 		});
 
-		const metadata = {
-			foodItem: newFoodName,
-		  };
-
-		
+		const getImage = () => {
+			getDownloadURL(ref(storage, "GHS/images/" + filename))
+					.then((url) => {
+						setImagesrc(url);
+						setImagesrc(url);
+						console.log(imagesrc);
+					})
+					.catch((error) => {
+						// Handle any errors
+						console.log(error);
+					});
+		}
 
 		const uploadData = async () => {
 			setUploading(true);
@@ -193,10 +206,11 @@ const AdminUploadScreen = () => {
 				// We're done with the blob, close and release it
 				//console.log(blob);
 				blob.close();
-
+				
+				
 				//console.log(uuid);
 
-				const docRef = doc(db, "GHS", "Users", "foodItems", fname);
+				const docRef = doc(db, "GHS", "Users", "foodItems", uniqueId);
 
 				// Add a new document in collection "cities"
 				await setDoc(docRef, {
@@ -206,12 +220,18 @@ const AdminUploadScreen = () => {
 					ingredients: ingredients.toLowerCase().split(", "),
 					calories: calories,
 					location: location,
-					//uuid: uuid.v4(),
 				});
 
+				getImage();
+				
+
+				console.log(imagesrc);
+
 				const updateTimestamp = await updateDoc(docRef, {
-					timestamp: serverTimestamp()
+					timestamp: serverTimestamp(),
 				});
+
+				
 
 				//const docRef = doc(db, "foodItems", uniqueId);
 				const docSnap = await getDoc(docRef);
@@ -401,7 +421,7 @@ const AdminUploadScreen = () => {
 				bg={Colors.morandiGreen}
 				size="md"
 				onPress={() => {
-					uploadImage();
+					checkDuplicates();
 				}}
 			>
 				Add Food Item
