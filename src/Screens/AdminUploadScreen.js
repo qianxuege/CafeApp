@@ -47,6 +47,19 @@ const AdminUploadScreen = () => {
 	const [price, setPrice] = useState("");
 	const [calories, setCalories] = useState("");
 	const [imagesrc, setImagesrc] = useState("");
+	const [uniqueId, setUniqueId] = useState("");
+	//let imagesrc = "";
+
+	useEffect(() => {
+		console.log(imagesrc);
+		console.log(uniqueId);
+		if (uniqueId != "" && imagesrc != "") {
+			const updateImagesrc = updateDoc(doc(db, "GHS", "Users", "foodItems", uniqueId), {
+				image: imagesrc,
+			});
+		}
+		
+	}, [imagesrc]);
 
 	//for Location Picker
 	const [open, setOpen] = useState(false);
@@ -91,7 +104,9 @@ const AdminUploadScreen = () => {
 		setTags("");
 		setPrice("");
 		setLocation("");
+		//imagesrc = "";
 		setImagesrc("");
+		setUniqueId("");
 		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
 	};
 
@@ -159,7 +174,8 @@ const AdminUploadScreen = () => {
 		//let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1);
 		//let filename = fname.concat(imageEnding);
 		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1); //this is the filename for the image
-		let uniqueId = uuid.v4();
+		let foodid = uuid.v4();
+		setUniqueId(foodid);
 		//console.log(uniqueId);
 		//setUuid(uniqueId);
 
@@ -184,17 +200,17 @@ const AdminUploadScreen = () => {
 		});
 
 		const getImage = () => {
-			getDownloadURL(ref(storage, "GHS/images/" + filename))
-					.then((url) => {
-						setImagesrc(url);
-						setImagesrc(url);
-						console.log(imagesrc);
-					})
-					.catch((error) => {
-						// Handle any errors
-						console.log(error);
-					});
-		}
+		 	getDownloadURL(ref(storage, "GHS/images/" + filename))
+				.then((url) => {
+					//imagesrc = url.toString();
+					setImagesrc(url);
+					//console.log(imagesrc);
+				})
+				.catch((error) => {
+					// Handle any errors
+					console.log(error);
+				});
+		};
 
 		const uploadData = async () => {
 			setUploading(true);
@@ -206,11 +222,10 @@ const AdminUploadScreen = () => {
 				// We're done with the blob, close and release it
 				//console.log(blob);
 				blob.close();
-				
-				
+
 				//console.log(uuid);
 
-				const docRef = doc(db, "GHS", "Users", "foodItems", uniqueId);
+				const docRef = doc(db, "GHS", "Users", "foodItems", foodid);
 
 				// Add a new document in collection "cities"
 				await setDoc(docRef, {
@@ -223,15 +238,19 @@ const AdminUploadScreen = () => {
 				});
 
 				getImage();
+				//console.log(imagesrc);
+
+				//console.log(imagesrc);
+
 				
 
-				console.log(imagesrc);
+				// const updateImagesrc = await updateDoc(docRef, {
+				// 	image: imagesrc,
+				// })
 
 				const updateTimestamp = await updateDoc(docRef, {
 					timestamp: serverTimestamp(),
 				});
-
-				
 
 				//const docRef = doc(db, "foodItems", uniqueId);
 				const docSnap = await getDoc(docRef);
