@@ -2,11 +2,14 @@ import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import {
 	Box,
 	Button,
+	Center,
 	Flex,
 	HStack,
+	Heading,
 	Input,
 	Pressable,
 	ScrollView,
+	Text,
 	View,
 } from "native-base";
 import React, { useEffect, useState } from "react";
@@ -40,8 +43,8 @@ const AdminMenuScreen = () => {
 		return new Promise((resolve) => setTimeout(resolve, timeout));
 	};
 	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
-    const [filter, setFilter] = useState(false);
-
+	const [filter, setFilter] = useState(false);
+	let dataArray;
 
 	const [docSnap, setDocSnap] = useState("");
 	const [word, setWord] = useState("");
@@ -50,27 +53,33 @@ const AdminMenuScreen = () => {
 	);
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		//getFoodItems();
+	// useEffect(() => {
+	// 	//getFoodItems();
+	// }, []);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
 	}, []);
 
-    useEffect(() => {
-        getFoodItems();
-        setFilter(false);
-        
-        // const foodRef = collection(db, "GHS", "Users", "foodItems");
-        // const querySnapshot = getDocs(foodRef);
-        // console.log(querySnapshot);
-        //setDocSnap(querySnapshot);
-        // querySnapshot.forEach((doc) => {
-        //     console.log(doc.id, "=>", doc.data().image)
-        // })
+	useEffect(() => {
+		getFoodItems();
+		setFilter(false);
 
-    }, [filter])
+		// const foodRef = collection(db, "GHS", "Users", "foodItems");
+		// const querySnapshot = getDocs(foodRef);
+		// console.log(querySnapshot);
+		//setDocSnap(querySnapshot);
+		// querySnapshot.forEach((doc) => {
+		//     console.log(doc.id, "=>", doc.data().image)
+		// })
+	}, [filter]);
 
 	const resetFilter = () => {
 		setWord("");
-        setDocSnap("");
+		setDocSnap("");
 	};
 
 	const getFoodItems = async () => {
@@ -84,13 +93,16 @@ const AdminMenuScreen = () => {
 			//console.log(querySnapshot);
 
 			if (docSnap != "") {
-				docSnap.forEach((doc) => {
-					// doc.data() is never undefined for query doc snapshots
-					//console.log(doc.id, " => ", doc.data().name);
-				});
-                // docSnap.map((doc) => {
-                //     console.log(doc.data().name);
-                // })
+				//console.log(docSnap);
+				// docSnap.forEach((doc) => {
+				// 	// doc.data() is never undefined for query doc snapshots
+				// 	console.log(doc.id, " => ", doc.data().name);
+				// });
+				// docSnap.map((doc) => {
+				//     console.log(doc.data().name);
+				// })
+				dataArray = docSnap.docs.map((doc) => doc.data());
+				console.log(dataArray);
 			} else {
 				// docSnap.data() will be undefined in this case
 				console.log("No such document!");
@@ -114,7 +126,8 @@ const AdminMenuScreen = () => {
 	}
 
 	return (
-		<Box backgroundColor={Colors.white} width="100%">
+		<>
+        <Box backgroundColor={Colors.white} width="100%">
 			<AdminTop />
 			<HStack w="full" px={2} py={4} alignItems="center">
 				<Pressable left={9} zIndex={2}>
@@ -169,7 +182,7 @@ const AdminMenuScreen = () => {
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
 					onPress={() => {
-						setFilter(true)
+						setFilter(true);
 					}}
 				>
 					Filter
@@ -201,34 +214,33 @@ const AdminMenuScreen = () => {
 				</Button>
 			</HStack>
 
+        </Box>
+
 			<ScrollView
 				mt={1}
 				flex={1}
-				// refreshControl={
-				// 	<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-				// }
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
+				backgroundColor={Colors.pink}
 			>
+				
 				<Flex
 					flexWrap="wrap"
 					direction="row"
 					justifyContent="space-between"
 					px={6}
 				>
-                    {/* {"null is not an object --> need to fix docSnap"} */}
-					{docSnap!= "" ? docSnap.forEach((product) => (
-                        <Image
-                        source={{ uri: product.data().image }}
-                        alt={product.data().name}
-                        w="100%"
-                        h={32}
-                        top={-12}
-                        resizeMode="stretch"
-                    />
-                    )) : console.log("docSnap not loaded")}
-				</Flex>
-			</ScrollView>
 
-			<Image
+				{/* {"null is not an object --> need to fix docSnap"} */}
+				{docSnap != "" ? docSnap.docs.map((doc) => (
+                        <Text >{doc.data().name}</Text>
+                    )) : console.log("docSnap not loaded")}
+
+				</Flex>
+			
+
+			{/* <Image
 				source={{ uri: imagesrc }}
 				alt="chosen image"
 				style={{ width: 400, height: 300 }}
@@ -240,8 +252,10 @@ const AdminMenuScreen = () => {
 				}}
 			>
 				{" "}
-			</Button>
-		</Box>
+			</Button> */}
+        </ScrollView>
+        </>
+		
 	);
 };
 
