@@ -40,8 +40,10 @@ const AdminMenuScreen = () => {
 		return new Promise((resolve) => setTimeout(resolve, timeout));
 	};
 	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
+    const [filter, setFilter] = useState(false);
 
-	const [docSnap, setDocSnap] = useState(null);
+
+	const [docSnap, setDocSnap] = useState("");
 	const [word, setWord] = useState("");
 	const [imagesrc, setImagesrc] = useState(
 		"https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png"
@@ -49,28 +51,46 @@ const AdminMenuScreen = () => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		getFoodItems();
+		//getFoodItems();
 	}, []);
+
+    useEffect(() => {
+        getFoodItems();
+        setFilter(false);
+        
+        // const foodRef = collection(db, "GHS", "Users", "foodItems");
+        // const querySnapshot = getDocs(foodRef);
+        // console.log(querySnapshot);
+        //setDocSnap(querySnapshot);
+        // querySnapshot.forEach((doc) => {
+        //     console.log(doc.id, "=>", doc.data().image)
+        // })
+
+    }, [filter])
 
 	const resetFilter = () => {
 		setWord("");
+        setDocSnap("");
 	};
 
 	const getFoodItems = async () => {
-		const foodRef = collection(db, "foodItems");
+		const foodRef = collection(db, "GHS", "Users", "foodItems");
 		try {
 			//const q = query(foodRef, where("name", "==", newFoodName));
 			//console.log(newFoodName);
 			const querySnapshot = await getDocs(foodRef);
 			//console.log(querySnapshot.docs.length);
 			setDocSnap(querySnapshot);
-			console.log(docSnap);
+			//console.log(querySnapshot);
 
-			if (docSnap != null) {
+			if (docSnap != "") {
 				docSnap.forEach((doc) => {
 					// doc.data() is never undefined for query doc snapshots
-					console.log(doc.id, " => ", doc.data().name);
+					//console.log(doc.id, " => ", doc.data().name);
 				});
+                // docSnap.map((doc) => {
+                //     console.log(doc.data().name);
+                // })
 			} else {
 				// docSnap.data() will be undefined in this case
 				console.log("No such document!");
@@ -149,7 +169,7 @@ const AdminMenuScreen = () => {
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
 					onPress={() => {
-						getFoodItems();
+						setFilter(true)
 					}}
 				>
 					Filter
@@ -194,17 +214,17 @@ const AdminMenuScreen = () => {
 					justifyContent="space-between"
 					px={6}
 				>
-                    {"null is not an object --> need to fix docSnap"}
-					{docSnap.map((product) => (
+                    {/* {"null is not an object --> need to fix docSnap"} */}
+					{docSnap!= "" ? docSnap.forEach((product) => (
                         <Image
-                        source={{ uri: product.image }}
-                        alt={product.name}
+                        source={{ uri: product.data().image }}
+                        alt={product.data().name}
                         w="100%"
                         h={32}
                         top={-12}
                         resizeMode="stretch"
                     />
-                    ))}
+                    )) : console.log("docSnap not loaded")}
 				</Flex>
 			</ScrollView>
 

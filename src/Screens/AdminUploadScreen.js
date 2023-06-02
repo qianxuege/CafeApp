@@ -51,15 +51,16 @@ const AdminUploadScreen = () => {
 	//let imagesrc = "";
 
 	useEffect(() => {
-		console.log(imagesrc);
-		console.log(uniqueId);
+		//console.log(imagesrc);
+		//console.log(uniqueId);
 		if (uniqueId != "" && imagesrc != "") {
 			const updateImagesrc = updateDoc(doc(db, "GHS", "Users", "foodItems", uniqueId), {
 				image: imagesrc,
+				
 			});
 		}
 		
-	}, [imagesrc]);
+	}, [imagesrc]); // will upload imagesrc once uniqueId and imagesrc are loaded
 
 	//for Location Picker
 	const [open, setOpen] = useState(false);
@@ -104,7 +105,6 @@ const AdminUploadScreen = () => {
 		setTags("");
 		setPrice("");
 		setLocation("");
-		//imagesrc = "";
 		setImagesrc("");
 		setUniqueId("");
 		setImage("https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png");
@@ -181,8 +181,8 @@ const AdminUploadScreen = () => {
 
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
 
-		const metadata = {
-			foodItem: newFoodName,
+		let metadata = {
+			name: newFoodName,
 		};
 
 		const blob = await new Promise((resolve, reject) => {
@@ -218,6 +218,8 @@ const AdminUploadScreen = () => {
 			try {
 				const storageRef = ref(storage, "GHS/images/" + filename);
 				const result = await uploadBytes(storageRef, blob, metadata);
+
+				//console.log(metadata);
 
 				// We're done with the blob, close and release it
 				//console.log(blob);
