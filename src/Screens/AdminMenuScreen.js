@@ -29,7 +29,7 @@ import {
 	where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const AdminMenuScreen = () => {
 	const [fontsLoaded] = useFonts({
@@ -39,14 +39,14 @@ const AdminMenuScreen = () => {
 		"Caladea-Regular": require("../../assets/Fonts/Caladea-Regular.ttf"),
 		"Caladea-Bold": require("../../assets/Fonts/Caladea-Bold.ttf"),
 	});
-    const navigation = useNavigation();
+	const navigation = useNavigation();
 
 	const wait = (timeout) => {
 		return new Promise((resolve) => setTimeout(resolve, timeout));
 	};
 	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
-	const [filter, setFilter] = useState(false);
-	let dataArray;
+	//const [filter, setFilter] = useState(false);
+
 
 	const [docSnap, setDocSnap] = useState("");
 	const [word, setWord] = useState("");
@@ -68,7 +68,7 @@ const AdminMenuScreen = () => {
 
 	useEffect(() => {
 		getFoodItems();
-		setFilter(false);
+		//setFilter(false);
 
 		// const foodRef = collection(db, "GHS", "Users", "foodItems");
 		// const querySnapshot = getDocs(foodRef);
@@ -77,11 +77,17 @@ const AdminMenuScreen = () => {
 		// querySnapshot.forEach((doc) => {
 		//     console.log(doc.id, "=>", doc.data().image)
 		// })
-	}, [filter]);
+	}, [word]);
+
+    useFocusEffect(
+		React.useCallback(() => {
+		 onRefresh();
+		}, [])
+	  );
 
 	const resetFilter = () => {
 		setWord("");
-		setDocSnap("");
+		//getFoodItems();
 	};
 
 	const getFoodItems = async () => {
@@ -89,47 +95,79 @@ const AdminMenuScreen = () => {
 		try {
 			//const q = query(foodRef, where("name", "==", newFoodName));
 			//console.log(newFoodName);
-			const querySnapshot = await getDocs(foodRef);
-			//console.log(querySnapshot.docs.length);
-			setDocSnap(querySnapshot);
+			if (word == "") {
+				const querySnapshot = await getDocs(foodRef);
+				setDocSnap(querySnapshot.docs);
+			} else {
+
+                console.log(word);
+                // let filter = word.split(" ");
+                // for (let i=0; i<filter.length; i++) {
+
+                // }
+
+
+                const qName = query(foodRef, where("lowercaseName", "array-contains", word));
+                const querySnapshotN = await getDocs(qName);
+
+                const qIngredients = query(foodRef, where("ingredients", "array-contains", word));
+                const querySnapshotI = await getDocs(qIngredients);
+
+                const qTags = query(foodRef, where("tags", "array-contains", word));
+                const querySnapshotT = await getDocs(qTags);
+
+                const qLocation = query(foodRef, where("location", "array-contains", word));
+                const querySnapshotL = await getDocs(qLocation);
+
+                const arrayDocs = [...querySnapshotN.docs, ...querySnapshotI.docs, ...querySnapshotT.docs, ...querySnapshotL.docs];
+                
+                const getUniqueList = () => {
+                    for (let i=0; i<arrayDocs.length -1; i++) {
+                        for (let j = i+1; j< arrayDocs.length; j++) {
+                            if (arrayDocs[i].id === arrayDocs[j].id) {
+                                //console.log(arrayDocs.map((doc) => doc.data().name));
+                                //console.log(arrayDocs[i].data());
+                                arrayDocs.splice(i, 1);
+                                getUniqueList();
+                                //console.log(arrayDocs.map((doc) => doc.data().name));
+                            }
+                        }
+                    }
+                }
+
+                getUniqueList();
+
+                //console.log(arrayDocs.map((doc) => doc.data().name));
+                
+
+                setDocSnap(arrayDocs);
+                //console.log(querySnapshot);
+            }
+
 			//console.log(querySnapshot);
 
-			if (docSnap != "") {
-				//console.log(docSnap);
-				// docSnap.forEach((doc) => {
-				// 	// doc.data() is never undefined for query doc snapshots
-				// 	console.log(doc.id, " => ", doc.data().name);
-				// });
-				// docSnap.map((doc) => {
-				//     console.log(doc.data().name);
-				// })
-				dataArray = docSnap.docs.map((doc) => doc.data());
-				//console.log(dataArray);
-			} else {
-				// docSnap.data() will be undefined in this case
-				console.log("No such document!");
-			}
+			
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	function getImage() {
-		const storage = getStorage();
-		getDownloadURL(ref(storage, "images/chicken_caesar_salad.jpg"))
-			.then((url) => {
-				setImagesrc(url);
-				console.log(imagesrc);
-			})
-			.catch((error) => {
-				// Handle any errors
-				console.log(error);
-			});
-	}
+	// function getImage() {
+	// 	const storage = getStorage();
+	// 	getDownloadURL(ref(storage, "images/chicken_caesar_salad.jpg"))
+	// 		.then((url) => {
+	// 			setImagesrc(url);
+	// 			console.log(imagesrc);
+	// 		})
+	// 		.catch((error) => {
+	// 			// Handle any errors
+	// 			console.log(error);
+	// 		});
+	// }
 
 	return (
 		<>
-			<Box backgroundColor={Colors.white} width="100%">
+			<Box backgroundColor={Colors.white} width="100%" paddingBottom={1}>
 				<AdminTop />
 				<HStack w="full" px={2} py={4} alignItems="center">
 					<Pressable left={9} zIndex={2}>
@@ -184,7 +222,7 @@ const AdminMenuScreen = () => {
 						}}
 						_pressed={{ bg: Colors.darkGreen }}
 						onPress={() => {
-							setFilter(true);
+							//setFilter(true);
 						}}
 					>
 						Filter
@@ -218,11 +256,12 @@ const AdminMenuScreen = () => {
 			</Box>
 
 			<ScrollView
-				mt={1}
+
 				flex={1}
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}
+                backgroundColor={Colors.white}
 			>
 				<Flex
 					flexWrap="wrap"
@@ -232,7 +271,7 @@ const AdminMenuScreen = () => {
 				>
 					{/* {"null is not an object --> need to fix docSnap"} */}
 					{docSnap != ""
-						? docSnap.docs.map((doc) => (
+						? docSnap.map((doc) => (
 								<Pressable
 									onPress={() => {
 										navigation.navigate("AdminSingle", doc.data());

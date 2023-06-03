@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import {
 	ScrollView,
@@ -39,6 +39,12 @@ function AdminSingleProductScreen({ route }) {
 			setRefreshing(false);
 		}, 1000);
 	}, []);
+
+    useFocusEffect(
+		React.useCallback(() => {
+		 onRefresh();
+		}, [])
+	  );
 
 	if (!fontsLoaded) {
 		return null;
@@ -92,7 +98,7 @@ function AdminSingleProductScreen({ route }) {
 					</Pressable>
                     <Box mt={6}>
 						<Text style={styles.heading2}>Location</Text>
-						<Text style={styles.paragraph}>{doc.location}</Text>
+						<Text style={styles.paragraph}>{doc.location.join(" ")}</Text>
 					</Box>
                     <Box mt={6}>
 						<Text style={styles.heading2}>Calories</Text>

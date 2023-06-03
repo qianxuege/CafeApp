@@ -236,7 +236,8 @@ const AdminUploadScreen = () => {
 					tags: tags.toLowerCase().split(", "),
 					ingredients: ingredients.toLowerCase().split(", "),
 					calories: calories,
-					location: location,
+					location: location.split(" "),
+					lowercaseName: newFoodName.toLowerCase().split(" "),
 				});
 
 				getImage();
