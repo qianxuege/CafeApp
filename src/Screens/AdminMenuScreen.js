@@ -47,8 +47,8 @@ const AdminMenuScreen = () => {
 	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
 	//const [filter, setFilter] = useState(false);
 
-
 	const [docSnap, setDocSnap] = useState("");
+	let arrayDocs = [];
 	const [word, setWord] = useState("");
 	const [imagesrc, setImagesrc] = useState(
 		"https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png"
@@ -79,14 +79,15 @@ const AdminMenuScreen = () => {
 		// })
 	}, [word]);
 
-    useFocusEffect(
+	useFocusEffect(
 		React.useCallback(() => {
-		 onRefresh();
+			onRefresh();
 		}, [])
-	  );
+	);
 
 	const resetFilter = () => {
 		setWord("");
+        arrayDocs = [];
 		//getFoodItems();
 	};
 
@@ -99,54 +100,80 @@ const AdminMenuScreen = () => {
 				const querySnapshot = await getDocs(foodRef);
 				setDocSnap(querySnapshot.docs);
 			} else {
+				console.log(word);
+				let filter = word.split(" ");
+				for (let i = 0; i < filter.length; i++) {
+					let qName = query(
+						foodRef,
+						where("lowercaseName", "array-contains", filter[i])
+					);
+					let querySnapshotN = await getDocs(qName);
 
-                console.log(word);
-                // let filter = word.split(" ");
-                // for (let i=0; i<filter.length; i++) {
+					let qIngredients = query(
+						foodRef,
+						where("ingredients", "array-contains", filter[i])
+					);
+					let querySnapshotI = await getDocs(qIngredients);
 
-                // }
+					let qTags = query(foodRef, where("tags", "array-contains", filter[i]));
+					let querySnapshotT = await getDocs(qTags);
 
+					let qLocation = query(
+						foodRef,
+						where("location", "array-contains", filter[i])
+					);
+					let querySnapshotL = await getDocs(qLocation);
 
-                const qName = query(foodRef, where("lowercaseName", "array-contains", word));
-                const querySnapshotN = await getDocs(qName);
+					// arrayDocs = [
+					// 	...querySnapshotN.docs,
+					// 	...querySnapshotI.docs,
+					// 	...querySnapshotT.docs,
+					// 	...querySnapshotL.docs,
+					// ];
 
-                const qIngredients = query(foodRef, where("ingredients", "array-contains", word));
-                const querySnapshotI = await getDocs(qIngredients);
+                    arrayDocs.push(...querySnapshotN.docs);
+                    arrayDocs.push(...querySnapshotI.docs);
+                    arrayDocs.push(...querySnapshotT.docs);
+                    arrayDocs.push(...querySnapshotL.docs);
+				}
 
-                const qTags = query(foodRef, where("tags", "array-contains", word));
-                const querySnapshotT = await getDocs(qTags);
+				// const qName = query(foodRef, where("lowercaseName", "array-contains", word));
+				// const querySnapshotN = await getDocs(qName);
 
-                const qLocation = query(foodRef, where("location", "array-contains", word));
-                const querySnapshotL = await getDocs(qLocation);
+				// const qIngredients = query(foodRef, where("ingredients", "array-contains", word));
+				// const querySnapshotI = await getDocs(qIngredients);
 
-                const arrayDocs = [...querySnapshotN.docs, ...querySnapshotI.docs, ...querySnapshotT.docs, ...querySnapshotL.docs];
-                
-                const getUniqueList = () => {
-                    for (let i=0; i<arrayDocs.length -1; i++) {
-                        for (let j = i+1; j< arrayDocs.length; j++) {
-                            if (arrayDocs[i].id === arrayDocs[j].id) {
-                                //console.log(arrayDocs.map((doc) => doc.data().name));
-                                //console.log(arrayDocs[i].data());
-                                arrayDocs.splice(i, 1);
-                                getUniqueList();
-                                //console.log(arrayDocs.map((doc) => doc.data().name));
-                            }
-                        }
-                    }
-                }
+				// const qTags = query(foodRef, where("tags", "array-contains", word));
+				// const querySnapshotT = await getDocs(qTags);
 
-                getUniqueList();
+				// const qLocation = query(foodRef, where("location", "array-contains", word));
+				// const querySnapshotL = await getDocs(qLocation);
 
-                //console.log(arrayDocs.map((doc) => doc.data().name));
-                
+				// const arrayDocs = [...querySnapshotN.docs, ...querySnapshotI.docs, ...querySnapshotT.docs, ...querySnapshotL.docs];
 
-                setDocSnap(arrayDocs);
-                //console.log(querySnapshot);
-            }
+				const getUniqueList = () => {
+					for (let i = 0; i < arrayDocs.length - 1; i++) {
+						for (let j = i + 1; j < arrayDocs.length; j++) {
+							if (arrayDocs[i].id === arrayDocs[j].id) {
+								//console.log(arrayDocs.map((doc) => doc.data().name));
+								//console.log(arrayDocs[i].data());
+								arrayDocs.splice(i, 1);
+								getUniqueList();
+								//console.log(arrayDocs.map((doc) => doc.data().name));
+							}
+						}
+					}
+				};
+
+				getUniqueList();
+
+				//console.log(arrayDocs.map((doc) => doc.data().name));
+
+				setDocSnap(arrayDocs);
+				//console.log(querySnapshot);
+			}
 
 			//console.log(querySnapshot);
-
-			
 		} catch (error) {
 			console.log(error);
 		}
@@ -256,12 +283,11 @@ const AdminMenuScreen = () => {
 			</Box>
 
 			<ScrollView
-
 				flex={1}
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}
-                backgroundColor={Colors.white}
+				backgroundColor={Colors.white}
 			>
 				<Flex
 					flexWrap="wrap"
