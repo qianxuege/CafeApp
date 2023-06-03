@@ -17,19 +17,19 @@ import {
 import { useFonts } from "expo-font";
 import React, { useState } from "react";
 import Colors from "../color";
-import Heart from "../Components/Heart";
-import Rating from "../Components/Rating";
+//import Heart from "../Components/Heart";
+//import Rating from "../Components/Rating";
 import NumericInput from "react-native-numeric-input";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import Review from "../Components/Review";
+//import Review from "../Components/Review";
 import NavBarMenu from "../Components/NavBarMenu";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import products from "../data/Products";
 
 function SingleProductScreen({ route }) {
 	const navigation = useNavigation();
-	const product = route.params;
+	const doc = route.params;
 	// const [value, setValue] = useState(0);
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
@@ -43,9 +43,15 @@ function SingleProductScreen({ route }) {
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
-		  setRefreshing(false);
+			setRefreshing(false);
 		}, 1000);
-	  }, []);
+	}, []);
+
+	useFocusEffect(
+		React.useCallback(() => {
+			onRefresh();
+		}, [])
+	);
 
 	if (!fontsLoaded) {
 		return null;
@@ -77,9 +83,9 @@ function SingleProductScreen({ route }) {
 				showsVerticalScrollIndicator={false}
 			>
 				<Image
-					source={{ uri: product.image }}
+					source={{ uri: doc.image }}
 					top={0}
-					alt="Image"
+					alt={doc.name}
 					margin="auto"
 					w="100%"
 					h={400}
@@ -92,29 +98,29 @@ function SingleProductScreen({ route }) {
 						<FontAwesome name="heart" size={24} color={Colors.pink} />
 					</Center>
 				</Pressable> */}
-				<Pressable position="absolute" top={370} right="2%" onPress={() => {
+				{/* <Pressable position="absolute" top={370} right="2%" onPress={() => {
 							product.saved==true? product.saved=false: product.saved=true;
 							onRefresh();
 						}}>
 					<Heart param={product.saved} size={24} />
-				</Pressable>
-				<Box marginLeft={6}>
+				</Pressable> */}
+				<Box marginLeft={6} paddingBottom={100}>
 					<Text
 						my={2}
 						fontFamily="AmaticSC-Bold"
 						fontSize={52}
 						color={Colors.black}
 					>
-						{product.name}
+						{doc.name}
 					</Text>
 					<HStack space={2} overflow="scroll">
-						{product.tags.map((tag) => {
+						{/* {product.tags.map((tag) => {
 							return (
 								<View style={styles.tagsView} key={Math.random() * 20}>
 									<Text style={styles.tags}>{tag}</Text>
 								</View>
 							);
-						})}
+						})} */}
 
 						{/* <View style={styles.tagsView}>
 							<Text style={styles.tags}>vegeterian</Text>
@@ -127,12 +133,12 @@ function SingleProductScreen({ route }) {
 							fontWeight="bold"
 							color={Colors.deepestGray}
 						>
-							${product.price}
+							${doc.price}
 						</Text>
 						<Spacer />
-						<Pressable right={10}>
+						{/* <Pressable right={10}>
 							<Rating value={product.rating} />
-						</Pressable>
+						</Pressable> */}
 					</HStack>
 					<Pressable>
 						<Center mt={6} left={-6}>
@@ -169,19 +175,19 @@ function SingleProductScreen({ route }) {
 
 					<Box mt={6}>
 						<Text style={styles.heading2}>Location</Text>
-						<Text style={styles.paragraph}>{product.location}</Text>
+						<Text style={styles.paragraph}>{doc.location.join(" ")}</Text>
 					</Box>
 
 					<Box mt={6}>
 						<Text style={styles.heading2}>Calories</Text>
-						<Text style={styles.paragraph}>{product.calories} cal</Text>
+						<Text style={styles.paragraph}>{doc.calories} cal</Text>
 					</Box>
 					<Box mt={6}>
 						<Text style={styles.heading2}>Ingredients</Text>
-						<Text style={styles.paragraph}>{product.ingredients}</Text>
+						<Text style={styles.paragraph}>{doc.ingredients.join(", ")}</Text>
 					</Box>
 					{/* rating */}
-					<Review />
+					{/* <Review /> */}
 				</Box>
 			</ScrollView>
 		</Box>

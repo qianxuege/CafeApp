@@ -68,15 +68,6 @@ const AdminMenuScreen = () => {
 
 	useEffect(() => {
 		getFoodItems();
-		//setFilter(false);
-
-		// const foodRef = collection(db, "GHS", "Users", "foodItems");
-		// const querySnapshot = getDocs(foodRef);
-		// console.log(querySnapshot);
-		//setDocSnap(querySnapshot);
-		// querySnapshot.forEach((doc) => {
-		//     console.log(doc.id, "=>", doc.data().image)
-		// })
 	}, [word]);
 
 	useFocusEffect(

@@ -9,19 +9,28 @@ import {
 	Center,
 	HStack,
 	Button,
-	Input
+	Input,
 } from "native-base";
 import { RefreshControl, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
 import React, { useState, useEffect } from "react";
 import Colors from "../color";
 import products from "../data/Products.js";
-import Rating from "./Rating";
-import Heart from "./Heart";
+//import Rating from "./Rating";
+//import Heart from "./Heart";
 import NavBarMenu from "../Components/NavBarMenu";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	setDoc,
+	where,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 
 function HomeProducts() {
 	const navigation = useNavigation();
@@ -38,88 +47,99 @@ function HomeProducts() {
 	};
 	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
 
-	const [word, setWord] = useState('');
-	const [uniqueFilteredId, setUniqeFilteredId] = useState([]);
-	//const [customizedData, setCustomizedData] = useState(CustomizedData);
-	const [finalData, setFinalData] = useState(products);
-	
-
-
-	let filteredId = [];
-	let singleFilteredId = [];
-	let newArray = [];
-
-	
-
-	const search = (word) => {
-		console.log(word);
-
-		const filteredName = products.filter((item) => item.name.toLocaleLowerCase().includes(word));
-		const filteredTags = products.filter((item) => item.tags.includes(word));
-		const filteredIngredients = products.filter((item) =>
-			item.ingredients.includes(word)
-		);
-		filteredName.forEach((food) => filteredId.push(food._id));
-		filteredTags.forEach((food) => filteredId.push(food._id));
-		filteredIngredients.forEach((food) => filteredId.push(food._id));
-		//filteredId is an array that consists of products that contain the word (may have duplicates)
-
-		//to filter out duplicates
-		singleFilteredId = filteredId.filter((element, index) => { //element is the current value, index is the index
-			return filteredId.indexOf(element) === index;
-		});
-
-		//singleFilteredId consists of id of products with the word, without duplicates
-
-		setUniqeFilteredId(singleFilteredId);  //now uniqueFilteredId == singleFilteredId
-
-		singleFilteredId.map((uniqueId) => {
-		 	newArray.push( products.filter((item) => item._id == uniqueId));
-			 
-			//setCustomizedData((oldArray) => [...oldArray, newArray]);
-			
-		 	
-
-		 });
-
-		setFinalData(newArray.flat());
-		
-	};
-
-	const resetFilter = () => {
-		newArray = [];
-		setFinalData(products);
-		setWord("");
-	}
+	const [word, setWord] = useState("");
+	const [docSnap, setDocSnap] = useState("");
+	let arrayDocs = [];
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
-		  setRefreshing(false);
+			setRefreshing(false);
 		}, 1000);
-	  }, []);
-
-	useEffect(() => {
-		setFinalData(products);
 	}, []);
 
-	//Will refresh once the screen is in focus: 
-	//(when it first renders and when user returns to this screen from another screen)
+	useEffect(() => {
+		search();
+	}, [word]);
+
 	useFocusEffect(
 		React.useCallback(() => {
-		 onRefresh();
+			onRefresh();
 		}, [])
-	  );
+	);
 
-	if (!fontsLoaded) {
-		return null;
-	}
+	const resetFilter = () => {
+		setWord("");
+		arrayDocs = [];
+		//getFoodItems();
+	};
 
-	
+	const search = async () => {
+		console.log(word);
+
+		const foodRef = collection(db, "GHS", "Users", "foodItems");
+		try {
+			if (word == "") {
+				const querySnapshot = await getDocs(foodRef);
+				setDocSnap(querySnapshot.docs);
+			} else {
+				console.log(word);
+				let filter = word.split(" ");
+				for (let i = 0; i < filter.length; i++) {
+					let qName = query(
+						foodRef,
+						where("lowercaseName", "array-contains", filter[i])
+					);
+					let querySnapshotN = await getDocs(qName);
+
+					let qIngredients = query(
+						foodRef,
+						where("ingredients", "array-contains", filter[i])
+					);
+					let querySnapshotI = await getDocs(qIngredients);
+
+					let qTags = query(
+						foodRef,
+						where("tags", "array-contains", filter[i])
+					);
+					let querySnapshotT = await getDocs(qTags);
+
+					let qLocation = query(
+						foodRef,
+						where("location", "array-contains", filter[i])
+					);
+					let querySnapshotL = await getDocs(qLocation);
+
+					arrayDocs.push(...querySnapshotN.docs);
+					arrayDocs.push(...querySnapshotI.docs);
+					arrayDocs.push(...querySnapshotT.docs);
+					arrayDocs.push(...querySnapshotL.docs);
+				}
+
+				const getUniqueList = () => {
+					for (let i = 0; i < arrayDocs.length - 1; i++) {
+						for (let j = i + 1; j < arrayDocs.length; j++) {
+							if (arrayDocs[i].id === arrayDocs[j].id) {
+								arrayDocs.splice(i, 1);
+								getUniqueList();
+								//console.log(arrayDocs.map((doc) => doc.data().name));
+							}
+						}
+					}
+				};
+
+				getUniqueList();
+
+				setDocSnap(arrayDocs);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<>
-		<NavBarMenu />
+			<NavBarMenu />
 			<HStack w="full" px={2} py={4} alignItems="center">
 				<Pressable left={9} zIndex={2}>
 					<Ionicons name="search" size={24} color={Colors.deepestGray} />
@@ -146,12 +166,12 @@ function HomeProducts() {
 					clearTextOnFocus
 				/>
 				<Box right={10}>
-				<TouchableOpacity  onPress={() => setWord("")}>
-					<Feather name="x" size={24} color={Colors.deepestGray} />
-				</TouchableOpacity>
+					<TouchableOpacity onPress={() => setWord("")}>
+						<Feather name="x" size={24} color={Colors.deepestGray} />
+					</TouchableOpacity>
 				</Box>
 			</HStack>
-		<HStack
+			<HStack
 				w="full"
 				marginBottom={2}
 				space={4}
@@ -171,9 +191,7 @@ function HomeProducts() {
 						fontFamily: "Caladea-Regular",
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
-					onPress={() => {
-						search(word)
-					}}
+					onPress={() => {}}
 				>
 					Filter
 				</Button>
@@ -197,93 +215,94 @@ function HomeProducts() {
 					}}
 					_pressed={{ bg: Colors.darkGreen }}
 					onPress={() => {
-						resetFilter()
+						resetFilter();
 					}}
 				>
 					Reset Filter
 				</Button>
-				
 			</HStack>
-		
-		<ScrollView
-			mt={1}
-			flex={1}
-			refreshControl={
-				<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-			}
-		>
-			<Flex
-				flexWrap="wrap"
-				direction="row"
-				justifyContent="space-between"
-				px={6}
+
+			<ScrollView
+				mt={1}
+				flex={1}
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
 			>
-				{finalData.map((product) => (
-					<Pressable
-						onPress={() => {
-							navigation.navigate("Single", product);
-						}}
-						key={product._id}
-						w="47%"
-						bg={Colors.lightGold}
-						shadow={2}
-						pt={3}
-						my={3}
-						pb={2}
-						overflow="hidden"
-					>
-						<Image
-							source={{ uri: product.image }}
-							alt={product.name}
-							w="100%"
-							h={32}
-							top={-12}
-							resizeMode="stretch"
-						/>
-						{/* <Pressable position="absolute" top="50%" right="3%">
+				<Flex
+					flexWrap="wrap"
+					direction="row"
+					justifyContent="space-between"
+					px={6}
+				>
+					{docSnap != ""
+						? docSnap.map((doc) => (
+								<Pressable
+									onPress={() => {
+										navigation.navigate("Single", doc.data());
+									}}
+									key={doc.id}
+									w="47%"
+									bg={Colors.lightGold}
+									shadow={2}
+									pt={3}
+									my={3}
+									pb={2}
+									overflow="hidden"
+								>
+									<Image
+										source={{ uri: doc.data().image }}
+										alt={doc.data().name}
+										w="100%"
+										h={32}
+										top={-12}
+										resizeMode="stretch"
+									/>
+									{/* <Pressable position="absolute" top="50%" right="3%">
 							<Center rounded="full" backgroundColor={Colors.white} padding={2}>
 								<FontAwesome name="heart-o" size={18} color={Colors.pink} />
 								<FontAwesome name="heart-o" size={24} color={Colors.pink} />
 							</Center>
 						</Pressable> */}
 
-						<Pressable position="absolute" top="50%" right="3%" onPress={() => {
+									{/* <Pressable position="absolute" top="50%" right="3%" onPress={() => {
 							product.saved==true? product.saved=false: product.saved=true;
 							onRefresh();
 						}}>
 							<Heart param={product.saved} size={18} />
 							
 							
-						</Pressable>
+						</Pressable> */}
 
-						<Box px={4} pt={1} marginX="auto" top={-10}>
-							<Text
-								fontFamily="AmaticSC-Bold"
-								color={Colors.white}
-								fontSize={20}
-								isTruncated="true"
-							>
-								{product.name}
-							</Text>
-						</Box>
-						<Box marginX="auto" top={-11}>
-							<Text fontFamily="Bitter-Bold" color={Colors.white}>
-								{product.calories} cal
-							</Text>
-						</Box>
-						<Box marginX="auto" top={-11}>
-							<Text fontFamily="Bitter-Bold" color={Colors.white}>
-								${product.price}
-							</Text>
-						</Box>
-						<Box marginX="auto" top={-8}>
+									<Box px={4} pt={1} marginX="auto" top={-10}>
+										<Text
+											fontFamily="AmaticSC-Bold"
+											color={Colors.white}
+											fontSize={20}
+											isTruncated="true"
+										>
+											{doc.data().name}
+										</Text>
+									</Box>
+									<Box marginX="auto" top={-11}>
+										<Text fontFamily="Bitter-Bold" color={Colors.white}>
+											{doc.data().calories} cal
+										</Text>
+									</Box>
+									<Box marginX="auto" top={-11}>
+										<Text fontFamily="Bitter-Bold" color={Colors.white}>
+											${doc.data().price}
+										</Text>
+									</Box>
+									{/* <Box marginX="auto" top={-8}>
 							<Rating value={product.rating} />
-						</Box>
-					</Pressable>
-				))}
-			</Flex>
-		</ScrollView>
-	</>
+						</Box> */}
+								</Pressable>
+						  ))
+						: console.log("docSnap not loaded")}
+				</Flex>
+			</ScrollView>
+		</>
 	);
 }
 
