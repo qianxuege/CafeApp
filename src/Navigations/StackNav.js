@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import AdminHomeScreen from "../Screens/AdminHomeScreen";
+import AdminHomeScreen from "../Screens/AdminEditScreen";
 import CartScreen from "../Screens/CartScreen";
 import HomeScreen from "../Screens/HomeScreen";
 import SingleProductScreen from "../Screens/SingleProductScreen";

@@ -1,15 +1,15 @@
 import { View, Text, ToastAndroid, StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import AdminHomeScreen from "../Screens/AdminHomeScreen";
+import AdminHomeScreen from "../Screens/AdminEditScreen";
 import ProfileScreen from "../Screens/ProfileScreen";
 import Colors from "../color";
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { Center } from "native-base";
 //import CartScreen from "../Screens/CartScreen";
-import StackNav from "./StackNav";
 import AdminStackNav from "./AdminStackNav";
 import AdminMenuScreen from "../Screens/AdminMenuScreen";
+import AdminEditScreen from "../Screens/AdminEditScreen";
 
 const Tab = createBottomTabNavigator();
 // const CustomTab = ({ children, onPress }) => <Text>hh</Text>;
@@ -64,8 +64,8 @@ const AdminBottomNav = () => {
 
             {/* Saved */}
             <Tab.Screen
-				name="AdminMenu"
-				component={AdminMenuScreen}
+				name="AdminEdit"
+				component={AdminEditScreen}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Center>

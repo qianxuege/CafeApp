@@ -25,7 +25,7 @@ import Colors from "../color";
 import AdminTop from "../Components/AdminTop";
 import AdminUploadScreen from "./AdminUploadScreen";
 
-const AdminHomeScreen = ({ route }) => {
+const AdminEditScreen = ({ route }) => {
 	const navigation = useNavigation();
 	const product = route.params;
 	const [fontsLoaded] = useFonts({
@@ -46,4 +46,4 @@ const AdminHomeScreen = ({ route }) => {
 	);
 };
 
-export default AdminHomeScreen;
+export default AdminEditScreen;
