@@ -114,7 +114,7 @@ function SingleProductScreen({ route }) {
 						{doc.name}
 					</Text>
 					<HStack space={2} overflow="scroll">
-						{/* {product.tags.map((tag) => {
+						{/* {doc.tags.map((tag)  => {
 							return (
 								<View style={styles.tagsView} key={Math.random() * 20}>
 									<Text style={styles.tags}>{tag}</Text>

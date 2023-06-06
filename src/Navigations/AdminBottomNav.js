@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AdminHomeScreen from "../Screens/AdminEditScreen";
 import ProfileScreen from "../Screens/ProfileScreen";
 import Colors from "../color";
-import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Entypo, FontAwesome, Ionicons, Feather } from "@expo/vector-icons";
 import { Center } from "native-base";
 //import CartScreen from "../Screens/CartScreen";
 import AdminStackNav from "./AdminStackNav";
@@ -70,9 +70,9 @@ const AdminBottomNav = () => {
 					tabBarIcon: ({ focused }) => (
 						<Center>
 							{focused ? (
-								<Ionicons name="menu" size={28} color={Colors.black} />
+								<Entypo name="edit" size={28} color={Colors.black} />
 							) : (
-								<Ionicons name="menu" size={28} color={Colors.deepestGray} />
+								<Entypo name="edit" size={28} color={Colors.deepestGray} />
 							)}
 						</Center>
 					),

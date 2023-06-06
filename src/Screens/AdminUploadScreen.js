@@ -16,7 +16,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { Button, Input, ScrollView, Box } from "native-base";
 import Colors from "../color";
 import { useFonts } from "expo-font";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
 import uuid from "react-native-uuid";
 import "firebase/storage";
 import {
@@ -54,12 +54,13 @@ const AdminUploadScreen = () => {
 		//console.log(imagesrc);
 		//console.log(uniqueId);
 		if (uniqueId != "" && imagesrc != "") {
-			const updateImagesrc = updateDoc(doc(db, "GHS", "Users", "foodItems", uniqueId), {
-				image: imagesrc,
-				
-			});
+			const updateImagesrc = updateDoc(
+				doc(db, "GHS", "Public", "foodItems", uniqueId),
+				{
+					image: imagesrc,
+				}
+			);
 		}
-		
 	}, [imagesrc]); // will upload imagesrc once uniqueId and imagesrc are loaded
 
 	//for Location Picker
@@ -181,8 +182,8 @@ const AdminUploadScreen = () => {
 
 		//setFilename(fname.concat(imageEnding)); uncomment if want to make it global
 
-		let metadata = {
-			name: newFoodName,
+		const metadata = {
+			foodName: newFoodName,
 		};
 
 		const blob = await new Promise((resolve, reject) => {
@@ -200,7 +201,7 @@ const AdminUploadScreen = () => {
 		});
 
 		const getImage = () => {
-		 	getDownloadURL(ref(storage, "GHS/images/" + filename))
+			getDownloadURL(ref(storage, "GHS/images/" + filename))
 				.then((url) => {
 					//imagesrc = url.toString();
 					setImagesrc(url);
@@ -225,9 +226,19 @@ const AdminUploadScreen = () => {
 				//console.log(blob);
 				blob.close();
 
+				getMetadata(storageRef)
+					.then((Metadata) => {
+						// Metadata now contains the metadata for 'images/forest.jpg'
+						console.log(Metadata);
+					})
+					.catch((error) => {
+						// Uh-oh, an error occurred!
+						console.log(error);
+					});
+
 				//console.log(uuid);
 
-				const docRef = doc(db, "GHS", "Users", "foodItems", foodid);
+				const docRef = doc(db, "GHS", "Public", "foodItems", foodid);
 
 				// Add a new document in collection "cities"
 				await setDoc(docRef, {
@@ -244,8 +255,6 @@ const AdminUploadScreen = () => {
 				//console.log(imagesrc);
 
 				//console.log(imagesrc);
-
-				
 
 				// const updateImagesrc = await updateDoc(docRef, {
 				// 	image: imagesrc,

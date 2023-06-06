@@ -77,7 +77,7 @@ function HomeProducts() {
 	const search = async () => {
 		console.log(word);
 
-		const foodRef = collection(db, "GHS", "Users", "foodItems");
+		const foodRef = collection(db, "GHS", "Public", "foodItems");
 		try {
 			if (word == "") {
 				const querySnapshot = await getDocs(foodRef);

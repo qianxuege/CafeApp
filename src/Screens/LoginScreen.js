@@ -10,26 +10,28 @@ import {
 	Alert,
 } from "native-base";
 import React, { useState, useEffect } from "react";
-import {RefreshControl} from "react-native";
+import { RefreshControl } from "react-native";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { AuthErrorCodes, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+	AuthErrorCodes,
+	getAuth,
+	signInWithEmailAndPassword,
+} from "firebase/auth";
 import firebase from "../../firebase";
 import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
 import { useFocusEffect } from "@react-navigation/native";
 import { UserInfo } from "firebase-admin/lib/auth/user-record";
 
-
-
 function LoginScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
 
-	<firebase />
+	<firebase />;
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [errorText, setErrorText] = useState("");
@@ -38,9 +40,9 @@ function LoginScreen({ navigation }) {
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
-		  setRefreshing(false);
+			setRefreshing(false);
 		}, 1000);
-	  }, []);
+	}, []);
 
 	// useFocusEffect(
 	// 	React.useCallback(() => {
@@ -60,10 +62,10 @@ function LoginScreen({ navigation }) {
 				navigation.navigate("Bottom");
 				// ...
 			})
-			.catch(function(error) {
+			.catch(function (error) {
 				const errorMessage = `Error: ${error.code}`;
 				setErrorText(errorMessage);
-			});	
+			});
 	}
 
 	return (
@@ -106,11 +108,10 @@ function LoginScreen({ navigation }) {
 						placeholder="user@gmail.com"
 						value={email}
 						onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
-						
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
-						placeholderTextColor="#4e954e"
+						placeholderTextColor={Colors.lightGreen}
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
 						autoCapitalize="none"
@@ -126,7 +127,7 @@ function LoginScreen({ navigation }) {
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
-						placeholderTextColor="#4e954e"
+						placeholderTextColor={Colors.lightGreen}
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
 						secureTextEntry
@@ -134,21 +135,23 @@ function LoginScreen({ navigation }) {
 					/>
 				</VStack>
 				<Box>
-				<Button
-					marginTop={10}
-					marginBottom={10}
-					_pressed={{
-						bg: Colors.lightGreen,
-					}}
-					w="50%"
-					rounded={50}
-					bg={Colors.darkGreen}
-					size="md"
-					onPress= {() => logIn()}
-				>
-					LOGIN
-				</Button>
-					<Text width="100%" color={Colors.red} top="-20">{errorText}</Text>
+					<Button
+						marginTop={10}
+						marginBottom={10}
+						_pressed={{
+							bg: Colors.lightGreen,
+						}}
+						w="50%"
+						rounded={50}
+						bg={Colors.darkGreen}
+						size="md"
+						onPress={() => logIn()}
+					>
+						LOGIN
+					</Button>
+					<Text width="100%" color={Colors.red} top="-20">
+						{errorText}
+					</Text>
 				</Box>
 				<Button
 					_pressed={{

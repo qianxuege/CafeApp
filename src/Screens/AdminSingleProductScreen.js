@@ -15,6 +15,7 @@ import {
 	FormControl,
 	Select,
 	CheckIcon,
+	Flex,
 } from "native-base";
 import AdminTop from "../Components/AdminTop";
 import Colors from "../color";
@@ -40,11 +41,11 @@ function AdminSingleProductScreen({ route }) {
 		}, 1000);
 	}, []);
 
-    useFocusEffect(
+	useFocusEffect(
 		React.useCallback(() => {
-		 onRefresh();
+			onRefresh();
 		}, [])
-	  );
+	);
 
 	if (!fontsLoaded) {
 		return null;
@@ -79,7 +80,16 @@ function AdminSingleProductScreen({ route }) {
 					>
 						{doc.name}
 					</Text>
-                    <HStack alignItems="baseline" space={2} w="full">
+					<Flex flexWrap="wrap" direction="row" justifyContent="space-between" width="90%">
+						{doc.tags.map((tag) => {
+							return (
+								<View style={styles.tagsView} key={Math.random() * 20}>
+									<Text style={styles.tags}>{tag}</Text>
+								</View>
+							);
+						})}
+					</Flex>
+					<HStack alignItems="baseline" space={2} w="full">
 						<Text
 							fontFamily="Bitter-Regular"
 							fontSize={20}
@@ -89,22 +99,22 @@ function AdminSingleProductScreen({ route }) {
 							${doc.price}
 						</Text>
 					</HStack>
-                    <Pressable>
+					<Pressable>
 						<Center mt={6} left={-6}>
 							<Text style={styles.heading2} color={Colors.deepGold} isTruncated>
 								----------- Additional Info -----------
 							</Text>
 						</Center>
 					</Pressable>
-                    <Box mt={6}>
+					<Box mt={6}>
 						<Text style={styles.heading2}>Location</Text>
 						<Text style={styles.paragraph}>{doc.location.join(" ")}</Text>
 					</Box>
-                    <Box mt={6}>
+					<Box mt={6}>
 						<Text style={styles.heading2}>Calories</Text>
 						<Text style={styles.paragraph}>{doc.calories} cal</Text>
 					</Box>
-                    <Box mt={6}>
+					<Box mt={6}>
 						<Text style={styles.heading2}>Ingredients</Text>
 						<Text style={styles.paragraph}>{doc.ingredients.join(", ")}</Text>
 					</Box>

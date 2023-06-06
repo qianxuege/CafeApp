@@ -83,7 +83,7 @@ const AdminMenuScreen = () => {
 	};
 
 	const getFoodItems = async () => {
-		const foodRef = collection(db, "GHS", "Users", "foodItems");
+		const foodRef = collection(db, "GHS", "Public", "foodItems");
 		try {
 			//const q = query(foodRef, where("name", "==", newFoodName));
 			//console.log(newFoodName);
