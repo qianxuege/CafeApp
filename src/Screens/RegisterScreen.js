@@ -7,6 +7,7 @@ import {
 	Input,
 	Button,
 	Pressable,
+	ScrollView,
 } from "native-base";
 import React, { useEffect, useState } from "react";
 import Colors from "../color";
@@ -16,7 +17,7 @@ import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "
 import firebase, { db } from "../../firebase";
 import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
-import { collection, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 
 function RegisterScreen({ navigation }) {
@@ -67,16 +68,7 @@ function RegisterScreen({ navigation }) {
 		console.log(organizationsArr);
 	};
 
-	const updateUserProfile = async (user) => {
-		const userRef = collection(db, "GHS", "Private", "users");
-		await setDoc(userRef, user.uid, {
-			firstName: firstName,
-			lastName: lastName,
-			email: email,
-			isAdmin: isAdmin,
-			uid: user.uid,
-		});
-   };
+	
 
 	const handleSignUp =  () => {
 		console.log("signup");
@@ -86,9 +78,10 @@ function RegisterScreen({ navigation }) {
            .then((userCredential) => {
                // Signed in
                const user = userCredential.user;
-			   sendEmailVerification(user);
+			   console.log(user.uid);
 			   updateUserProfile(user);
-               console.log(user.id);
+			   sendEmailVerification(user);
+               
                // ...
            })
            .catch((error) => {
@@ -102,6 +95,17 @@ function RegisterScreen({ navigation }) {
 			alert("need to choose an organization")
 		};
 		
+		const updateUserProfile = async (user) => {
+			console.log(user.uid);
+			const userRef = doc(db, "GHS", "Private", "users", user.uid);
+			await setDoc(userRef, {
+				firstName: firstName,
+				lastName: lastName,
+				email: email,
+				isAdmin: isAdmin,
+				uid: user.uid,
+			});
+	   };
 		
    };
 
@@ -111,7 +115,8 @@ function RegisterScreen({ navigation }) {
 			
 	
 	return (
-		<Box flex={1} bg={Colors.black}>
+		
+		<Box flex={1}>
 			<Image
 				flex={1}
 				alt="Logo"
@@ -120,14 +125,18 @@ function RegisterScreen({ navigation }) {
 				w="full"
 				source={require("../../assets/cover.png")}
 			/>
-			<Box
+			<ScrollView
 				w="full"
 				h="full"
 				position="absolute"
 				left="3"
-				top="10"
+				top="250"
 				px="6"
-				justifyContent="center"
+				flex={1}
+				contentContainerStyle={{
+					justifyContent: "center",
+					paddingBottom: 500,
+				}}
 			>
 				<Heading
 					style={{
@@ -135,7 +144,7 @@ function RegisterScreen({ navigation }) {
 						fontSize: 50,
 						color: "#BD9E1E",
 						paddingTop: 20,
-						marginBottom: 10,
+						marginBottom: 5,
 					}}
 				>
 					REGISTER
@@ -203,7 +212,7 @@ function RegisterScreen({ navigation }) {
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
-						placeholderTextColor="#4e954e"
+						placeholderTextColor={Colors.lightGreen}
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
 						autoCapitalize="none"
@@ -219,7 +228,7 @@ function RegisterScreen({ navigation }) {
 						w="85%"
 						fontSize="16"
 						color="#4e954e"
-						placeholderTextColor="#4e954e"
+						placeholderTextColor={Colors.lightGreen}
 						paddingLeft="3"
 						borderBottomColor={Colors.gold}
 						autoCapitalize="none"
@@ -233,7 +242,7 @@ function RegisterScreen({ navigation }) {
 							<MaterialIcons name="email" size={24} color="#4e954e" />
 						}
 						variant="underlined"
-						placeholder="user@gmail.com"
+						placeholder="email"
 						value={email}
 						onChangeText={(text) => setEmail(text.toLocaleLowerCase())}
 						w="85%"
@@ -249,7 +258,7 @@ function RegisterScreen({ navigation }) {
 						InputLeftElement={<Ionicons name="eye" size={24} color="#4e954e" />}
 						variant="underlined"
 						type="password"
-						placeholder="*********"
+						placeholder="password (at least 6 digits)"
 						value={password}
 						onChangeText={(text) => setPassword(text)}
 						w="85%"
@@ -268,13 +277,13 @@ function RegisterScreen({ navigation }) {
 					_pressed={{
 						bg: Colors.lightGold,
 					}}
-					marginTop={10}
+					marginTop={2}
 					marginBottom={10}
 					w="50%"
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={handleSignUp}
+					onPress={() => handleSignUp()}
 				>
 					REGISTER AS USER
 				</Button>
@@ -304,7 +313,8 @@ function RegisterScreen({ navigation }) {
 				>
 					LOGIN
 				</Button>
-			</Box>
+
+			</ScrollView>
 		</Box>
 	);
 }
