@@ -8,22 +8,29 @@ import {
 	Button,
 	Pressable,
 } from "native-base";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import firebase, { db } from "../../firebase";
-import { Auth } from "firebase/auth";
+import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, setDoc } from "firebase/firestore";
+import { useFocusEffect } from "@react-navigation/native";
 
 function RegisterScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 	});
+
+	//const provider = new GoogleAuthProvider();
+	//provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
 	//const [displayName, setDisplayName] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [errorText, setErrorText] = useState("");
@@ -32,6 +39,18 @@ function RegisterScreen({ navigation }) {
 	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState(null);
 	const [items, setItems] = useState([]);
+	const [organization, setOrganization] = useState("");
+
+	useEffect(() => {
+		getOrganizations();
+	}, [isAdmin]);
+
+	useFocusEffect(
+		React.useCallback(() => {
+			setOrganization("");
+			setIsAdmin(false);
+		}, [])
+	);
 
 	<firebase />;
 
@@ -48,24 +67,49 @@ function RegisterScreen({ navigation }) {
 		console.log(organizationsArr);
 	};
 
-	const handleSignUp = () => {
+	const updateUserProfile = async (user) => {
+		const userRef = collection(db, "GHS", "Private", "users");
+		await setDoc(userRef, user.uid, {
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			isAdmin: isAdmin,
+			uid: user.uid,
+		});
+   };
+
+	const handleSignUp =  () => {
 		console.log("signup");
 		const auth = getAuth();
-		createUserWithEmailAndPassword(auth, email, password)
-			.then((userCredential) => {
-				// Signed in
-				const user = userCredential.user;
-				console.log(user.email);
-				// ...
-			})
-			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.log(errorMessage);
-				setErrorText(errorMessage);
-				// ..
-			});
-	};
+		if (organization != "") {
+			createUserWithEmailAndPassword(auth, email, password)
+           .then((userCredential) => {
+               // Signed in
+               const user = userCredential.user;
+			   sendEmailVerification(user);
+			   updateUserProfile(user);
+               console.log(user.id);
+               // ...
+           })
+           .catch((error) => {
+               const errorCode = error.code;
+               const errorMessage = error.message;
+               console.log(errorMessage);
+               setErrorText(errorMessage);
+               // ..
+           });
+		} else {
+			alert("need to choose an organization")
+		};
+		
+		
+   };
+
+  
+
+		
+			
+	
 	return (
 		<Box flex={1} bg={Colors.black}>
 			<Image
@@ -97,22 +141,7 @@ function RegisterScreen({ navigation }) {
 					REGISTER
 				</Heading>
 				<VStack space={5} pt="6">
-					{/* USERNAME */}
-					{/* <Input
-						InputLeftElement={
-							<Ionicons name="person-circle" size={28} color="#4e954e" />
-						}
-						variant="underlined"
-						placeholder="FirstName LastName"
-						w="85%"
-						fontSize="16"
-						color="#4e954e"
-						placeholderTextColor="#4e954e"
-						paddingLeft="3"
-						borderBottomColor={Colors.gold}
-						autoCapitalize="none"
-					/> */}
-
+					{/* choose organization */}
 					<DropDownPicker
 						open={open}
 						value={value}
@@ -134,10 +163,10 @@ function RegisterScreen({ navigation }) {
 							borderBottomColor: Colors.gold,
 						}}
 						searchPlaceholderTextColor={Colors.lightGreen}
-						searchTextInputStyle = {{
+						searchTextInputStyle={{
 							borderColor: Colors.white,
 							fontSize: 14,
-							color: Colors.lightGreen
+							color: Colors.lightGreen,
 						}}
 						placeholderStyle={{
 							color: Colors.lightGreen,
@@ -159,6 +188,43 @@ function RegisterScreen({ navigation }) {
 						textStyle={{
 							color: "#4e954e",
 						}}
+						onChangeValue={(value) => {
+							setOrganization(value);
+						}}
+					/>
+
+					{/* USERNAME */}
+					<Input
+						InputLeftElement={
+							<Ionicons name="person-circle" size={28} color="#4e954e" />
+						}
+						variant="underlined"
+						placeholder="First Name"
+						w="85%"
+						fontSize="16"
+						color="#4e954e"
+						placeholderTextColor="#4e954e"
+						paddingLeft="3"
+						borderBottomColor={Colors.gold}
+						autoCapitalize="none"
+						value={firstName}
+						onChangeText={(text) => setFirstName(text)}
+					/>
+					<Input
+						InputLeftElement={
+							<Ionicons name="person-circle" size={28} color="#4e954e" />
+						}
+						variant="underlined"
+						placeholder="Last Name"
+						w="85%"
+						fontSize="16"
+						color="#4e954e"
+						placeholderTextColor="#4e954e"
+						paddingLeft="3"
+						borderBottomColor={Colors.gold}
+						autoCapitalize="none"
+						value={lastName}
+						onChangeText={(text) => setLastName(text)}
 					/>
 
 					{/* EMAIL */}
@@ -221,7 +287,7 @@ function RegisterScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={() => getOrganizations()}
+					onPress={() => setIsAdmin(true)}
 				>
 					REGISTER AS ADMIN
 				</Button>
