@@ -18,13 +18,16 @@ import { StyleSheet } from "react-native";
 import {
 	AuthErrorCodes,
 	getAuth,
+	sendEmailVerification,
 	signInWithEmailAndPassword,
 } from "firebase/auth";
-import firebase from "../../firebase";
+import firebase, { db } from "../../firebase";
 import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
 import { useFocusEffect } from "@react-navigation/native";
 import { UserInfo } from "firebase-admin/lib/auth/user-record";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import DropDownPicker from "react-native-dropdown-picker";
 
 function LoginScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
@@ -37,12 +40,33 @@ function LoginScreen({ navigation }) {
 	const [errorText, setErrorText] = useState("");
 	const [refreshing, setRefreshing] = React.useState(false);
 
+	//dropdownpicker
+	const [open, setOpen] = useState(false);
+	const [value, setValue] = useState(null);
+	const [items, setItems] = useState([]);
+	const [organization, setOrganization] = useState("");
+	let organizationsArr = [];
+
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
 	}, []);
+
+	useEffect(() => {
+		getOrganizations();
+	}, []);
+
+	const getOrganizations = async () => {
+		const orgRef = collection(db, "Organizations");
+		const querySnapshot = await getDocs(orgRef);
+		// for (let i=0; i<querySnapshot.size; i++) {
+		// 	organizations.push(querySnapshot.docs[i].id)
+		// }
+		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
+		setItems(organizationsArr);
+	};
 
 	// useFocusEffect(
 	// 	React.useCallback(() => {
@@ -56,10 +80,33 @@ function LoginScreen({ navigation }) {
 			.then((userCredential) => {
 				// Signed in
 				const user = userCredential.user;
-				setEmail("");
-				setPassword("");
-				setErrorText("");
-				navigation.navigate("Bottom");
+
+				if (user.emailVerified == true) {
+					//console.log(user.displayName);
+					const userRef = doc(db, organization, "Private", "users", user.uid);
+					const docSnap = await getDoc(userRef);
+					const userOrg = docSnap.data().organization;
+					console.log(userOrg);
+					if (userOrg == organization) {
+						setEmail("");
+						setPassword("");
+						setErrorText("");
+						navigation.navigate("Bottom");
+					} else {
+						alert("You do not have an account with this organization");
+					}
+				} else {
+					sendEmailVerification(user)
+						//.then(() => {})
+						.catch((error) => {
+							const errorMessage = `Error: ${error.code}`;
+							setErrorText(errorMessage);
+						});
+					alert(
+						"Email not verified. Please check your email for verification link!"
+					);
+				}
+
 				// ...
 			})
 			.catch(function (error) {
@@ -99,6 +146,57 @@ function LoginScreen({ navigation }) {
 					LOGIN
 				</Heading>
 				<VStack space={5} pt="6">
+					<DropDownPicker
+						open={open}
+						value={value}
+						items={items}
+						setOpen={setOpen}
+						setValue={setValue}
+						setItems={setItems}
+						searchable={true}
+						multiple={false}
+						listMode="SCROLLVIEW"
+						maxHeight={200}
+						searchTextInputProps={{
+							maxLength: 25,
+						}}
+						//addCustomItem={true}
+						searchPlaceholder="Search or create a new organization"
+						placeholder="Select an organization"
+						searchContainerStyle={{
+							borderBottomColor: Colors.gold,
+						}}
+						searchPlaceholderTextColor={Colors.lightGreen}
+						searchTextInputStyle={{
+							borderColor: Colors.white,
+							fontSize: 14,
+							color: Colors.lightGreen,
+						}}
+						placeholderStyle={{
+							color: Colors.lightGreen,
+						}}
+						style={{
+							borderColor: Colors.gold,
+						}}
+						containerStyle={{
+							width: "85%",
+							borderColor: Colors.gold,
+						}}
+						dropDownContainerStyle={{
+							borderColor: Colors.gold,
+						}}
+						labelStyle={{
+							color: "#4e954e",
+							fontSize: "16",
+						}}
+						textStyle={{
+							color: "#4e954e",
+						}}
+						onChangeValue={(value) => {
+							setOrganization(value);
+							console.log(value);
+						}}
+					/>
 					{/* EMAIL */}
 					<Input
 						InputLeftElement={

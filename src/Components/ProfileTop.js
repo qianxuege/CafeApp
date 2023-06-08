@@ -47,7 +47,7 @@ function ProfileTop() {
 
 			<Center marginTop={0}>
 				<Text fontFamily="Akronim-Regular" fontSize={36} color={Colors.white}>
-					{auth.currentUser.email}
+					{auth.currentUser.displayName}
 				</Text>
 			</Center>
 		</Box>

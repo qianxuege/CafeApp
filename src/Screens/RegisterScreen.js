@@ -13,12 +13,19 @@ import React, { useEffect, useState } from "react";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+	getAuth,
+	createUserWithEmailAndPassword,
+	sendEmailVerification,
+	updateProfile,
+	sendPasswordResetEmail,
+} from "firebase/auth";
 import firebase, { db } from "../../firebase";
 import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
+import { Alert } from "react-native";
 
 function RegisterScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
@@ -68,54 +75,105 @@ function RegisterScreen({ navigation }) {
 		console.log(organizationsArr);
 	};
 
-	
+	const updateOrganizations = async (value) => {
+		let count = 0;
+		for (let i = 0; i < organizationsArr.length; i++) {
+			if (organizationsArr[i].value == value) {
+				count += 1;
+			}
+		}
+		console.log(count);
+		if (count != 0) {
+			const orgRef = doc(db, "Organizations", value);
+			await setDoc(orgRef, {
+				dropDown: [{ label: value, value: value }],
+			});
+			count = 0;
+		};
+	};
 
-	const handleSignUp =  () => {
+	const handleSignUp = () => {
 		console.log("signup");
 		const auth = getAuth();
 		if (organization != "") {
 			createUserWithEmailAndPassword(auth, email, password)
-           .then((userCredential) => {
-               // Signed in
-               const user = userCredential.user;
-			   console.log(user.uid);
-			   updateUserProfile(user);
-			   sendEmailVerification(user);
-               
-               // ...
-           })
-           .catch((error) => {
-               const errorCode = error.code;
-               const errorMessage = error.message;
-               console.log(errorMessage);
-               setErrorText(errorMessage);
-               // ..
-           });
+				.then((userCredential) => {
+					// Signed in
+					const user = userCredential.user;
+					console.log(user.uid);
+					uploadUserProfile(user);
+					updateOrganizations(organization);
+					sendEmailVerification(user).then(() => {
+						updateProfile(user, {
+							displayName: firstName + " " + lastName,
+						}).catch((error) => {
+							const errorCode = error.code;
+							const errorMessage = error.message;
+							console.log(errorMessage);
+						});
+						console.log(user.emailVerified);
+					});
+
+					// ...
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.log(errorMessage);
+					setErrorText(errorMessage);
+					if (errorMessage == "Firebase: Error (auth/email-already-in-use).") {
+						Alert.alert(
+							"ERROR",
+							"This email is already in use. Click 'ok' if wish to reset password.",
+							[
+								{
+									text: "Cancel",
+									onPress: () => {
+										return;
+									},
+									style: "cancel",
+								},
+								{ text: "OK", onPress: () => resetPassword() },
+							]
+						);
+					}
+
+					// ..
+				});
 		} else {
-			alert("need to choose an organization")
-		};
-		
-		const updateUserProfile = async (user) => {
+			alert("need to choose an organization");
+		}
+
+		const uploadUserProfile = async (user) => {
 			console.log(user.uid);
-			const userRef = doc(db, "GHS", "Private", "users", user.uid);
+			const userRef = doc(db, organization, "Private", "users", user.uid);
 			await setDoc(userRef, {
 				firstName: firstName,
 				lastName: lastName,
 				email: email,
 				isAdmin: isAdmin,
 				uid: user.uid,
+				emailVerified: user.emailVerified,
+				organization: organization,
 			});
-	   };
-		
-   };
+		};
 
-  
+		const resetPassword = () => {
+			sendPasswordResetEmail(auth, email)
+				.then(() => {
+					// Password reset email sent!
+					alert("Password reset email sent!");
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.log(errorMessage);
+					// ..
+				});
+		};
+	};
 
-		
-			
-	
 	return (
-		
 		<Box flex={1}>
 			<Image
 				flex={1}
@@ -199,6 +257,7 @@ function RegisterScreen({ navigation }) {
 						}}
 						onChangeValue={(value) => {
 							setOrganization(value);
+							console.log(value);
 						}}
 					/>
 
@@ -313,7 +372,6 @@ function RegisterScreen({ navigation }) {
 				>
 					LOGIN
 				</Button>
-
 			</ScrollView>
 		</Box>
 	);

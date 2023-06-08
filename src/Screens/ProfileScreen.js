@@ -16,10 +16,8 @@ import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
 import { StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
-import { getAuth, signOut, updatePassword } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail, signOut, updatePassword } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
-
-
 
 const Inputs = [
 	{
@@ -40,11 +38,7 @@ const Inputs = [
 	},
 ];
 
-
-
-
-
-function ProfileScreen({navigation}) {
+function ProfileScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
 		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
@@ -56,54 +50,71 @@ function ProfileScreen({navigation}) {
 	const [newPassword, setNewPassword] = useState("");
 	const [message, setMessage] = useState("");
 
-	<firebase />
+	<firebase />;
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
-		  setRefreshing(false);
+			setRefreshing(false);
 		}, 1000);
-	  }, []);
+	}, []);
 
-	  useFocusEffect(
+	useFocusEffect(
 		React.useCallback(() => {
-		 onRefresh();
-		 setNewPassword("");
-		 setMessage("");
+			onRefresh();
+			// setNewPassword("");
+			// setMessage("");
 		}, [])
-	  );
+	);
 
-	function changePassword() {
-		const auth = getAuth();
-		const user = auth.currentUser;
-		console.log(newPassword);
-		updatePassword(user, newPassword).then(() => {
-			// Update successful.
-			setMessage(`Update successful. New password is ${newPassword}`);
-			//console.log(message);
-			
-		  }).catch((error) => {
-			// An error ocurred
-			//need to check if the two passwords are the same
-			setMessage(`You have an error: ${error.code}`);
-			//console.log(message);
-		  });
-		
-	}
+	const auth = getAuth();
 
-	function logOut(){
+	// function changePassword() {
+	// 	const user = auth.currentUser;
+	// 	console.log(newPassword);
+	// 	updatePassword(user, newPassword)
+	// 		.then(() => {
+	// 			// Update successful.
+	// 			setMessage(`Update successful. New password is ${newPassword}`);
+	// 			//console.log(message);
+	// 		})
+	// 		.catch((error) => {
+	// 			// An error ocurred
+	// 			//need to check if the two passwords are the same
+	// 			setMessage(`You have an error: ${error.code}`);
+	// 			//console.log(message);
+	// 		});
+	// }
+
+	const resetPassword = () => {
+		sendPasswordResetEmail(auth, auth.currentUser.email)
+			.then(() => {
+				// Password reset email sent!
+				alert("Password reset email sent!");
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorMessage);
+				// ..
+			});
+	};
+
+	function logOut() {
 		//console.log("logout");
-		const auth = getAuth();
+
 		//console.log(auth.currentUser);
-		signOut(auth).then(() => {
-			// Sign-out successful.
-			navigation.navigate("Login");
-		  }).catch((error) => {
-			// An error happened.
-			console.log(error.code);
-		  });
+		signOut(auth)
+			.then(() => {
+				// Sign-out successful.
+				navigation.navigate("Login");
+			})
+			.catch((error) => {
+				// An error happened.
+				console.log(error.code);
+			});
 	}
-	
+
 	if (!fontsLoaded) {
 		return null;
 	}
@@ -115,8 +126,19 @@ function ProfileScreen({navigation}) {
 				contentContainerStyle={{ flexGrow: 1 }}
 				paddingLeft={3}
 			>
-				<VStack space={10} mt={5} pb={10} marginLeft="2%" alignItems="center">
-					{Inputs.map((i, index) => (
+				<VStack space={6} mt={5} pb={10} marginLeft="2%" alignItems="center">
+					<Box width="90%">
+						<Text style={styles.label}>USERNAME</Text>
+						<Text style={styles.userInfo}>{auth.currentUser.displayName}</Text>
+					</Box>
+					<Box width="90%">
+						<Text style={styles.label}>EMAIL</Text>
+						<Text style={styles.userInfo}>{auth.currentUser.email}</Text>
+					</Box>
+					<Box height="30"></Box>
+
+
+					{/* {Inputs.map((i, index) => (
 						<FormControl key={index}>
 							<FormControl.Label
 								_text={{
@@ -142,7 +164,8 @@ function ProfileScreen({navigation}) {
 									}}
 								/>
 						</FormControl>
-					))}
+					))} */}
+
 					<Box alignItems="center" width="80" left={-2}>
 						<Button
 							width="100%"
@@ -157,9 +180,9 @@ function ProfileScreen({navigation}) {
 							}}
 							_pressed={{ bg: Colors.deepGold }}
 							marginBottom={3}
-							onPress={()=> {changePassword()}}
+							onPress={()=> resetPassword()}
 						>
-							Confirm Changes
+							Reset Password
 						</Button>
 						<Text>{message}</Text>
 						<Text style={styles.or} marginBottom={3}>
@@ -206,6 +229,21 @@ const styles = StyleSheet.create({
 		backgroundColor: Colors.gray,
 		paddingVertical: 4,
 		color: Colors.gold,
+		fontSize: 20,
+		fontFamily: "Caladea-Regular",
+	},
+	label: {
+		fontSize: "16px",
+		fontWeight: "bold",
+		fontFamily: "Bitter-Bold",
+		color: Colors.deepestGray,
+		marginBottom: 3,
+	},
+	userInfo: {
+		backgroundColor: Colors.gray,
+		padding: 10,
+		backgroundColor: Colors.gray,
+		color: Colors.darkGreen,
 		fontSize: 20,
 		fontFamily: "Caladea-Regular",
 	},
