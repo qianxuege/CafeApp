@@ -6,11 +6,10 @@ import {
 	VStack,
 	Input,
 	Button,
-	Pressable,
 	Alert,
 } from "native-base";
 import React, { useState, useEffect } from "react";
-import { RefreshControl } from "react-native";
+import { RefreshControl, TouchableOpacity, Pressable } from "react-native";
 import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
@@ -19,6 +18,7 @@ import {
 	AuthErrorCodes,
 	getAuth,
 	sendEmailVerification,
+	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 } from "firebase/auth";
 import firebase, { db } from "../../firebase";
@@ -47,6 +47,8 @@ function LoginScreen({ navigation }) {
 	const [organization, setOrganization] = useState("");
 	let organizationsArr = [];
 
+	const auth = getAuth();
+
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
@@ -74,8 +76,50 @@ function LoginScreen({ navigation }) {
 	// 	}, [])
 	//   );
 
+	const reset = () => {
+		setEmail("");
+		setPassword("");
+		setErrorText("");
+		setValue(null);
+	};
+
+	const checkUserOrg = async (user) => {
+		const userRef = doc(db, "Users", user.uid);
+		const docSnap = await getDoc(userRef);
+		const userOrg = docSnap.data().organization;
+		console.log(userOrg);
+
+		for (let i = 0; i < userOrg.length; i++) {
+			if (userOrg[i] == organization) {
+				reset();
+				console.log("account is linked with organization");
+				navigation.navigate("Bottom");
+				return;
+			}
+		}
+
+		//this should not run if the user is able to log in
+		alert(
+			"Your account is not linked with this organization. Add this organization on your profile screen."
+		);
+	};
+
+	const resetPassword = () => {
+		sendPasswordResetEmail(auth, email)
+			.then(() => {
+				// Password reset email sent!
+				alert("Password reset email sent!");
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				setErrorText(errorMessage);
+				console.log(errorMessage);
+				// ..
+			});
+	};
+
 	function logIn() {
-		const auth = getAuth();
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				// Signed in
@@ -83,18 +127,7 @@ function LoginScreen({ navigation }) {
 
 				if (user.emailVerified == true) {
 					//console.log(user.displayName);
-					const userRef = doc(db, organization, "Private", "users", user.uid);
-					const docSnap = await getDoc(userRef);
-					const userOrg = docSnap.data().organization;
-					console.log(userOrg);
-					if (userOrg == organization) {
-						setEmail("");
-						setPassword("");
-						setErrorText("");
-						navigation.navigate("Bottom");
-					} else {
-						alert("You do not have an account with this organization");
-					}
+					checkUserOrg(user);
 				} else {
 					sendEmailVerification(user)
 						//.then(() => {})
@@ -139,7 +172,7 @@ function LoginScreen({ navigation }) {
 						fontFamily: "Akronim-Regular",
 						fontSize: 46,
 						color: "#BD9E1E",
-						paddingTop: 20,
+						paddingTop: 100,
 						marginBottom: 10,
 					}}
 				>
@@ -231,6 +264,21 @@ function LoginScreen({ navigation }) {
 						secureTextEntry
 						autoCapitalize="none"
 					/>
+					<Pressable
+						backgroundColor={Colors.darkGreen}
+						style={({ pressed }) => [
+							{
+								width: "90%", backgroundColor: pressed ? Colors.lightBlack : Colors.white,
+							}, 
+						]}
+						onPress={() => {
+							resetPassword();
+						}}
+					>
+						<Text color={Colors.deepestGray} padding={2}>
+							Forget password?
+						</Text>
+					</Pressable>
 				</VStack>
 				<Box>
 					<Button

@@ -70,6 +70,7 @@ function RegisterScreen({ navigation }) {
 		// for (let i=0; i<querySnapshot.size; i++) {
 		// 	organizations.push(querySnapshot.docs[i].id)
 		// }
+		//returns an array of all available organizations for the user to choose from
 		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
 		setItems(organizationsArr);
 		console.log(organizationsArr);
@@ -111,7 +112,10 @@ function RegisterScreen({ navigation }) {
 							const errorMessage = error.message;
 							console.log(errorMessage);
 						});
-						console.log(user.emailVerified);
+						Alert.alert(
+							"User Registered",
+							"Please verify your emai address!"
+						);
 					});
 
 					// ...
@@ -146,7 +150,7 @@ function RegisterScreen({ navigation }) {
 
 		const uploadUserProfile = async (user) => {
 			console.log(user.uid);
-			const userRef = doc(db, organization, "Private", "users", user.uid);
+			const userRef = doc(db, "Users", user.uid);
 			await setDoc(userRef, {
 				firstName: firstName,
 				lastName: lastName,
@@ -154,7 +158,7 @@ function RegisterScreen({ navigation }) {
 				isAdmin: isAdmin,
 				uid: user.uid,
 				emailVerified: user.emailVerified,
-				organization: organization,
+				organization: organization.split(" "),
 			});
 		};
 
