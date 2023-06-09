@@ -25,7 +25,7 @@ import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
-import { Alert } from "react-native";
+import { Alert, RefreshControl } from "react-native";
 
 function RegisterScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
@@ -49,8 +49,21 @@ function RegisterScreen({ navigation }) {
 	const [items, setItems] = useState([]);
 	const [organization, setOrganization] = useState("");
 
+	//refresh
+	const [refreshing, setRefreshing] = useState(false);
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		reset();
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
+	}, []);
+
 	useEffect(() => {
 		getOrganizations();
+		if (isAdmin == true) {
+			handleSignUp();
+		}
 	}, [isAdmin]);
 
 	useFocusEffect(
@@ -63,6 +76,16 @@ function RegisterScreen({ navigation }) {
 	<firebase />;
 
 	let organizationsArr = [];
+
+	const reset = () => {
+		setEmail("");
+		setPassword("");
+		setFirstName("");
+		setLastName("");
+		setIsAdmin(false);
+		setErrorText("");
+		setValue("");
+	}
 
 	const getOrganizations = async () => {
 		const orgRef = collection(db, "Organizations");
@@ -84,13 +107,29 @@ function RegisterScreen({ navigation }) {
 			}
 		}
 		console.log(count);
-		if (count != 0) {
-			const orgRef = doc(db, "Organizations", value);
-			await setDoc(orgRef, {
-				dropDown: [{ label: value, value: value }],
-			});
-			count = 0;
-		};
+		if (count == 0) {
+			// runs if there is no existing organization of this name
+			if (isAdmin == true) {
+				const orgRef = doc(db, "Organizations", value);
+				await setDoc(orgRef, {
+					dropDown: [{ label: value, value: value }],
+					adminEmail: email.join(), //transforms string to an array and sets this email as the first admin email
+				});
+				count = 0;
+				//handleSignUp();
+				uploadUserProfile(user); //firstName, lastName, email, isAdmin, uid, emailVerified, selected organization
+			} else {
+				setIsAdmin(false);
+				alert(
+					"You can only create a new organization if you register as an admin"
+				);
+				
+			}
+		} else {
+			alert(
+				"This organization already exists, there can only be one admin at this time. Please create a new organization or ask the current admin for access."
+			);
+		}
 	};
 
 	const handleSignUp = () => {
@@ -102,8 +141,7 @@ function RegisterScreen({ navigation }) {
 					// Signed in
 					const user = userCredential.user;
 					console.log(user.uid);
-					uploadUserProfile(user);
-					updateOrganizations(organization);
+					updateOrganizations(organization); //if create a new organization, will add it to the Organizations collection
 					sendEmailVerification(user).then(() => {
 						updateProfile(user, {
 							displayName: firstName + " " + lastName,
@@ -112,10 +150,7 @@ function RegisterScreen({ navigation }) {
 							const errorMessage = error.message;
 							console.log(errorMessage);
 						});
-						Alert.alert(
-							"User Registered",
-							"Please verify your emai address!"
-						);
+						Alert.alert("User Registered", "Please verify your emai address!");
 					});
 
 					// ...
@@ -199,6 +234,9 @@ function RegisterScreen({ navigation }) {
 					justifyContent: "center",
 					paddingBottom: 500,
 				}}
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
 			>
 				<Heading
 					style={{
@@ -359,7 +397,9 @@ function RegisterScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={() => setIsAdmin(true)}
+					onPress={() => {
+						setIsAdmin(true);
+					}}
 				>
 					REGISTER AS ADMIN
 				</Button>
