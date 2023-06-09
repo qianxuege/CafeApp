@@ -5,19 +5,28 @@ import {
 	FormControl,
 	Input,
 	KeyboardAvoidingView,
+	Modal,
 	NativeBaseProvider,
 	ScrollView,
 	Text,
 	View,
 	VStack,
 } from "native-base";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
 import { StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
-import { getAuth, sendPasswordResetEmail, signOut, updatePassword } from "firebase/auth";
+import {
+	getAuth,
+	sendPasswordResetEmail,
+	signOut,
+	updatePassword,
+} from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const Inputs = [
 	{
@@ -47,8 +56,17 @@ function ProfileScreen({ navigation }) {
 	});
 
 	const [refreshing, setRefreshing] = React.useState(false);
+	const [showModal, setShowModal] = useState(false);
+
 	const [newPassword, setNewPassword] = useState("");
 	const [message, setMessage] = useState("");
+	const [userOrganization, setUserOrganization] = useState();
+
+	//for the Dropdown Picker
+	const [open, setOpen] = useState(false);
+	const [value, setValue] = useState(null);
+	const [items, setItems] = useState([]);
+	const [newOrganization, setNewOrganization] = useState("");
 
 	<firebase />;
 
@@ -58,6 +76,10 @@ function ProfileScreen({ navigation }) {
 			setRefreshing(false);
 		}, 1000);
 	}, []);
+
+	useEffect(() => {
+		getOrganizations();
+	}, [userOrganization]);
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -100,6 +122,15 @@ function ProfileScreen({ navigation }) {
 			});
 	};
 
+	const getOrganizations = async () => {
+		const userRef = doc(db, "Users", auth.currentUser.uid);
+		const docSnap = await getDoc(userRef);
+		const userOrg = docSnap.data().organization;
+		setUserOrganization(userOrg.join(", "));
+	};
+
+	const addOrganizations = async () => {};
+
 	function logOut() {
 		//console.log("logout");
 
@@ -124,9 +155,68 @@ function ProfileScreen({ navigation }) {
 			<ScrollView
 				backgroundColor={Colors.morandiGreen}
 				contentContainerStyle={{ flexGrow: 1 }}
-				paddingLeft={3}
+				//paddingLeft={3}
 			>
-				<VStack space={6} mt={5} pb={10} marginLeft="2%" alignItems="center">
+				<Modal isOpen={true} onClose={() => setShowModal(false)}>
+					<Modal.Content maxWidth="400px">
+						<Modal.CloseButton />
+						<Modal.Header>Organizations</Modal.Header>
+						<Modal.Body>
+							<DropDownPicker
+								open={open}
+								value={value}
+								items={items}
+								setOpen={setOpen}
+								setValue={setValue}
+								setItems={setItems}
+								searchable={true}
+								multiple={false}
+								listMode="SCROLLVIEW"
+								maxHeight={200}
+								searchTextInputProps={{
+									maxLength: 25,
+								}}
+								addCustomItem={false}
+								searchPlaceholder="Search for an organization"
+								placeholder="Add an organization"
+								searchContainerStyle={{
+									borderBottomColor: Colors.gold,
+								}}
+								searchPlaceholderTextColor={Colors.lightGreen}
+								searchTextInputStyle={{
+									borderColor: Colors.white,
+									fontSize: 14,
+									color: Colors.lightGreen,
+								}}
+								placeholderStyle={{
+									color: Colors.lightGreen,
+								}}
+								style={{
+									borderColor: Colors.gold,
+								}}
+								containerStyle={{
+									width: "85%",
+									borderColor: Colors.gold,
+								}}
+								dropDownContainerStyle={{
+									borderColor: Colors.gold,
+								}}
+								labelStyle={{
+									color: "#4e954e",
+									fontSize: "16",
+								}}
+								textStyle={{
+									color: "#4e954e",
+								}}
+								onChangeValue={(value) => {
+									setNewOrganization(value);
+									console.log(value);
+								}}
+							/>
+						</Modal.Body>
+					</Modal.Content>
+				</Modal>
+				<VStack space={6} mt={5} pb={10} marginLeft="1%" alignItems="center">
 					<Box width="90%">
 						<Text style={styles.label}>USERNAME</Text>
 						<Text style={styles.userInfo}>{auth.currentUser.displayName}</Text>
@@ -135,8 +225,12 @@ function ProfileScreen({ navigation }) {
 						<Text style={styles.label}>EMAIL</Text>
 						<Text style={styles.userInfo}>{auth.currentUser.email}</Text>
 					</Box>
-					<Box height="30"></Box>
+					<Box width="90%">
+						<Text style={styles.label}>ORGANIZATIONS</Text>
+						<Text style={styles.userInfo}>{userOrganization}</Text>
+					</Box>
 
+					<Box height="10"></Box>
 
 					{/* {Inputs.map((i, index) => (
 						<FormControl key={index}>
@@ -179,8 +273,25 @@ function ProfileScreen({ navigation }) {
 								fontFamily: "Bitter-Regular",
 							}}
 							_pressed={{ bg: Colors.deepGold }}
+							marginBottom={6}
+							//onPress={()=> resetPassword()}
+						>
+							Add Organization
+						</Button>
+						<Button
+							width="100%"
+							height={55}
+							rounded="full"
+							bg={Colors.lightGold}
+							_text={{
+								color: Colors.white,
+								fontWeight: "bold",
+								fontSize: 16,
+								fontFamily: "Bitter-Regular",
+							}}
+							_pressed={{ bg: Colors.deepGold }}
 							marginBottom={3}
-							onPress={()=> resetPassword()}
+							onPress={() => resetPassword()}
 						>
 							Reset Password
 						</Button>

@@ -27,7 +27,7 @@ import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
 import { useFocusEffect } from "@react-navigation/native";
 import { UserInfo } from "firebase-admin/lib/auth/user-record";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 
 function LoginScreen({ navigation }) {
@@ -90,6 +90,12 @@ function LoginScreen({ navigation }) {
 		const userRef = doc(db, "Users", user.uid);
 		const docSnap = await getDoc(userRef);
 		const userOrg = docSnap.data().organization;
+
+		//update emailVerified
+		await updateDoc(userRef, {
+			emailVerified: true
+		});
+
 		console.log(userOrg);
 
 		for (let i = 0; i < userOrg.length; i++) {
@@ -204,7 +210,7 @@ function LoginScreen({ navigation }) {
 							maxLength: 25,
 						}}
 						//addCustomItem={true}
-						searchPlaceholder="Search or create a new organization"
+						searchPlaceholder="Search for an organization"
 						placeholder="Select an organization"
 						searchContainerStyle={{
 							borderBottomColor: Colors.gold,
@@ -285,7 +291,7 @@ function LoginScreen({ navigation }) {
 							resetPassword();
 						}}
 					>
-						<Text color={Colors.deepestGray} padding={2}>
+						<Text color={Colors.deepGray} padding={2}>
 							Forget password?
 						</Text>
 					</Pressable>

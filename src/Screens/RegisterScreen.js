@@ -261,7 +261,7 @@ function RegisterScreen({ navigation }) {
 						}}
 						onChangeValue={(value) => {
 							setOrganization(value);
-							console.log(value);
+							//console.log(value);
 						}}
 					/>
 
