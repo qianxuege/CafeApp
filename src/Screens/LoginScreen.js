@@ -7,6 +7,7 @@ import {
 	Input,
 	Button,
 	Alert,
+	ScrollView,
 } from "native-base";
 import React, { useState, useEffect } from "react";
 import { RefreshControl, TouchableOpacity, Pressable } from "react-native";
@@ -47,10 +48,12 @@ function LoginScreen({ navigation }) {
 	const [organization, setOrganization] = useState("");
 	let organizationsArr = [];
 
+
 	const auth = getAuth();
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
+		reset();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
@@ -158,14 +161,21 @@ function LoginScreen({ navigation }) {
 				w="full"
 				source={require("../../assets/cover.png")}
 			/>
-			<Box
+			<ScrollView
 				w="full"
 				h="full"
 				position="absolute"
 				left="3"
-				top="8"
+				top="180"
 				px="6"
-				justifyContent="center"
+				contentContainerStyle={{
+					justifyContent: "center",
+					paddingBottom: 300
+				}}
+				flex={1}
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
 			>
 				<Heading
 					style={{
@@ -324,7 +334,7 @@ function LoginScreen({ navigation }) {
 				>
 					ADMIN LOGIN
 				</Button>
-			</Box>
+			</ScrollView>
 		</Box>
 	);
 }
