@@ -76,6 +76,7 @@ function LoginScreen({ navigation }) {
 		// }
 		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
 		setItems(organizationsArr);
+		console.log(organizationsArr);
 	};
 
 	// useFocusEffect(
@@ -95,6 +96,7 @@ function LoginScreen({ navigation }) {
 		const userRef = doc(db, "Users", user.uid);
 		const docSnap = await getDoc(userRef);
 		const userOrg = docSnap.data().organization;
+		const isAdmin = docSnap.data().isAdmin;
 
 		//update emailVerified
 		await updateDoc(userRef, {
@@ -107,13 +109,23 @@ function LoginScreen({ navigation }) {
 			if (userOrg[i] == organization) {
 				reset();
 				console.log("account is linked with organization");
-				navigation.navigate("Bottom", {
-					screen: "Main",
-					params: {
-						screen: "Home",
-						params: { organization: organization },
-					},
-				});
+				if (isAdmin == true) {
+					navigation.navigate("AdminBottom", {
+						screen: "Main",
+						params: {
+							screen: "AdminMenu",
+							params: { organization: organization },
+						},
+					});
+				} else {
+					navigation.navigate("Bottom", {
+						screen: "Main",
+						params: {
+							screen: "Home",
+							params: { organization: organization },
+						},
+					});
+				}
 				return;
 			}
 		}
@@ -220,6 +232,7 @@ function LoginScreen({ navigation }) {
 						searchTextInputProps={{
 							maxLength: 25,
 						}}
+						itemKey={value}
 						//addCustomItem={true}
 						searchPlaceholder="Search for an organization"
 						placeholder="Select an organization"
@@ -339,18 +352,6 @@ function LoginScreen({ navigation }) {
 					onPress={() => navigation.navigate("Register")}
 				>
 					REGISTER
-				</Button>
-				<Button
-					_pressed={{
-						bg: Colors.lightGold,
-					}}
-					w="50%"
-					rounded={50}
-					bg={Colors.gold}
-					size="md"
-					onPress={() => navigation.navigate("AdminBottom")}
-				>
-					ADMIN LOGIN
 				</Button>
 			</ScrollView>
 		</Box>

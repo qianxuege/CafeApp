@@ -42,6 +42,7 @@ function RegisterScreen({ navigation }) {
 	//const [displayName, setDisplayName] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [errorText, setErrorText] = useState("");
+	const auth = getAuth();
 
 	//for the Dropdown Picker
 	const [open, setOpen] = useState(false);
@@ -99,7 +100,9 @@ function RegisterScreen({ navigation }) {
 		console.log(organizationsArr);
 	};
 
-	const updateOrganizations = async (value) => {
+	
+
+	const checkOrganizations = async (value) => {
 		let count = 0;
 		for (let i = 0; i < organizationsArr.length; i++) {
 			if (organizationsArr[i].value == value) {
@@ -107,41 +110,47 @@ function RegisterScreen({ navigation }) {
 			}
 		}
 		console.log(count);
-		if (count == 0) {
-			// runs if there is no existing organization of this name
-			if (isAdmin == true) {
+		if (count == 0) { //if this organization is new
+			if (isAdmin == true) { //if it is a new organization and isAdmin is true, update organizations collection
 				const orgRef = doc(db, "Organizations", value);
 				await setDoc(orgRef, {
 					dropDown: [{ label: value, value: value }],
-					adminEmail: email.join(), //transforms string to an array and sets this email as the first admin email
+					adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
 				});
 				count = 0;
-				//handleSignUp();
-				uploadUserProfile(user); //firstName, lastName, email, isAdmin, uid, emailVerified, selected organization
-			} else {
-				setIsAdmin(false);
+				//Proceed with creating the user
+				createUser();
+				
+			} else { // if isAdmin is false but wants to create a new organization
 				alert(
 					"You can only create a new organization if you register as an admin"
 				);
+				//will not create a new user
 				
 			}
-		} else {
-			alert(
-				"This organization already exists, there can only be one admin at this time. Please create a new organization or ask the current admin for access."
-			);
+		};
+
+		if (count != 0) { //if this is an existing organization
+			if (isAdmin==true) { // you cannot register as admin if there is already an admin
+				alert(
+					"This organization already exists, there can only be one admin at this time. Please create a new organization or ask the current admin for access."
+				);
+			} else { //if isAdmin is false
+				//proceed to creating the user as a regular user
+				createUser();
+			}
+			
 		}
 	};
 
-	const handleSignUp = () => {
-		console.log("signup");
-		const auth = getAuth();
-		if (organization != "") {
-			createUserWithEmailAndPassword(auth, email, password)
+	const createUser = () => {
+		createUserWithEmailAndPassword(auth, email, password)
 				.then((userCredential) => {
 					// Signed in
 					const user = userCredential.user;
 					console.log(user.uid);
-					updateOrganizations(organization); //if create a new organization, will add it to the Organizations collection
+					 //if create a new organization, will add it to the Organizations collection
+					uploadUserProfile(user); 
 					sendEmailVerification(user).then(() => {
 						updateProfile(user, {
 							displayName: firstName + " " + lastName,
@@ -179,37 +188,45 @@ function RegisterScreen({ navigation }) {
 
 					// ..
 				});
+	};
+
+	const resetPassword = () => {
+		sendPasswordResetEmail(auth, email)
+			.then(() => {
+				// Password reset email sent!
+				alert("Password reset email sent!");
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorMessage);
+				// ..
+			});
+	};
+
+	const uploadUserProfile = async (user) => {
+		console.log(user.uid);
+		const userRef = doc(db, "Users", user.uid);
+		await setDoc(userRef, {
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			isAdmin: isAdmin,
+			uid: user.uid,
+			emailVerified: user.emailVerified,
+			organization: organization.split(" "),
+		});
+	};
+
+	const handleSignUp = () => {
+		console.log("signup");
+		
+		if (organization != "") {
+			checkOrganizations(organization); // if organization is checked, will proceed with creating the user
 		} else {
 			alert("need to choose an organization");
 		}
-
-		const uploadUserProfile = async (user) => {
-			console.log(user.uid);
-			const userRef = doc(db, "Users", user.uid);
-			await setDoc(userRef, {
-				firstName: firstName,
-				lastName: lastName,
-				email: email,
-				isAdmin: isAdmin,
-				uid: user.uid,
-				emailVerified: user.emailVerified,
-				organization: organization.split(" "),
-			});
-		};
-
-		const resetPassword = () => {
-			sendPasswordResetEmail(auth, email)
-				.then(() => {
-					// Password reset email sent!
-					alert("Password reset email sent!");
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.log(errorMessage);
-					// ..
-				});
-		};
+		
 	};
 
 	return (

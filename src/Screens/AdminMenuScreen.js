@@ -31,7 +31,7 @@ import {
 import { db } from "../../firebase";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-const AdminMenuScreen = () => {
+const AdminMenuScreen = ({route}) => {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
@@ -40,12 +40,14 @@ const AdminMenuScreen = () => {
 		"Caladea-Bold": require("../../assets/Fonts/Caladea-Bold.ttf"),
 	});
 	const navigation = useNavigation();
+	const organization = route.params.organization;
+	//console.log(organization);
 
 	const wait = (timeout) => {
 		return new Promise((resolve) => setTimeout(resolve, timeout));
 	};
 	const [refreshing, setRefreshing] = React.useState(false); //to refresh the screen
-	//const [filter, setFilter] = useState(false);
+	const [filterPressed, setFilterPressed] = useState(false);
 
 	const [docSnap, setDocSnap] = useState("");
 	let arrayDocs = [];
@@ -68,7 +70,7 @@ const AdminMenuScreen = () => {
 
 	useEffect(() => {
 		getFoodItems();
-	}, [word]);
+	}, [filterPressed]);
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -79,11 +81,12 @@ const AdminMenuScreen = () => {
 	const resetFilter = () => {
 		setWord("");
         arrayDocs = [];
+		setFilterPressed(false);
 		//getFoodItems();
 	};
 
 	const getFoodItems = async () => {
-		const foodRef = collection(db, "GHS", "Public", "foodItems");
+		const foodRef = collection(db, organization, "Public", "foodItems");
 		try {
 			//const q = query(foodRef, where("name", "==", newFoodName));
 			//console.log(newFoodName);
@@ -240,7 +243,7 @@ const AdminMenuScreen = () => {
 						}}
 						_pressed={{ bg: Colors.darkGreen }}
 						onPress={() => {
-							//setFilter(true);
+							setFilterPressed(true);
 						}}
 					>
 						Filter
