@@ -232,7 +232,7 @@ function LoginScreen({ navigation }) {
 						searchTextInputProps={{
 							maxLength: 25,
 						}}
-						itemKey={value}
+						itemKey="label"
 						//addCustomItem={true}
 						searchPlaceholder="Search for an organization"
 						placeholder="Select an organization"

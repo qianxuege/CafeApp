@@ -114,7 +114,7 @@ function RegisterScreen({ navigation }) {
 			if (isAdmin == true) { //if it is a new organization and isAdmin is true, update organizations collection
 				const orgRef = doc(db, "Organizations", value);
 				await setDoc(orgRef, {
-					dropDown: [{ label: value, value: value }],
+					dropDown: { label: value, value: value },
 					adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
 				});
 				count = 0;
