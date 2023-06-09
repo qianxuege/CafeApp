@@ -11,8 +11,9 @@ import StackNav from "./StackNav";
 
 const Tab = createBottomTabNavigator();
 // const CustomTab = ({ children, onPress }) => <Text>hh</Text>;
-const BottomNav = () => {
-	
+const BottomNav = ({ navigation, route }) => {
+	const organization = route.params.organization;
+	console.log(organization);
 	return (
 		<Tab.Navigator
 			backBehavior="Main"

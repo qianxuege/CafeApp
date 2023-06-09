@@ -96,13 +96,13 @@ function LoginScreen({ navigation }) {
 			emailVerified: true
 		});
 
-		console.log(userOrg);
+		//console.log(userOrg);
 
 		for (let i = 0; i < userOrg.length; i++) {
 			if (userOrg[i] == organization) {
 				reset();
 				console.log("account is linked with organization");
-				navigation.navigate("Bottom");
+				navigation.navigate("Bottom", {organization: organization});
 				return;
 			}
 		}
@@ -123,7 +123,7 @@ function LoginScreen({ navigation }) {
 				const errorCode = error.code;
 				const errorMessage = error.message;
 				setErrorText(errorMessage);
-				console.log(errorMessage);
+				//console.log(errorMessage);
 				// ..
 			});
 	};
@@ -243,7 +243,7 @@ function LoginScreen({ navigation }) {
 						}}
 						onChangeValue={(value) => {
 							setOrganization(value);
-							console.log(value);
+							//console.log(value);
 						}}
 					/>
 					{/* EMAIL */}

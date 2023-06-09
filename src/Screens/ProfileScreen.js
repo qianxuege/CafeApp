@@ -24,7 +24,7 @@ import {
 	updatePassword,
 } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
-import { doc, getDoc } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import DropDownPicker from "react-native-dropdown-picker";
 
@@ -67,6 +67,7 @@ function ProfileScreen({ navigation }) {
 	const [value, setValue] = useState(null);
 	const [items, setItems] = useState([]);
 	const [newOrganization, setNewOrganization] = useState("");
+	let organizationsArr = [];
 
 	<firebase />;
 
@@ -126,10 +127,23 @@ function ProfileScreen({ navigation }) {
 		const userRef = doc(db, "Users", auth.currentUser.uid);
 		const docSnap = await getDoc(userRef);
 		const userOrg = docSnap.data().organization;
-		setUserOrganization(userOrg.join(", "));
+		setUserOrganization(userOrg.join(", ")); //this is the organization(s) that the user's account currently link to
+
+		const orgRef = collection(db, "Organizations");
+		const querySnapshot = await getDocs(orgRef);
+		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
+		setItems(organizationsArr); //returns an array of all available organizations for the user to choose from
+		console.log(organizationsArr);
 	};
 
-	const addOrganizations = async () => {};
+	const addOrganizations = async () => {
+		const userRef = doc(db, "Users", auth.currentUser.uid);
+		await updateDoc(userRef, {
+			organization: arrayUnion(newOrganization),
+		});
+		console.log("updated organization");
+		setShowModal(false);
+	};
 
 	function logOut() {
 		//console.log("logout");
@@ -157,11 +171,11 @@ function ProfileScreen({ navigation }) {
 				contentContainerStyle={{ flexGrow: 1 }}
 				//paddingLeft={3}
 			>
-				<Modal isOpen={true} onClose={() => setShowModal(false)}>
-					<Modal.Content maxWidth="400px">
+				<Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+					<Modal.Content maxWidth="400px" maxHeight="400px">
 						<Modal.CloseButton />
-						<Modal.Header>Organizations</Modal.Header>
-						<Modal.Body>
+						<Modal.Header>Add Organization</Modal.Header>
+						<Modal.Body height="200px">
 							<DropDownPicker
 								open={open}
 								value={value}
@@ -210,10 +224,30 @@ function ProfileScreen({ navigation }) {
 								}}
 								onChangeValue={(value) => {
 									setNewOrganization(value);
-									console.log(value);
+									//console.log(value);
 								}}
 							/>
 						</Modal.Body>
+						<Modal.Footer>
+							<Button.Group space={2}>
+								<Button
+									variant="ghost"
+									colorScheme="blueGray"
+									onPress={() => {
+										setShowModal(false);
+									}}
+								>
+									Cancel
+								</Button>
+								<Button
+									onPress={() => {
+										addOrganizations();
+									}}
+								>
+									Confirm
+								</Button>
+							</Button.Group>
+						</Modal.Footer>
 					</Modal.Content>
 				</Modal>
 				<VStack space={6} mt={5} pb={10} marginLeft="1%" alignItems="center">
@@ -274,7 +308,7 @@ function ProfileScreen({ navigation }) {
 							}}
 							_pressed={{ bg: Colors.deepGold }}
 							marginBottom={6}
-							//onPress={()=> resetPassword()}
+							onPress={()=> setShowModal(true)}
 						>
 							Add Organization
 						</Button>
