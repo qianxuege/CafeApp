@@ -30,9 +30,7 @@ function ProfileTop() {
 		return null;
 	}
 
-	useEffect(() => {
-		checkAdminStatus();
-	}, []);
+	
 
 	const auth = getAuth();
 	const user = auth.currentUser;
@@ -42,8 +40,13 @@ function ProfileTop() {
 	const checkAdminStatus = async () => {
 		const userRef = doc(db, "Users", user.uid);
 		const docSnap = await getDoc(userRef);
-		setIsAdmin(docSnap.data().isAdmin);
+		const bool = docSnap.data().isAdmin;
+		//console.log(bool);
+		setIsAdmin(bool);
+		console.log(isAdmin);
 	};
+
+	checkAdminStatus();
 
 	return (
 		<Box
@@ -57,15 +60,16 @@ function ProfileTop() {
 			safeAreaTop
 		>
 			<Center>
-				{isAdmin ? (
-					<Circle size="86px" bg={Colors.pink}>
+				{isAdmin? (
+					<Circle size="86px" bg={Colors.darkPink}>
 						<Ionicons name="ios-person" size={36} color={Colors.white} />
 					</Circle>
 				) : (
-					<Circle size="86px" bg={Colors.maroon}>
+					<Circle size="86px" bg={Colors.pink}>
 						<Ionicons name="ios-person" size={36} color={Colors.white} />
 					</Circle>
 				)}
+
 			</Center>
 
 			<Center marginTop={0}>

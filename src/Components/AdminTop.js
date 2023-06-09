@@ -42,8 +42,8 @@ function AdminTop() {
 				</Center>
 
 				<Center marginTop={0}>
-					<Text fontFamily="Akronim-Regular" fontSize={36} color={Colors.white}>
-						admin@gmail.com
+					<Text fontFamily="Akronim-Regular" fontSize={36} color={Colors.white} left={-5}>
+					ADMIN
 					</Text>
 				</Center>
 			</Box>

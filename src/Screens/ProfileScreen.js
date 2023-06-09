@@ -141,7 +141,7 @@ function ProfileScreen({ navigation }) {
 		await updateDoc(userRef, {
 			organization: arrayUnion(newOrganization),
 		});
-		console.log("updated organization");
+		alert("updated organization");
 		setShowModal(false);
 	};
 
