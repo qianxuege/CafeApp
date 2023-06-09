@@ -27,7 +27,13 @@ import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
 import { useFocusEffect } from "@react-navigation/native";
 import { UserInfo } from "firebase-admin/lib/auth/user-record";
-import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	updateDoc,
+} from "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 
 function LoginScreen({ navigation }) {
@@ -47,7 +53,6 @@ function LoginScreen({ navigation }) {
 	const [items, setItems] = useState([]);
 	const [organization, setOrganization] = useState("");
 	let organizationsArr = [];
-
 
 	const auth = getAuth();
 
@@ -93,7 +98,7 @@ function LoginScreen({ navigation }) {
 
 		//update emailVerified
 		await updateDoc(userRef, {
-			emailVerified: true
+			emailVerified: true,
 		});
 
 		//console.log(userOrg);
@@ -102,7 +107,13 @@ function LoginScreen({ navigation }) {
 			if (userOrg[i] == organization) {
 				reset();
 				console.log("account is linked with organization");
-				navigation.navigate("Bottom", {organization: organization});
+				navigation.navigate("Bottom", {
+					screen: "Main",
+					params: {
+						screen: "Home",
+						params: { organization: organization },
+					},
+				});
 				return;
 			}
 		}
@@ -176,7 +187,7 @@ function LoginScreen({ navigation }) {
 				px="6"
 				contentContainerStyle={{
 					justifyContent: "center",
-					paddingBottom: 300
+					paddingBottom: 300,
 				}}
 				flex={1}
 				refreshControl={
@@ -284,8 +295,9 @@ function LoginScreen({ navigation }) {
 						backgroundColor={Colors.darkGreen}
 						style={({ pressed }) => [
 							{
-								width: "90%", backgroundColor: pressed ? Colors.lightBlack : Colors.white,
-							}, 
+								width: "90%",
+								backgroundColor: pressed ? Colors.lightBlack : Colors.white,
+							},
 						]}
 						onPress={() => {
 							resetPassword();

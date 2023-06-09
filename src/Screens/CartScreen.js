@@ -18,12 +18,13 @@ function CartScreen() {
 			<NavBarCart />
 		<Box flex={1} safeAreaTop bg={Colors.morandiGreen}>
 			<Center >
-			
+				<Text color={Colors.white} fontSize={20} fontFamily="Bitter-Bold">More Content Coming</Text>
 			</Center>
 			{/* If Cart is Empty */}
 			{/* <CartEmpty />  */}
 			{/* <ScrollView showsVerticalScrollIndicator={false}> */}
-			<CartItems /> 
+			{/* <CartItems />  */}
+			
 			{/* </ScrollView> */}
 
 		</Box>

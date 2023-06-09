@@ -32,6 +32,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
+//moved to HomeScreen.js
 function HomeProducts() {
 	const navigation = useNavigation();
 	const [fontsLoaded] = useFonts({
@@ -139,133 +140,134 @@ function HomeProducts() {
 
 	return (
 		<>
-			<NavBarMenu />
-			<HStack w="full" px={2} py={4} alignItems="center">
-				<Pressable left={9} zIndex={2}>
-					<Ionicons name="search" size={24} color={Colors.deepestGray} />
-				</Pressable>
-				<Input
-					placeholder="Type In A Filter"
-					autoCapitalize="none"
-					w="85%"
-					bg={Colors.white}
-					type="search"
-					height={12}
-					paddingLeft={12}
-					borderWidth={1}
-					borderColor={Colors.lightBlack}
-					fontSize={14}
-					color={Colors.deepestGray}
-					variant="unstyled"
-					_focus={{
-						borderColor: Colors.pink,
-						backgroundColor: Colors.white,
-					}}
-					value={word}
-					onChangeText={(text) => setWord(text.toLocaleLowerCase())}
-					clearTextOnFocus
-				/>
-				<Box right={10}>
-					<TouchableOpacity onPress={() => setWord("")}>
-						<Feather name="x" size={24} color={Colors.deepestGray} />
-					</TouchableOpacity>
-				</Box>
-			</HStack>
-			<HStack
-				w="full"
-				marginBottom={2}
-				space={4}
-				px={6}
-				py={0}
-				alignItems="center"
-			>
-				<Button
-					h={10}
-					w={117}
-					bg={Colors.morandiGreen}
-					paddingRight={6}
-					position="relative"
-					left="15%"
-					_text={{
-						color: Colors.black,
-						fontFamily: "Caladea-Regular",
-					}}
-					_pressed={{ bg: Colors.darkGreen }}
-					onPress={() => {}}
-				>
-					Filter
-				</Button>
-				<View left={0}>
-					<Ionicons
-						name="filter"
-						size={22}
-						flex={2}
+			<Box flex={1} bg={Colors.white} w="100%">
+				<NavBarMenu />
+				<HStack w="full" px={2} py={4} alignItems="center">
+					<Pressable left={9} zIndex={2}>
+						<Ionicons name="search" size={24} color={Colors.deepestGray} />
+					</Pressable>
+					<Input
+						placeholder="Type In A Filter"
+						autoCapitalize="none"
+						w="85%"
+						bg={Colors.white}
+						type="search"
+						height={12}
+						paddingLeft={12}
+						borderWidth={1}
+						borderColor={Colors.lightBlack}
+						fontSize={14}
 						color={Colors.deepestGray}
+						variant="unstyled"
+						_focus={{
+							borderColor: Colors.pink,
+							backgroundColor: Colors.white,
+						}}
+						value={word}
+						onChangeText={(text) => setWord(text.toLocaleLowerCase())}
+						clearTextOnFocus
 					/>
-				</View>
-				<Button
-					h={10}
-					w={124}
-					bg={Colors.morandiGreen}
-					paddingRight={4}
-					left={7}
-					_text={{
-						color: Colors.black,
-						fontFamily: "Caladea-Regular",
-					}}
-					_pressed={{ bg: Colors.darkGreen }}
-					onPress={() => {
-						resetFilter();
-					}}
-				>
-					Reset Filter
-				</Button>
-			</HStack>
-
-			<ScrollView
-				mt={1}
-				flex={1}
-				refreshControl={
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-				}
-			>
-				<Flex
-					flexWrap="wrap"
-					direction="row"
-					justifyContent="space-between"
+					<Box right={10}>
+						<TouchableOpacity onPress={() => setWord("")}>
+							<Feather name="x" size={24} color={Colors.deepestGray} />
+						</TouchableOpacity>
+					</Box>
+				</HStack>
+				<HStack
+					w="full"
+					marginBottom={2}
+					space={4}
 					px={6}
+					py={0}
+					alignItems="center"
 				>
-					{docSnap != ""
-						? docSnap.map((doc) => (
-								<Pressable
-									onPress={() => {
-										navigation.navigate("Single", doc.data());
-									}}
-									key={doc.id}
-									w="47%"
-									bg={Colors.lightGold}
-									shadow={2}
-									pt={3}
-									my={3}
-									pb={2}
-									overflow="hidden"
-								>
-									<Image
-										source={{ uri: doc.data().image }}
-										alt={doc.data().name}
-										w="100%"
-										h={32}
-										top={-12}
-										resizeMode="stretch"
-									/>
-									{/* <Pressable position="absolute" top="50%" right="3%">
+					<Button
+						h={10}
+						w={117}
+						bg={Colors.morandiGreen}
+						paddingRight={6}
+						position="relative"
+						left="15%"
+						_text={{
+							color: Colors.black,
+							fontFamily: "Caladea-Regular",
+						}}
+						_pressed={{ bg: Colors.darkGreen }}
+						onPress={() => {}}
+					>
+						Filter
+					</Button>
+					<View left={0}>
+						<Ionicons
+							name="filter"
+							size={22}
+							flex={2}
+							color={Colors.deepestGray}
+						/>
+					</View>
+					<Button
+						h={10}
+						w={124}
+						bg={Colors.morandiGreen}
+						paddingRight={4}
+						left={7}
+						_text={{
+							color: Colors.black,
+							fontFamily: "Caladea-Regular",
+						}}
+						_pressed={{ bg: Colors.darkGreen }}
+						onPress={() => {
+							resetFilter();
+						}}
+					>
+						Reset Filter
+					</Button>
+				</HStack>
+
+				<ScrollView
+					mt={1}
+					flex={1}
+					refreshControl={
+						<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+					}
+				>
+					<Flex
+						flexWrap="wrap"
+						direction="row"
+						justifyContent="space-between"
+						px={6}
+					>
+						{docSnap != ""
+							? docSnap.map((doc) => (
+									<Pressable
+										onPress={() => {
+											navigation.navigate("Single", doc.data());
+										}}
+										key={doc.id}
+										w="47%"
+										bg={Colors.lightGold}
+										shadow={2}
+										pt={3}
+										my={3}
+										pb={2}
+										overflow="hidden"
+									>
+										<Image
+											source={{ uri: doc.data().image }}
+											alt={doc.data().name}
+											w="100%"
+											h={32}
+											top={-12}
+											resizeMode="stretch"
+										/>
+										{/* <Pressable position="absolute" top="50%" right="3%">
 							<Center rounded="full" backgroundColor={Colors.white} padding={2}>
 								<FontAwesome name="heart-o" size={18} color={Colors.pink} />
 								<FontAwesome name="heart-o" size={24} color={Colors.pink} />
 							</Center>
 						</Pressable> */}
 
-									{/* <Pressable position="absolute" top="50%" right="3%" onPress={() => {
+										{/* <Pressable position="absolute" top="50%" right="3%" onPress={() => {
 							product.saved==true? product.saved=false: product.saved=true;
 							onRefresh();
 						}}>
@@ -274,34 +276,35 @@ function HomeProducts() {
 							
 						</Pressable> */}
 
-									<Box px={4} pt={1} marginX="auto" top={-10}>
-										<Text
-											fontFamily="AmaticSC-Bold"
-											color={Colors.white}
-											fontSize={20}
-											isTruncated="true"
-										>
-											{doc.data().name}
-										</Text>
-									</Box>
-									<Box marginX="auto" top={-11}>
-										<Text fontFamily="Bitter-Bold" color={Colors.white}>
-											{doc.data().calories} cal
-										</Text>
-									</Box>
-									<Box marginX="auto" top={-11}>
-										<Text fontFamily="Bitter-Bold" color={Colors.white}>
-											${doc.data().price}
-										</Text>
-									</Box>
-									{/* <Box marginX="auto" top={-8}>
+										<Box px={4} pt={1} marginX="auto" top={-10}>
+											<Text
+												fontFamily="AmaticSC-Bold"
+												color={Colors.white}
+												fontSize={20}
+												isTruncated="true"
+											>
+												{doc.data().name}
+											</Text>
+										</Box>
+										<Box marginX="auto" top={-11}>
+											<Text fontFamily="Bitter-Bold" color={Colors.white}>
+												{doc.data().calories} cal
+											</Text>
+										</Box>
+										<Box marginX="auto" top={-11}>
+											<Text fontFamily="Bitter-Bold" color={Colors.white}>
+												${doc.data().price}
+											</Text>
+										</Box>
+										{/* <Box marginX="auto" top={-8}>
 							<Rating value={product.rating} />
 						</Box> */}
-								</Pressable>
-						  ))
-						: console.log("docSnap not loaded")}
-				</Flex>
-			</ScrollView>
+									</Pressable>
+							  ))
+							: console.log("docSnap not loaded")}
+					</Flex>
+				</ScrollView>
+			</Box>
 		</>
 	);
 }
