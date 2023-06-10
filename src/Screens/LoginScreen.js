@@ -66,7 +66,7 @@ function LoginScreen({ navigation }) {
 
 	useEffect(() => {
 		getOrganizations();
-	}, []);
+	}, [organization]);
 
 	const getOrganizations = async () => {
 		const orgRef = collection(db, "Organizations");
@@ -110,13 +110,7 @@ function LoginScreen({ navigation }) {
 				reset();
 				console.log("account is linked with organization");
 				if (isAdmin == true) {
-					navigation.navigate("AdminBottom", {
-						screen: "Main",
-						params: {
-							screen: "AdminMenu",
-							params: { organization: organization },
-						},
-					});
+					navigation.navigate("AdminBottom", { organization: organization });
 				} else {
 					navigation.navigate("Bottom", {
 						screen: "Main",

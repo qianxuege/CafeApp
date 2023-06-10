@@ -56,6 +56,7 @@ function HomeScreen({route}) {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
+        search();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);

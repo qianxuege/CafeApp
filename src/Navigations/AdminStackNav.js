@@ -8,8 +8,9 @@ import AdminEditScreen from "../Screens/AdminEditScreen";
 //import SingleProductScreen from "../Screens/SingleProductScreen";
 
 
-const AdminStackNav = () => {
-    const Stack = createNativeStackNavigator()
+const AdminStackNav = ({route}) => {
+    const Stack = createNativeStackNavigator();
+    const organization = route.params.organization;
     return (
         <Stack.Navigator
         initialRouteName="AdminMenu"
@@ -17,11 +18,11 @@ const AdminStackNav = () => {
             headerShown: false,
         }}
         >
-            <Stack.Screen name="AdminEdit" component={AdminEditScreen}/>
+            <Stack.Screen name="AdminEdit" component={AdminEditScreen} initialParams={{organization: organization}} />
             {/* <Stack.Screen name="Single" component={SingleProductScreen}/>
             <Stack.Screen name="Cart" component={CartScreen}/> */}
             <Stack.Screen name="AdminSingle" component={AdminSingleProductScreen}/>
-            <Stack.Screen name="AdminMenu" component={AdminMenuScreen}/>
+            <Stack.Screen name="AdminMenu" component={AdminMenuScreen} initialParams={{organization: organization}} />
         </Stack.Navigator>
     );
 };

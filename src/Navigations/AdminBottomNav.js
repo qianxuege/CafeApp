@@ -13,8 +13,9 @@ import AdminEditScreen from "../Screens/AdminEditScreen";
 
 const Tab = createBottomTabNavigator();
 // const CustomTab = ({ children, onPress }) => <Text>hh</Text>;
-const AdminBottomNav = () => {
-	
+const AdminBottomNav = ({ route }) => {
+	const organization = route.params.organization;
+	//console.log(organization);
 	return (
 		<Tab.Navigator
 			backBehavior="Main"
@@ -26,29 +27,36 @@ const AdminBottomNav = () => {
 				tabBarHideOnKeyBoard: true,
 			}}
 		>
-			
-
-            {/* Profile */}
-            <Tab.Screen
+			{/* Profile */}
+			<Tab.Screen
 				name="Profile"
 				component={ProfileScreen}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Center top={1}>
 							{focused ? (
-								<FontAwesome name="user-circle" size={24} color={Colors.black} />
+								<FontAwesome
+									name="user-circle"
+									size={24}
+									color={Colors.black}
+								/>
 							) : (
-								<FontAwesome name="user-circle" size={24} color={Colors.deepestGray} />
+								<FontAwesome
+									name="user-circle"
+									size={24}
+									color={Colors.deepestGray}
+								/>
 							)}
 						</Center>
 					),
 				}}
 			/>
 
-            {/* HomeScreen */}
-            <Tab.Screen
+			{/* HomeScreen */}
+			<Tab.Screen
 				name="Main"
 				component={AdminStackNav}
+				initialParams={{organization: organization}}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Center>
@@ -62,10 +70,11 @@ const AdminBottomNav = () => {
 				}}
 			/>
 
-            {/* Saved */}
-            <Tab.Screen
+			{/* Saved */}
+			<Tab.Screen
 				name="AdminEdit"
 				component={AdminEditScreen}
+				initialParams={{organization: organization}}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Center>
@@ -87,7 +96,7 @@ const styles = StyleSheet.create({
 		elevation: 0,
 		backgroundColor: Colors.white,
 		height: 64,
-        paddingTop: 8,
+		paddingTop: 8,
 	},
 });
 

@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
-import { StyleSheet } from "react-native";
+import { RefreshControl, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
 import {
 	getAuth,
@@ -73,6 +73,7 @@ function ProfileScreen({ navigation }) {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
+		getOrganizations();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
@@ -169,13 +170,16 @@ function ProfileScreen({ navigation }) {
 			<ScrollView
 				backgroundColor={Colors.morandiGreen}
 				contentContainerStyle={{ flexGrow: 1 }}
-				//paddingLeft={3}
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
 			>
 				<Modal isOpen={showModal} onClose={() => setShowModal(false)}>
 					<Modal.Content maxWidth="400px" maxHeight="400px">
 						<Modal.CloseButton />
 						<Modal.Header>Add Organization</Modal.Header>
-						<Modal.Body height="200px">
+						<Modal.Body height="400px">
+
 							<DropDownPicker
 								open={open}
 								value={value}

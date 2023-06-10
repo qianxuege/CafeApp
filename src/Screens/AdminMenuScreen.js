@@ -63,6 +63,7 @@ const AdminMenuScreen = ({route}) => {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
+		getFoodItems();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);

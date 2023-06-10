@@ -16,7 +16,13 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { Button, Input, ScrollView, Box } from "native-base";
 import Colors from "../color";
 import { useFonts } from "expo-font";
-import { getStorage, ref, uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
+import {
+	getStorage,
+	ref,
+	uploadBytes,
+	getDownloadURL,
+	getMetadata,
+} from "firebase/storage";
 import uuid from "react-native-uuid";
 import "firebase/storage";
 import {
@@ -35,8 +41,10 @@ import LocationPicker from "../Components/LocationPicker";
 import { foodLocation } from "../Components/LocationPicker";
 import AdminMenuScreen from "./AdminMenuScreen";
 import AdminTop from "../Components/AdminTop";
+import { getAuth } from "firebase/auth";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-const AdminEditScreen = () => {
+const AdminEditScreen = ({ route }) => {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"Caladea-BoldItalic": require("../../assets/Fonts/Caladea-BoldItalic.ttf"),
@@ -49,10 +57,11 @@ const AdminEditScreen = () => {
 	const [calories, setCalories] = useState("");
 	const [imagesrc, setImagesrc] = useState("");
 	const [uniqueId, setUniqueId] = useState("");
-	const [organization, setOrganization] = useState("");
+	//const [organization, setOrganization] = useState("");
 	//let imagesrc = "";
-
-	
+	const navigation = useNavigation();
+	const organization = route.params.organization;
+	//console.log(organization);
 
 	//for Location Picker
 	const [open, setOpen] = useState(false);
@@ -76,7 +85,7 @@ const AdminEditScreen = () => {
 		//console.log(uniqueId);
 		if (uniqueId != "" && imagesrc != "") {
 			const updateImagesrc = updateDoc(
-				doc(db, "GHS", "Public", "foodItems", uniqueId),
+				doc(db, organization , "Public", "foodItems", uniqueId),
 				{
 					image: imagesrc,
 				}
@@ -116,11 +125,23 @@ const AdminEditScreen = () => {
 	};
 
 	const checkDuplicates = async () => {
-		if (foodname == "" || image == null || image == "https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png" || calories == "" || ingredients == "" || tags == "" || price == "" || location == "") {
-			alert('Please fill out all required fields. Fill in "N/A" if not applicable.');
+		if (
+			foodname == "" ||
+			image == null ||
+			image ==
+				"https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png" ||
+			calories == "" ||
+			ingredients == "" ||
+			tags == "" ||
+			price == "" ||
+			location == ""
+		) {
+			alert(
+				'Please fill out all required fields. Fill in "N/A" if not applicable.'
+			);
 			return;
 		}
-		
+
 		let nameArr = foodname.split(" ");
 		for (let i = 0; i < nameArr.length; i++) {
 			nameArr[i] = nameArr[i].charAt(0).toUpperCase() + nameArr[i].slice(1);
@@ -133,7 +154,7 @@ const AdminEditScreen = () => {
 		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1); //this is the filename for the image
 		//let filename = fname.concat(imageEnding);
 
-		const foodRef = collection(db, "GHS", "Users", "foodItems");
+		const foodRef = collection(db, organization, "Users", "foodItems");
 
 		try {
 			const q = query(foodRef, where("name", "==", newFoodName));
@@ -247,7 +268,7 @@ const AdminEditScreen = () => {
 
 				//console.log(uuid);
 
-				const docRef = doc(db, "GHS", "Public", "foodItems", foodid);
+				const docRef = doc(db, organization, "Public", "foodItems", foodid);
 
 				// Add a new document in collection "cities"
 				await setDoc(docRef, {
@@ -286,8 +307,8 @@ const AdminEditScreen = () => {
 				setUploading(false);
 
 				Alert.alert(
-					"Image uploaded!",
-					"Your image has been uploaded to the Firebase Cloud Storage successfully!"
+					"Uploaded!",
+					"This food item has been uploaded to the Firebase Cloud Storage successfully!"
 				);
 
 				return await reset();
@@ -302,173 +323,173 @@ const AdminEditScreen = () => {
 
 	return (
 		<>
-		<AdminTop />
-		<ScrollView
-			top={0}
-			margin="auto"
-			width="100%"
-			bg={Colors.white}
-			contentContainerStyle={{ alignItems: "center", paddingBottom: 500 }}
-			showsVerticalScrollIndicator={false}
-		>
-			<Spinner visible={uploading} />
-			<TouchableOpacity onPress={pickImage}>
-				{image != null ? (
-					<Image
-						source={{ uri: image }}
-						style={{ width: 200, height: 200, margin: 15 }}
-					/>
-				) : (
-					<Image
-						source={{
-							uri: "https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png",
-						}}
-						style={{ width: 200, height: 200 }}
-					/>
-				)}
-			</TouchableOpacity>
-			<Input
-				variant="filled"
-				placeholder="Enter Food Name"
-				value={foodname}
-				onChangeText={(text) => setFoodname(text)}
-				w="92%"
-				fontSize="16"
-				fontFamily="Bitter-Regular"
-				color={Colors.darkPink}
-				placeholderTextColor={Colors.gray}
-				paddingLeft="3"
-				marginY={2}
-				borderColor={Colors.morandiPink}
-				backgroundColor={Colors.morandiPink}
-				_focus={{ bg: Colors.morandiPink }}
-				autoCapitalize="none"
-			/>
-			<Input
-				variant="filled"
-				placeholder="Enter Price"
-				value={price}
-				onChangeText={(text) => setPrice(text)}
-				w="92%"
-				fontSize="16"
-				fontFamily="Bitter-Regular"
-				color={Colors.darkPink}
-				placeholderTextColor={Colors.gray}
-				paddingLeft="3"
-				marginY={2}
-				borderColor={Colors.morandiPink}
-				backgroundColor={Colors.morandiPink}
-				_focus={{ bg: Colors.morandiPink }}
-				keyboardType="numeric"
-			/>
-			<Input
-				variant="filled"
-				placeholder="Enter Tags: breakfast, sweet, etc ..."
-				value={tags}
-				onChangeText={(text) => setTags(text)}
-				w="92%"
-				fontSize="16"
-				fontFamily="Bitter-Regular"
-				color={Colors.darkPink}
-				placeholderTextColor={Colors.gray}
-				paddingLeft="3"
-				marginY={2}
-				borderColor={Colors.morandiPink}
-				backgroundColor={Colors.morandiPink}
-				_focus={{ bg: Colors.morandiPink }}
-				autoCapitalize="none"
-			/>
-			<Input
-				variant="filled"
-				placeholder="Enter Ingredients"
-				value={ingredients}
-				onChangeText={(text) => setIngredients(text)}
-				w="92%"
-				fontSize="16"
-				fontFamily="Bitter-Regular"
-				color={Colors.darkPink}
-				placeholderTextColor={Colors.gray}
-				paddingLeft="3"
-				marginY={2}
-				borderColor={Colors.morandiPink}
-				backgroundColor={Colors.morandiPink}
-				_focus={{ bg: Colors.morandiPink }}
-				autoCapitalize="none"
-			/>
-			<Input
-				variant="filled"
-				placeholder="Enter Estimated Calories"
-				value={calories}
-				onChangeText={(text) => setCalories(text)}
-				w="92%"
-				fontSize="16"
-				fontFamily="Bitter-Regular"
-				color={Colors.darkPink}
-				placeholderTextColor={Colors.gray}
-				paddingLeft="3"
-				marginY={2}
-				borderColor={Colors.morandiPink}
-				backgroundColor={Colors.morandiPink}
-				_focus={{ bg: Colors.morandiPink }}
-				keyboardType="numeric"
-			/>
-			<Box width="92%" margin={2}>
-				<DropDownPicker
-					open={open}
-					value={location}
-					items={items}
-					setOpen={setOpen}
-					setValue={setLocation}
-					setItems={setItems}
-					theme="LIGHT"
-					multiple={false}
-					listMode="SCROLLVIEW"
-					mode="BADGE"
-					badgeDotColors={[
-						"#ffd700",
-						"#90ee90",
-						"#800000",
-						"#006400",
-						"#ffc0cb",
-					]}
-					maxHeight={200}
-					dropDownDirection="TOP"
-					style={{
-						borderColor: Colors.morandiPink,
-						backgroundColor: Colors.morandiPink,
-					}}
-					dropDownContainerStyle={{
-						backgroundColor: Colors.morandiPink,
-						borderColor: Colors.morandiPink,
-					}}
-					textStyle={{
-						fontSize: 16,
-						fontFamily: "Bitter-Regular",
-						color: Colors.gray,
-					}}
-					labelStyle={{
-						color: Colors.darkPink,
-						backgroundColor: Colors.morandiPink,
-					}}
-				/>
-			</Box>
-
-			<Button
-				_pressed={{
-					bg: Colors.lightGreen,
-				}}
-				marginTop={10}
-				w="80%"
-				rounded={50}
-				bg={Colors.morandiGreen}
-				size="md"
-				onPress={() => {
-					checkDuplicates();
-				}}
+			<AdminTop />
+			<ScrollView
+				top={0}
+				margin="auto"
+				width="100%"
+				bg={Colors.white}
+				contentContainerStyle={{ alignItems: "center", paddingBottom: 500 }}
+				showsVerticalScrollIndicator={false}
 			>
-				Add Food Item
-			</Button>
-		</ScrollView>
+				<Spinner visible={uploading} />
+				<TouchableOpacity onPress={pickImage}>
+					{image != null ? (
+						<Image
+							source={{ uri: image }}
+							style={{ width: 200, height: 200, margin: 15 }}
+						/>
+					) : (
+						<Image
+							source={{
+								uri: "https://pixsector.com/cache/517d8be6/av5c8336583e291842624.png",
+							}}
+							style={{ width: 200, height: 200 }}
+						/>
+					)}
+				</TouchableOpacity>
+				<Input
+					variant="filled"
+					placeholder="Enter Food Name"
+					value={foodname}
+					onChangeText={(text) => setFoodname(text)}
+					w="92%"
+					fontSize="16"
+					fontFamily="Bitter-Regular"
+					color={Colors.darkPink}
+					placeholderTextColor={Colors.gray}
+					paddingLeft="3"
+					marginY={2}
+					borderColor={Colors.morandiPink}
+					backgroundColor={Colors.morandiPink}
+					_focus={{ bg: Colors.morandiPink }}
+					autoCapitalize="none"
+				/>
+				<Input
+					variant="filled"
+					placeholder="Enter Price"
+					value={price}
+					onChangeText={(text) => setPrice(text)}
+					w="92%"
+					fontSize="16"
+					fontFamily="Bitter-Regular"
+					color={Colors.darkPink}
+					placeholderTextColor={Colors.gray}
+					paddingLeft="3"
+					marginY={2}
+					borderColor={Colors.morandiPink}
+					backgroundColor={Colors.morandiPink}
+					_focus={{ bg: Colors.morandiPink }}
+					keyboardType="numeric"
+				/>
+				<Input
+					variant="filled"
+					placeholder="Enter Tags: breakfast, sweet, etc ..."
+					value={tags}
+					onChangeText={(text) => setTags(text)}
+					w="92%"
+					fontSize="16"
+					fontFamily="Bitter-Regular"
+					color={Colors.darkPink}
+					placeholderTextColor={Colors.gray}
+					paddingLeft="3"
+					marginY={2}
+					borderColor={Colors.morandiPink}
+					backgroundColor={Colors.morandiPink}
+					_focus={{ bg: Colors.morandiPink }}
+					autoCapitalize="none"
+				/>
+				<Input
+					variant="filled"
+					placeholder="Enter Ingredients"
+					value={ingredients}
+					onChangeText={(text) => setIngredients(text)}
+					w="92%"
+					fontSize="16"
+					fontFamily="Bitter-Regular"
+					color={Colors.darkPink}
+					placeholderTextColor={Colors.gray}
+					paddingLeft="3"
+					marginY={2}
+					borderColor={Colors.morandiPink}
+					backgroundColor={Colors.morandiPink}
+					_focus={{ bg: Colors.morandiPink }}
+					autoCapitalize="none"
+				/>
+				<Input
+					variant="filled"
+					placeholder="Enter Estimated Calories"
+					value={calories}
+					onChangeText={(text) => setCalories(text)}
+					w="92%"
+					fontSize="16"
+					fontFamily="Bitter-Regular"
+					color={Colors.darkPink}
+					placeholderTextColor={Colors.gray}
+					paddingLeft="3"
+					marginY={2}
+					borderColor={Colors.morandiPink}
+					backgroundColor={Colors.morandiPink}
+					_focus={{ bg: Colors.morandiPink }}
+					keyboardType="numeric"
+				/>
+				<Box width="92%" margin={2}>
+					<DropDownPicker
+						open={open}
+						value={location}
+						items={items}
+						setOpen={setOpen}
+						setValue={setLocation}
+						setItems={setItems}
+						theme="LIGHT"
+						multiple={false}
+						listMode="SCROLLVIEW"
+						mode="BADGE"
+						badgeDotColors={[
+							"#ffd700",
+							"#90ee90",
+							"#800000",
+							"#006400",
+							"#ffc0cb",
+						]}
+						maxHeight={200}
+						dropDownDirection="TOP"
+						style={{
+							borderColor: Colors.morandiPink,
+							backgroundColor: Colors.morandiPink,
+						}}
+						dropDownContainerStyle={{
+							backgroundColor: Colors.morandiPink,
+							borderColor: Colors.morandiPink,
+						}}
+						textStyle={{
+							fontSize: 16,
+							fontFamily: "Bitter-Regular",
+							color: Colors.gray,
+						}}
+						labelStyle={{
+							color: Colors.darkPink,
+							backgroundColor: Colors.morandiPink,
+						}}
+					/>
+				</Box>
+
+				<Button
+					_pressed={{
+						bg: Colors.lightGreen,
+					}}
+					marginTop={10}
+					w="80%"
+					rounded={50}
+					bg={Colors.morandiGreen}
+					size="md"
+					onPress={() => {
+						checkDuplicates();
+					}}
+				>
+					Add Food Item
+				</Button>
+			</ScrollView>
 		</>
 	);
 };
