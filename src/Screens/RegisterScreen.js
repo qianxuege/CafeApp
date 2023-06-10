@@ -51,23 +51,25 @@ function RegisterScreen({ navigation }) {
 	const [organization, setOrganization] = useState("");
 	let dropDownArr = []; //map of items
 	let organizationsArr = []; //the value of items
+	let count = 0;
 
 	//refresh
 	const [refreshing, setRefreshing] = useState(false);
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		reset();
+		getOrganizations();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
 	}, []);
 
-	useEffect(() => {
-		getOrganizations();
+	 useEffect(() => {
+		// getOrganizations();
 		if (isAdmin == true) {
 			handleSignUp();
 		}
-	}, [isAdmin]);
+	 }, [isAdmin]);
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -78,8 +80,6 @@ function RegisterScreen({ navigation }) {
 
 	<firebase />;
 
-	
-
 	const reset = () => {
 		setEmail("");
 		setPassword("");
@@ -88,7 +88,9 @@ function RegisterScreen({ navigation }) {
 		setIsAdmin(false);
 		setErrorText("");
 		setValue("");
-	}
+		setItems([]);
+		count = 0;
+	};
 
 	const getOrganizations = async () => {
 		const orgRef = collection(db, "Organizations");
@@ -99,104 +101,112 @@ function RegisterScreen({ navigation }) {
 		//returns an array of all available organizations for the user to choose from
 		dropDownArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
 		setItems(dropDownArr);
-		//console.log(dropDownArr);
+		console.log(dropDownArr);
 	};
 
-	
-
 	const checkOrganizations = async (org) => {
-		let count = 0;
-		console.log(org);
-		
-		for (let i = 0; i < items.length; i++) {
-			if (items[i].value == org) {
-				count += 1;
-		
-			} else {
-
-			}
-		};
 
 		console.log(count);
-		//console.log(organizationsArr);
-		if (count == 0) { //if this organization is new
-			if (isAdmin == true) { //if it is a new organization and isAdmin is true, update organizations collection
-				const orgRef = doc(db, "Organizations", value);
-				await setDoc(orgRef, {
-					dropDown: { label: value, value: value },
-					adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
-				});
-				count = 0;
-				//Proceed with creating the user
-				createUser();
-				
-			} else { // if isAdmin is false but wants to create a new organization
-				alert(
-					"You can only create a new organization if you register as an admin"
-				);
-				//will not create a new user
-				
+		console.log(dropDownArr);
+
+		if (items != []) {
+			for (let i = 0; i < dropDownArr.length; i++) {
+				if (dropDownArr[i].value == org) {
+					count += 1;
+				}
 			}
-		} else { //if this is an existing organization
-			if (isAdmin==true) { // you cannot register as admin if there is already an admin
-				alert(
-					"This organization already exists, there can only be one admin at this time. Please create a new organization or ask the current admin for access."
-				);
-				count = 0;
-			} else { //if isAdmin is false
-				//proceed to creating the user as a regular user
-				createUser();
-				count = 0;
+
+			console.log(count);
+			console.log(isAdmin);
+			//console.log(organizationsArr);
+			if (count == 0) {
+				//if this organization is new
+				if (isAdmin == true) {
+					//if it is a new organization and isAdmin is true, update organizations collection
+					console.log(org);
+					//Proceed with creating the user
+					createUser();
+					const orgRef = doc(db, "Organizations", org);
+					await setDoc(orgRef, {
+						dropDown: { label: org, value: org },
+						adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
+					});
+					count = 0;
+					console.log("organization updated");
+					onRefresh();
+					
+					
+				} else {
+					// if isAdmin is false but wants to create a new organization
+					alert(
+						"You can only create a new organization if you register as an admin"
+					);
+					//will not create a new user
+				}
+			} else {
+				//if this is an existing organization
+				if (isAdmin == true) {
+					// you cannot register as admin if there is already an admin
+					alert(
+						"This organization already exists, there can only be one admin at this time. Please ask the current admin for access."
+					);
+					count = 0;
+				} else {
+					//if isAdmin is false
+					//proceed to creating the user as a regular user
+					createUser();
+					count = 0;
+					onRefresh();
+				}
 			}
-			
 		}
 	};
 
 	const createUser = () => {
 		createUserWithEmailAndPassword(auth, email, password)
-				.then((userCredential) => {
-					// Signed in
-					const user = userCredential.user;
-					console.log(user.uid);
-					 //if create a new organization, will add it to the Organizations collection
-					uploadUserProfile(user); 
-					sendEmailVerification(user).then(() => {
-						updateProfile(user, {
-							displayName: firstName + " " + lastName,
-						}).catch((error) => {
-							const errorCode = error.code;
-							const errorMessage = error.message;
-							console.log(errorMessage);
-						});
-						Alert.alert("User Registered", "Please verify your email address!");
+			.then((userCredential) => {
+				// Signed in
+				const user = userCredential.user;
+				console.log(user.uid);
+				//if create a new organization, will add it to the Organizations collection
+				uploadUserProfile(user);
+				sendEmailVerification(user).then(() => {
+					updateProfile(user, {
+						displayName: firstName + " " + lastName,
+					}).catch((error) => {
+						const errorCode = error.code;
+						const errorMessage = error.message;
+						console.log(errorMessage);
 					});
-
-					// ...
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.log(errorMessage);
-					setErrorText(errorMessage);
-					if (errorMessage == "Firebase: Error (auth/email-already-in-use).") {
-						Alert.alert(
-							"ERROR",
-							"This email is already in use. Click 'ok' if wish to reset password.",
-							[
-								{
-									text: "Cancel",
-									onPress: () => {
-										return;
-									},
-									style: "cancel",
-								},
-								{ text: "OK", onPress: () => resetPassword() },
-							]
-						);
-					}
-
-					// ..
+					Alert.alert("User Registered", "Please verify your email address!");
 				});
+
+				// ...
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorMessage);
+				setErrorText(errorMessage);
+				if (errorMessage == "Firebase: Error (auth/email-already-in-use).") {
+					Alert.alert(
+						"ERROR",
+						"This email is already in use. Click 'ok' if wish to reset password.",
+						[
+							{
+								text: "Cancel",
+								onPress: () => {
+									return;
+								},
+								style: "cancel",
+							},
+							{ text: "OK", onPress: () => resetPassword() },
+						]
+					);
+				}
+
+				// ..
+			});
 	};
 
 	const resetPassword = () => {
@@ -229,13 +239,24 @@ function RegisterScreen({ navigation }) {
 
 	const handleSignUp = () => {
 		console.log("signup");
-		
+
+		if (
+			organization == "" ||
+			firstName == "" ||
+			lastName == "" ||
+			email == "" ||
+			password == ""
+		) {
+			alert("Please fill out all required fields!");
+			return;
+		}
+
 		if (organization != "") {
-			checkOrganizations(organization); // if organization is checked, will proceed with creating the user
+			checkOrganizations(organization);
+			//console.log(organization); // if organization is checked, will proceed with creating the user
 		} else {
 			alert("need to choose an organization");
 		}
-		
 	};
 
 	return (

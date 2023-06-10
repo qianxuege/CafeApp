@@ -19,12 +19,29 @@ import {
 } from "native-base";
 import AdminTop from "../Components/AdminTop";
 import Colors from "../color";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import React from "react";
+import { MaterialIcons } from '@expo/vector-icons';
+import { deleteObject, getStorage, ref } from "firebase/storage";
+import { db } from "../../firebase";
+import {
+	collection,
+	deleteDoc,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	setDoc,
+	where,
+} from "firebase/firestore";
 
 function AdminSingleProductScreen({ route }) {
 	const navigation = useNavigation();
-	const doc = route.params;
+	const item = route.params.doc;
+	const itemID = route.params.docID;
+	const organization = route.params.organization;
+	//console.log(organization);
+
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
@@ -49,7 +66,55 @@ function AdminSingleProductScreen({ route }) {
 
 	if (!fontsLoaded) {
 		return null;
-	}
+	};
+
+	const deleteAlert = () => {
+		Alert.alert(
+			"ALERT",
+			"Deleted items cannot be recovered. Click 'OK' to start delete.",
+			[
+				{
+					text: "Cancel",
+					onPress: () => {
+						return;
+					},
+					style: "cancel",
+				},
+				{ text: "OK", onPress: () => deleteFoodItem() },
+			]
+		);
+		console.log(itemID);
+	};
+
+	const deleteFoodItem = async () => {
+		const storage = getStorage();
+		//console.log("delete0");
+		const docRef = doc(db, organization, "Public", "foodItems", itemID);
+		//console.log("delete1");
+		//const image = await getDoc(docRef).data().image;
+		//console.log("delete2");
+		console.log(organization);
+		const imageFile = organization + "/images/" + "E937790C-613F-4F6E-8602-D7429464D6A0.jpg";
+		console.log(imageFile);
+		const fileRef = ref(storage, imageFile);
+		console.log("delete3");
+		try {
+			deleteObject(fileRef).then(() => {
+				// File deleted successfully
+			  }).catch((error) => {
+				// Uh-oh, an error occurred!
+				console.log(error);
+			  });
+			await deleteDoc(docRef);
+			
+			alert("Item deleted!");
+			onRefresh();
+			navigation.navigate("AdminMenu");
+		} catch (error) {
+			alert(error);
+		}
+		
+	};
 
 	return (
 		<Box flex={1} top={0}>
@@ -62,7 +127,7 @@ function AdminSingleProductScreen({ route }) {
 				showsVerticalScrollIndicator={false}
 			>
 				<Image
-					source={{ uri: doc.image }}
+					source={{ uri: item.image }}
 					top={0}
 					alt="Image"
 					margin="auto"
@@ -71,6 +136,13 @@ function AdminSingleProductScreen({ route }) {
 					resizeMode="cover"
 					marginBottom={2}
 				/>
+				<Pressable position="absolute" top={370} right="2%" onPress={() => {
+					deleteAlert();
+				}}>
+					<Center rounded="full" backgroundColor={Colors.white} padding={2}>
+						<MaterialIcons name="delete-outline" size={24} color="black" />
+					</Center>
+				</Pressable>
 				<Box marginLeft={6} paddingBottom={100}>
 					<Text
 						my={2}
@@ -78,10 +150,15 @@ function AdminSingleProductScreen({ route }) {
 						fontSize={52}
 						color={Colors.black}
 					>
-						{doc.name}
+						{item.name}
 					</Text>
-					<Flex flexWrap="wrap" direction="row" justifyContent="space-between" width="90%">
-						{doc.tags.map((tag) => {
+					<Flex
+						flexWrap="wrap"
+						direction="row"
+						justifyContent="space-between"
+						width="90%"
+					>
+						{item.tags.map((tag) => {
 							return (
 								<View style={styles.tagsView} key={Math.random() * 20}>
 									<Text style={styles.tags}>{tag}</Text>
@@ -96,7 +173,7 @@ function AdminSingleProductScreen({ route }) {
 							fontWeight="bold"
 							color={Colors.deepestGray}
 						>
-							${doc.price}
+							${item.price}
 						</Text>
 					</HStack>
 					<Pressable>
@@ -108,15 +185,15 @@ function AdminSingleProductScreen({ route }) {
 					</Pressable>
 					<Box mt={6}>
 						<Text style={styles.heading2}>Location</Text>
-						<Text style={styles.paragraph}>{doc.location.join(" ")}</Text>
+						<Text style={styles.paragraph}>{item.location.join(" ")}</Text>
 					</Box>
 					<Box mt={6}>
 						<Text style={styles.heading2}>Calories</Text>
-						<Text style={styles.paragraph}>{doc.calories} cal</Text>
+						<Text style={styles.paragraph}>{item.calories} cal</Text>
 					</Box>
 					<Box mt={6}>
 						<Text style={styles.heading2}>Ingredients</Text>
-						<Text style={styles.paragraph}>{doc.ingredients.join(", ")}</Text>
+						<Text style={styles.paragraph}>{item.ingredients.join(", ")}</Text>
 					</Box>
 				</Box>
 			</ScrollView>

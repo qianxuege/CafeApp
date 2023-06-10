@@ -1,4 +1,4 @@
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, deleteObject } from "firebase/storage";
 import {
 	Box,
 	Button,
@@ -14,13 +14,14 @@ import {
 } from "native-base";
 import React, { useEffect, useState } from "react";
 import { Image } from "native-base";
-import { Ionicons, Feather } from "@expo/vector-icons";
+import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Colors from "../color";
 import AdminTop from "../Components/AdminTop";
 import { useFonts } from "expo-font";
-import { RefreshControl, TouchableOpacity } from "react-native";
+import { Alert, RefreshControl, TouchableOpacity } from "react-native";
 import {
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
@@ -31,7 +32,8 @@ import {
 import { db } from "../../firebase";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-const AdminMenuScreen = ({route}) => {
+
+const AdminMenuScreen = ({ route }) => {
 	const [fontsLoaded] = useFonts({
 		"Akronim-Regular": require("../../assets/Fonts/Akronim-Regular.ttf"),
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
@@ -81,7 +83,7 @@ const AdminMenuScreen = ({route}) => {
 
 	const resetFilter = () => {
 		setWord("");
-        arrayDocs = [];
+		arrayDocs = [];
 		setFilterPressed(false);
 		//getFoodItems();
 	};
@@ -110,7 +112,10 @@ const AdminMenuScreen = ({route}) => {
 					);
 					let querySnapshotI = await getDocs(qIngredients);
 
-					let qTags = query(foodRef, where("tags", "array-contains", filter[i]));
+					let qTags = query(
+						foodRef,
+						where("tags", "array-contains", filter[i])
+					);
 					let querySnapshotT = await getDocs(qTags);
 
 					let qLocation = query(
@@ -126,10 +131,10 @@ const AdminMenuScreen = ({route}) => {
 					// 	...querySnapshotL.docs,
 					// ];
 
-                    arrayDocs.push(...querySnapshotN.docs);
-                    arrayDocs.push(...querySnapshotI.docs);
-                    arrayDocs.push(...querySnapshotT.docs);
-                    arrayDocs.push(...querySnapshotL.docs);
+					arrayDocs.push(...querySnapshotN.docs);
+					arrayDocs.push(...querySnapshotI.docs);
+					arrayDocs.push(...querySnapshotT.docs);
+					arrayDocs.push(...querySnapshotL.docs);
 				}
 
 				// const qName = query(foodRef, where("lowercaseName", "array-contains", word));
@@ -172,6 +177,53 @@ const AdminMenuScreen = ({route}) => {
 		} catch (error) {
 			console.log(error);
 		}
+	};
+
+	const deleteAlert = (foodId) => {
+		Alert.alert(
+			"ALERT",
+			"Deleted items cannot be recovered. Click 'OK' to start delete.",
+			[
+				{
+					text: "Cancel",
+					onPress: () => {
+						return;
+					},
+					style: "cancel",
+				},
+				{ text: "OK", onPress: () => deleteFoodItem(foodId) },
+			]
+		);
+		console.log(foodId);
+	}
+
+	const deleteFoodItem = async (foodId) => {
+		const storage = getStorage();
+		//console.log("delete0");
+		const docRef = doc(db, organization, "Public", "foodItems", foodId);
+		//console.log("delete1");
+		//const image = await getDoc(docRef).data().image;
+		//console.log("delete2");
+		console.log(organization);
+		const imageFile = organization + "/images/" + "A7A8BE2B-371C-4C97-A952-EB35E7FA1025.jpg";
+		console.log(imageFile);
+		const fileRef = ref(storage, imageFile);
+		console.log("delete3");
+		try {
+			deleteObject(fileRef).then(() => {
+				// File deleted successfully
+			  }).catch((error) => {
+				// Uh-oh, an error occurred!
+				console.log(error);
+			  });
+			await deleteDoc(docRef);
+			
+			alert("Item deleted!");
+			onRefresh();
+		} catch (error) {
+			alert(error);
+		}
+		
 	};
 
 	// function getImage() {
@@ -295,7 +347,7 @@ const AdminMenuScreen = ({route}) => {
 						? docSnap.map((doc) => (
 								<Pressable
 									onPress={() => {
-										navigation.navigate("AdminSingle", doc.data());
+										navigation.navigate("AdminSingle", {doc: doc.data(), docID: doc.id, organization: organization,});
 									}}
 									key={doc.id}
 									w="47%"
@@ -314,6 +366,15 @@ const AdminMenuScreen = ({route}) => {
 										top={-12}
 										resizeMode="stretch"
 									/>
+									<Pressable position="absolute" top="50%" right="3%" onPress={() => deleteAlert(doc.id)}>
+										<Center
+											rounded="full"
+											backgroundColor={Colors.white}
+											padding={2}
+										>
+											<MaterialIcons name="delete-outline" size={18} color="black" />
+										</Center>
+									</Pressable>
 									<Box px={4} pt={1} marginX="auto" top={-10}>
 										<Text
 											fontFamily="AmaticSC-Bold"

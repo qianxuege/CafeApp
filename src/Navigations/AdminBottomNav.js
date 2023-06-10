@@ -10,6 +10,7 @@ import { Center } from "native-base";
 import AdminStackNav from "./AdminStackNav";
 import AdminMenuScreen from "../Screens/AdminMenuScreen";
 import AdminEditScreen from "../Screens/AdminEditScreen";
+import AdminProfileScreen from "../Screens/AdminProfileScreen";
 
 const Tab = createBottomTabNavigator();
 // const CustomTab = ({ children, onPress }) => <Text>hh</Text>;
@@ -30,7 +31,7 @@ const AdminBottomNav = ({ route }) => {
 			{/* Profile */}
 			<Tab.Screen
 				name="Profile"
-				component={ProfileScreen}
+				component={AdminProfileScreen}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Center top={1}>

@@ -231,7 +231,7 @@ const AdminEditScreen = ({ route }) => {
 		});
 
 		const getImage = () => {
-			getDownloadURL(ref(storage, "GHS/images/" + filename))
+			getDownloadURL(ref(storage, organization + "/images/" + filename))
 				.then((url) => {
 					//imagesrc = url.toString();
 					setImagesrc(url);
@@ -247,7 +247,7 @@ const AdminEditScreen = ({ route }) => {
 			setUploading(true);
 
 			try {
-				const storageRef = ref(storage, "GHS/images/" + filename);
+				const storageRef = ref(storage, organization + "/images/" + filename);
 				const result = await uploadBytes(storageRef, blob, metadata);
 
 				//console.log(metadata);
@@ -279,6 +279,7 @@ const AdminEditScreen = ({ route }) => {
 					calories: calories,
 					location: location.split(" "),
 					lowercaseName: newFoodName.toLowerCase().split(" "),
+					imageFileName:  organization + "/images/" + filename,
 				});
 
 				getImage();
