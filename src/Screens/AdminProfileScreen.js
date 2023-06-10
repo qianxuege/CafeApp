@@ -20,7 +20,6 @@ import { RefreshControl, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import {
-	getAuth,
 	sendPasswordResetEmail,
 	signOut,
 	updatePassword,
@@ -34,27 +33,9 @@ import {
 	getDocs,
 	updateDoc,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const Inputs = [
-	{
-		label: "USERNAME",
-		type: "text",
-	},
-	{
-		label: "EMAIL",
-		type: "text",
-	},
-	{
-		label: "NEW PASSWORD",
-		type: "password",
-	},
-	{
-		label: "CONFIRM PASSWORD",
-		type: "password",
-	},
-];
 
 function AdminProfileScreen({ navigation }) {
 	const [fontsLoaded] = useFonts({
@@ -100,7 +81,7 @@ function AdminProfileScreen({ navigation }) {
 		}, [])
 	);
 
-	const auth = getAuth();
+	//const auth = getAuth();
 
 	// function changePassword() {
 	// 	const user = auth.currentUser;

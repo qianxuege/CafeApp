@@ -13,8 +13,8 @@ import { useFonts } from "expo-font";
 import Colors from "../color";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { getAuth } from "firebase/auth";
-import { db } from "../../firebase";
+//import { getAuth } from "firebase/auth";
+import { db, auth } from "../../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 function ProfileTop() {
@@ -30,7 +30,7 @@ function ProfileTop() {
 		return null;
 	}
 
-	const auth = getAuth();
+	//const auth = getAuth();
 	const user = auth.currentUser;
 
 	const checkAdminStatus = async () => {

@@ -91,10 +91,11 @@ function AdminSingleProductScreen({ route }) {
 		//console.log("delete0");
 		const docRef = doc(db, organization, "Public", "foodItems", itemID);
 		//console.log("delete1");
-		//const image = await getDoc(docRef).data().image;
+		const imageSnap = await getDoc(docRef);
+		const imageFileName = imageSnap.data().imageFileName;
 		//console.log("delete2");
 		console.log(organization);
-		const imageFile = organization + "/images/" + "E937790C-613F-4F6E-8602-D7429464D6A0.jpg";
+		const imageFile = organization + "/images/" + imageFileName;
 		console.log(imageFile);
 		const fileRef = ref(storage, imageFile);
 		console.log("delete3");

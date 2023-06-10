@@ -22,7 +22,7 @@ import {
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 } from "firebase/auth";
-import firebase, { db } from "../../firebase";
+import firebase, { db, auth } from "../../firebase";
 import { Auth } from "firebase/auth";
 import StackNav from "../Navigations/StackNav";
 import { useFocusEffect } from "@react-navigation/native";
@@ -54,7 +54,7 @@ function LoginScreen({ navigation }) {
 	const [organization, setOrganization] = useState("");
 	let organizationsArr = [];
 
-	const auth = getAuth();
+	//const auth = getAuth();
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
@@ -68,6 +68,12 @@ function LoginScreen({ navigation }) {
 	useEffect(() => {
 		getOrganizations();
 	}, [organization]);
+
+	useFocusEffect(
+		React.useCallback(() => {
+			onRefresh();
+		}, [])
+	);
 
 	const getOrganizations = async () => {
 		const orgRef = collection(db, "Organizations");

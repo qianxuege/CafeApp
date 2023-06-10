@@ -202,10 +202,11 @@ const AdminMenuScreen = ({ route }) => {
 		//console.log("delete0");
 		const docRef = doc(db, organization, "Public", "foodItems", foodId);
 		//console.log("delete1");
-		//const image = await getDoc(docRef).data().image;
+		const imageSnap = await getDoc(docRef);
+		const imageFileName = imageSnap.data().imageFileName;
 		//console.log("delete2");
 		console.log(organization);
-		const imageFile = organization + "/images/" + "A7A8BE2B-371C-4C97-A952-EB35E7FA1025.jpg";
+		const imageFile = organization + "/images/" + imageFileName;
 		console.log(imageFile);
 		const fileRef = ref(storage, imageFile);
 		console.log("delete3");

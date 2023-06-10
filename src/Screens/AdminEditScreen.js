@@ -36,12 +36,12 @@ import {
 	updateDoc,
 	serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import LocationPicker from "../Components/LocationPicker";
 import { foodLocation } from "../Components/LocationPicker";
 import AdminMenuScreen from "./AdminMenuScreen";
 import AdminTop from "../Components/AdminTop";
-import { getAuth } from "firebase/auth";
+//import { getAuth } from "firebase/auth";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const AdminEditScreen = ({ route }) => {

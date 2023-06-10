@@ -18,14 +18,13 @@ import Colors from "../color";
 import { RefreshControl, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
 import {
-	getAuth,
 	sendPasswordResetEmail,
 	signOut,
 	updatePassword,
 } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
 import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth} from "../../firebase";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const Inputs = [
@@ -91,7 +90,7 @@ function ProfileScreen({ navigation }) {
 		}, [])
 	);
 
-	const auth = getAuth();
+	//const auth = getAuth();
 
 	// function changePassword() {
 	// 	const user = auth.currentUser;

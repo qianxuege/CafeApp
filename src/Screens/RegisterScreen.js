@@ -14,13 +14,12 @@ import Colors from "../color";
 import { useFonts } from "expo-font";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import {
-	getAuth,
 	createUserWithEmailAndPassword,
 	sendEmailVerification,
 	updateProfile,
 	sendPasswordResetEmail,
 } from "firebase/auth";
-import firebase, { db } from "../../firebase";
+import firebase, { db, auth } from "../../firebase";
 import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
@@ -42,13 +41,14 @@ function RegisterScreen({ navigation }) {
 	//const [displayName, setDisplayName] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [errorText, setErrorText] = useState("");
-	const auth = getAuth();
+	//const auth = getAuth();
 
 	//for the Dropdown Picker
 	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState(null);
 	const [items, setItems] = useState([]);
 	const [organization, setOrganization] = useState("");
+	const [orgArrDB, setOrgArrDB] = useState([]);
 	let dropDownArr = []; //map of items
 	let organizationsArr = []; //the value of items
 	let count = 0;
@@ -73,8 +73,7 @@ function RegisterScreen({ navigation }) {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			setOrganization("");
-			setIsAdmin(false);
+			onRefresh();
 		}, [])
 	);
 
@@ -89,6 +88,7 @@ function RegisterScreen({ navigation }) {
 		setErrorText("");
 		setValue("");
 		setItems([]);
+		setOrgArrDB([]);
 		count = 0;
 	};
 
@@ -100,21 +100,25 @@ function RegisterScreen({ navigation }) {
 		// }
 		//returns an array of all available organizations for the user to choose from
 		dropDownArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
+		setOrgArrDB(dropDownArr);
 		setItems(dropDownArr);
-		console.log(dropDownArr);
+		//console.log(dropDownArr);
 	};
 
 	const checkOrganizations = async (org) => {
 
 		console.log(count);
-		console.log(dropDownArr);
+		console.log(org);
+		getOrganizations();
+		console.log(orgArrDB);
 
-		if (items != []) {
-			for (let i = 0; i < dropDownArr.length; i++) {
-				if (dropDownArr[i].value == org) {
+		if (orgArrDB != []) {
+			for (let i = 0; i < orgArrDB.length; i++) {
+				if (orgArrDB[i].value == org) {
 					count += 1;
+					console.log("found it");
 				}
-			}
+			};
 
 			console.log(count);
 			console.log(isAdmin);
@@ -141,6 +145,7 @@ function RegisterScreen({ navigation }) {
 					alert(
 						"You can only create a new organization if you register as an admin"
 					);
+					onRefresh();
 					//will not create a new user
 				}
 			} else {
@@ -151,11 +156,12 @@ function RegisterScreen({ navigation }) {
 						"This organization already exists, there can only be one admin at this time. Please ask the current admin for access."
 					);
 					count = 0;
+					onRefresh();
 				} else {
 					//if isAdmin is false
 					//proceed to creating the user as a regular user
+					console.log("regular user");
 					createUser();
-					count = 0;
 					onRefresh();
 				}
 			}
@@ -432,7 +438,7 @@ function RegisterScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={() => handleSignUp()}
+					onPress={() => {handleSignUp();}}
 				>
 					REGISTER AS USER
 				</Button>
