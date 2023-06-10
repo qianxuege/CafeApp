@@ -32,6 +32,7 @@ const AdminBottomNav = ({ route }) => {
 			<Tab.Screen
 				name="Profile"
 				component={AdminProfileScreen}
+				initialParams={{ organization: organization }}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Center top={1}>

@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
-import { RefreshControl, StyleSheet } from "react-native";
+import { Alert, RefreshControl, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -24,10 +24,11 @@ import {
 	signOut,
 	updatePassword,
 } from "firebase/auth";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
 	arrayUnion,
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
@@ -35,9 +36,10 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import DropDownPicker from "react-native-dropdown-picker";
+import { deleteUser } from "firebase/auth/react-native";
 
 
-function AdminProfileScreen({ navigation }) {
+function AdminProfileScreen({ navigation, route }) {
 	const [fontsLoaded] = useFonts({
 		"AmaticSC-Bold": require("../../assets/Fonts/AmaticSC-Bold.ttf"),
 		"Bitter-Bold": require("../../assets/Fonts/Bitter-Bold.ttf"),
@@ -51,6 +53,8 @@ function AdminProfileScreen({ navigation }) {
 	const [newPassword, setNewPassword] = useState("");
 	const [message, setMessage] = useState("");
 	const [userOrganization, setUserOrganization] = useState();
+	const organization = route.params.organization;
+	//const navigation = useNavigation();
 
 	//for the Dropdown Picker
 	const [open, setOpen] = useState(false);
@@ -112,6 +116,42 @@ function AdminProfileScreen({ navigation }) {
 				console.log(errorMessage);
 				// ..
 			});
+	};
+
+	const deleteAlert = () => {
+		Alert.alert(
+			"ALERT",
+			"Deleted accounts cannot be recovered. Click 'OK' to start delete.",
+			[
+				{
+					text: "Cancel",
+					onPress: () => {
+						return;
+					},
+					style: "cancel",
+				},
+				{ text: "OK", onPress: () => deleteAccount() },
+			]
+		);
+	}
+
+	const deleteAccount = async () => {
+		console.log("start delete");
+		const user = auth.currentUser;
+		const docRef = doc(db, "Users", user.uid);
+		await deleteDoc(docRef);
+		const orgRef = doc(db, "Organizations", organization);
+		await updateDoc(orgRef, {
+			adminEmail: "",
+		  });
+		deleteUser(user).then(() => {
+			// User deleted.
+			alert("user deleted");
+			navigation.navigate("Login");
+		  }).catch((error) => {
+			// An error ocurred
+			console.log(error);
+		  });
 	};
 
 	const getOrganizations = async () => {
@@ -310,7 +350,7 @@ function AdminProfileScreen({ navigation }) {
 					))} */}
 
 					<Box alignItems="center" width="80" left={-2}>
-						{/* <Button
+						<Button
 							width="100%"
 							height={55}
 							rounded="full"
@@ -323,10 +363,10 @@ function AdminProfileScreen({ navigation }) {
 							}}
 							_pressed={{ bg: Colors.deepGold }}
 							marginBottom={6}
-							onPress={() => setShowModal(true)}
+							onPress={() => deleteAlert()}
 						>
-							Add Organization
-						</Button> */}
+							Delete Account
+						</Button>
 						<Button
 							width="100%"
 							height={55}

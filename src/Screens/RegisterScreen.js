@@ -22,7 +22,7 @@ import {
 import firebase, { db, auth } from "../../firebase";
 import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 import { Alert, RefreshControl } from "react-native";
 
@@ -64,12 +64,12 @@ function RegisterScreen({ navigation }) {
 		}, 1000);
 	}, []);
 
-	 useEffect(() => {
+	useEffect(() => {
 		// getOrganizations();
 		if (isAdmin == true) {
 			handleSignUp();
 		}
-	 }, [isAdmin]);
+	}, [isAdmin]);
 
 	useFocusEffect(
 		React.useCallback(() => {
@@ -106,7 +106,6 @@ function RegisterScreen({ navigation }) {
 	};
 
 	const checkOrganizations = async (org) => {
-
 		console.log(count);
 		console.log(org);
 		getOrganizations();
@@ -118,7 +117,7 @@ function RegisterScreen({ navigation }) {
 					count += 1;
 					console.log("found it");
 				}
-			};
+			}
 
 			console.log(count);
 			console.log(isAdmin);
@@ -138,8 +137,6 @@ function RegisterScreen({ navigation }) {
 					count = 0;
 					console.log("organization updated");
 					onRefresh();
-					
-					
 				} else {
 					// if isAdmin is false but wants to create a new organization
 					alert(
@@ -152,11 +149,27 @@ function RegisterScreen({ navigation }) {
 				//if this is an existing organization
 				if (isAdmin == true) {
 					// you cannot register as admin if there is already an admin
-					alert(
-						"This organization already exists, there can only be one admin at this time. Please ask the current admin for access."
-					);
-					count = 0;
-					onRefresh();
+					const orgRef = doc(db, "Organizations", org);
+					const docSnap = await getDoc(orgRef);
+					const adminEmail = docSnap.data().adminEmail;
+					if (adminEmail == "") {
+						createUser();
+						const orgRef = doc(db, "Organizations", org);
+						await updateDoc(orgRef, {
+							adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
+						});
+						count = 0;
+						console.log("adminInfo updated");
+						onRefresh();
+					} else {
+						alert(
+							"This organization already exists, there can only be one admin at this time. Please ask the current admin for access."
+						);
+						count = 0;
+						onRefresh();
+					};
+					
+					
 				} else {
 					//if isAdmin is false
 					//proceed to creating the user as a regular user
@@ -438,7 +451,9 @@ function RegisterScreen({ navigation }) {
 					rounded={50}
 					bg={Colors.gold}
 					size="md"
-					onPress={() => {handleSignUp();}}
+					onPress={() => {
+						handleSignUp();
+					}}
 				>
 					REGISTER AS USER
 				</Button>
