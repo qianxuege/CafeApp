@@ -218,6 +218,7 @@ function ProfileScreen({ navigation }) {
 								}}
 								dropDownContainerStyle={{
 									borderColor: Colors.gold,
+									paddingBottom: 20,
 								}}
 								labelStyle={{
 									color: "#4e954e",

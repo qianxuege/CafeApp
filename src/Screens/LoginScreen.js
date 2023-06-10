@@ -59,6 +59,7 @@ function LoginScreen({ navigation }) {
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		reset();
+		getOrganizations();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 1000);
@@ -251,6 +252,7 @@ function LoginScreen({ navigation }) {
 						}}
 						dropDownContainerStyle={{
 							borderColor: Colors.gold,
+							paddingBottom: 20,
 						}}
 						labelStyle={{
 							color: "#4e954e",

@@ -49,6 +49,8 @@ function RegisterScreen({ navigation }) {
 	const [value, setValue] = useState(null);
 	const [items, setItems] = useState([]);
 	const [organization, setOrganization] = useState("");
+	let dropDownArr = []; //map of items
+	let organizationsArr = []; //the value of items
 
 	//refresh
 	const [refreshing, setRefreshing] = useState(false);
@@ -76,7 +78,7 @@ function RegisterScreen({ navigation }) {
 
 	<firebase />;
 
-	let organizationsArr = [];
+	
 
 	const reset = () => {
 		setEmail("");
@@ -95,21 +97,28 @@ function RegisterScreen({ navigation }) {
 		// 	organizations.push(querySnapshot.docs[i].id)
 		// }
 		//returns an array of all available organizations for the user to choose from
-		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
-		setItems(organizationsArr);
-		console.log(organizationsArr);
+		dropDownArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
+		setItems(dropDownArr);
+		//console.log(dropDownArr);
 	};
 
 	
 
-	const checkOrganizations = async (value) => {
+	const checkOrganizations = async (org) => {
 		let count = 0;
-		for (let i = 0; i < organizationsArr.length; i++) {
-			if (organizationsArr[i].value == value) {
+		console.log(org);
+		
+		for (let i = 0; i < items.length; i++) {
+			if (items[i].value == org) {
 				count += 1;
+		
+			} else {
+
 			}
-		}
+		};
+
 		console.log(count);
+		//console.log(organizationsArr);
 		if (count == 0) { //if this organization is new
 			if (isAdmin == true) { //if it is a new organization and isAdmin is true, update organizations collection
 				const orgRef = doc(db, "Organizations", value);
@@ -128,16 +137,16 @@ function RegisterScreen({ navigation }) {
 				//will not create a new user
 				
 			}
-		};
-
-		if (count != 0) { //if this is an existing organization
+		} else { //if this is an existing organization
 			if (isAdmin==true) { // you cannot register as admin if there is already an admin
 				alert(
 					"This organization already exists, there can only be one admin at this time. Please create a new organization or ask the current admin for access."
 				);
+				count = 0;
 			} else { //if isAdmin is false
 				//proceed to creating the user as a regular user
 				createUser();
+				count = 0;
 			}
 			
 		}
@@ -159,7 +168,7 @@ function RegisterScreen({ navigation }) {
 							const errorMessage = error.message;
 							console.log(errorMessage);
 						});
-						Alert.alert("User Registered", "Please verify your emai address!");
+						Alert.alert("User Registered", "Please verify your email address!");
 					});
 
 					// ...
@@ -306,6 +315,7 @@ function RegisterScreen({ navigation }) {
 						}}
 						dropDownContainerStyle={{
 							borderColor: Colors.gold,
+							paddingBottom: 20,
 						}}
 						labelStyle={{
 							color: "#4e954e",
