@@ -19,11 +19,7 @@ import Colors from "../color";
 import { Alert, RefreshControl, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
-import {
-	sendPasswordResetEmail,
-	signOut,
-	updatePassword,
-} from "firebase/auth";
+import { sendPasswordResetEmail, signOut, updatePassword } from "firebase/auth";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
 	arrayUnion,
@@ -36,8 +32,11 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import DropDownPicker from "react-native-dropdown-picker";
-import { deleteUser } from "firebase/auth/react-native";
-
+import {
+	EmailAuthProvider,
+	deleteUser,
+	reauthenticateWithCredential,
+} from "firebase/auth/react-native";
 
 function AdminProfileScreen({ navigation, route }) {
 	const [fontsLoaded] = useFonts({
@@ -63,10 +62,13 @@ function AdminProfileScreen({ navigation, route }) {
 	const [newOrganization, setNewOrganization] = useState("");
 	let organizationsArr = [];
 
+	const [userProvidedPassword, setUserProvidedPassword] = useState("");
+
 	<firebase />;
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
+		setUserProvidedPassword("");
 		getOrganizations();
 		setTimeout(() => {
 			setRefreshing(false);
@@ -121,7 +123,7 @@ function AdminProfileScreen({ navigation, route }) {
 	const deleteAlert = () => {
 		Alert.alert(
 			"ALERT",
-			"Deleted accounts cannot be recovered. Click 'OK' to start delete.",
+			"Deleted accounts cannot be recovered. Click 'OK' to reauthenticate and start delete.",
 			[
 				{
 					text: "Cancel",
@@ -130,51 +132,77 @@ function AdminProfileScreen({ navigation, route }) {
 					},
 					style: "cancel",
 				},
-				{ text: "OK", onPress: () => deleteAccount() },
+				{ text: "OK", onPress: () => setShowModal(true) },
 			]
 		);
-	}
+	};
+
+	const reauthenticate = async () => {
+		const user = auth.currentUser;
+
+		const credential = EmailAuthProvider.credential(
+			auth.currentUser.email,
+			userProvidedPassword
+		);
+
+		reauthenticateWithCredential(user, credential)
+			.then(() => {
+				// User re-authenticated.
+				deleteAccount();
+			})
+			.catch((error) => {
+				// An error ocurred
+				console.log(error);
+			});
+	};
 
 	const deleteAccount = async () => {
 		console.log("start delete");
 		const user = auth.currentUser;
+
 		const docRef = doc(db, "Users", user.uid);
-		await deleteDoc(docRef);
 		const orgRef = doc(db, "Organizations", organization);
+		await deleteDoc(docRef);
 		await updateDoc(orgRef, {
 			adminEmail: "",
-		  });
-		deleteUser(user).then(() => {
-			// User deleted.
-			alert("user deleted");
-			navigation.navigate("Login");
-		  }).catch((error) => {
-			// An error ocurred
-			console.log(error);
-		  });
+		});
+		deleteUser(user)
+			.then(() => {
+				// User deleted.
+				console.log(auth);
+				setUserProvidedPassword("");
+				alert("user deleted");
+				navigation.navigate("Login");
+			})
+			.catch((error) => {
+				// An error ocurred
+				console.log(error);
+			});
 	};
 
 	const getOrganizations = async () => {
-		const userRef = doc(db, "Users", auth.currentUser.uid);
-		const docSnap = await getDoc(userRef);
-		const userOrg = docSnap.data().organization;
-		setUserOrganization(userOrg.join(", ")); //this is the organization(s) that the user's account currently link to
+		if (auth != null) {
+			const userRef = doc(db, "Users", auth.currentUser.uid);
+			const docSnap = await getDoc(userRef);
+			const userOrg = docSnap.data().organization;
+			setUserOrganization(userOrg.join(", ")); //this is the organization(s) that the user's account currently link to
 
-		const orgRef = collection(db, "Organizations");
-		const querySnapshot = await getDocs(orgRef);
-		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
-		setItems(organizationsArr); //returns an array of all available organizations for the user to choose from
-		console.log(organizationsArr);
+			const orgRef = collection(db, "Organizations");
+			const querySnapshot = await getDocs(orgRef);
+			organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
+			setItems(organizationsArr); //returns an array of all available organizations for the user to choose from
+			//console.log(organizationsArr);
+		}
 	};
 
-	const addOrganizations = async () => {
-		const userRef = doc(db, "Users", auth.currentUser.uid);
-		await updateDoc(userRef, {
-			organization: arrayUnion(newOrganization),
-		});
-		alert("updated organization");
-		setShowModal(false);
-	};
+	// const addOrganizations = async () => {
+	// 	const userRef = doc(db, "Users", auth.currentUser.uid);
+	// 	await updateDoc(userRef, {
+	// 		organization: arrayUnion(newOrganization),
+	// 	});
+	// 	alert("updated organization");
+	// 	setShowModal(false);
+	// };
 
 	function logOut() {
 		//console.log("logout");
@@ -196,7 +224,10 @@ function AdminProfileScreen({ navigation, route }) {
 	}
 	return (
 		<NativeBaseProvider>
-			<Box
+			{auth.currentUser == undefined? 
+			(<Text>User deleted</Text> ): (
+				<>
+				<Box
 				space={3}
 				bg={Colors.lightGold}
 				height={210}
@@ -207,7 +238,7 @@ function AdminProfileScreen({ navigation, route }) {
 				safeAreaTop
 			>
 				<Center>
-				<Circle size="86px" bg={Colors.darkPink}>
+					<Circle size="86px" bg={Colors.darkPink}>
 						<Ionicons name="ios-person" size={36} color={Colors.white} />
 					</Circle>
 				</Center>
@@ -228,60 +259,21 @@ function AdminProfileScreen({ navigation, route }) {
 				<Modal isOpen={showModal} onClose={() => setShowModal(false)}>
 					<Modal.Content maxWidth="400px" maxHeight="400px">
 						<Modal.CloseButton />
-						<Modal.Header>Add Organization</Modal.Header>
-						<Modal.Body height="400px">
-							<DropDownPicker
-								open={open}
-								value={value}
-								items={items}
-								setOpen={setOpen}
-								setValue={setValue}
-								setItems={setItems}
-								searchable={true}
-								multiple={false}
-								listMode="SCROLLVIEW"
-								maxHeight={200}
-								searchTextInputProps={{
-									maxLength: 25,
-								}}
-								addCustomItem={false}
-								searchPlaceholder="Search for an organization"
-								placeholder="Add an organization"
-								searchContainerStyle={{
-									borderBottomColor: Colors.gold,
-								}}
-								searchPlaceholderTextColor={Colors.lightGreen}
-								searchTextInputStyle={{
-									borderColor: Colors.white,
-									fontSize: 14,
-									color: Colors.lightGreen,
-								}}
-								placeholderStyle={{
-									color: Colors.lightGreen,
-								}}
-								style={{
-									borderColor: Colors.gold,
-								}}
-								containerStyle={{
-									width: "85%",
-									borderColor: Colors.gold,
-								}}
-								dropDownContainerStyle={{
-									borderColor: Colors.gold,
-									paddingBottom: 20,
-								}}
-								labelStyle={{
-									color: "#4e954e",
-									fontSize: "16",
-								}}
-								textStyle={{
-									color: "#4e954e",
-								}}
-								onChangeValue={(value) => {
-									setNewOrganization(value);
-									//console.log(value);
-								}}
-							/>
+						<Modal.Header>Reauthenticate</Modal.Header>
+						<Modal.Body height="200px">
+							Enter your password to delete your account.
+							<FormControl mt="3">
+								<FormControl.Label>Password</FormControl.Label>
+								<Input
+									_focus={{
+										backgroundColor: Colors.white,
+										color: Colors.darkGreen,
+										borderColor: Colors.gold,
+									}}
+									value={userProvidedPassword}
+									onChangeText={(text) => setUserProvidedPassword(text)}
+								/>
+							</FormControl>
 						</Modal.Body>
 						<Modal.Footer>
 							<Button.Group space={2}>
@@ -296,7 +288,8 @@ function AdminProfileScreen({ navigation, route }) {
 								</Button>
 								<Button
 									onPress={() => {
-										addOrganizations();
+										setShowModal(false);
+										reauthenticate();
 									}}
 								>
 									Confirm
@@ -408,6 +401,11 @@ function AdminProfileScreen({ navigation, route }) {
 					</Box>
 				</VStack>
 			</ScrollView>
+			</>
+			
+			)
+		}
+			
 		</NativeBaseProvider>
 	);
 }
