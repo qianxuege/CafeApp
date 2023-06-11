@@ -85,7 +85,7 @@ const AdminEditScreen = ({ route }) => {
 		//console.log(uniqueId);
 		if (uniqueId != "" && imagesrc != "") {
 			const updateImagesrc = updateDoc(
-				doc(db, organization , "Public", "foodItems", uniqueId),
+				doc(db, "Organizations", organization, "foodItems", uniqueId),
 				{
 					image: imagesrc,
 				}
@@ -154,7 +154,7 @@ const AdminEditScreen = ({ route }) => {
 		let filename = uploadUri.substring(uploadUri.lastIndexOf("/") + 1); //this is the filename for the image
 		//let filename = fname.concat(imageEnding);
 
-		const foodRef = collection(db, organization, "Users", "foodItems");
+		const foodRef = collection(db, "Organizations", organization, "foodItems");
 
 		try {
 			const q = query(foodRef, where("name", "==", newFoodName));
@@ -231,7 +231,7 @@ const AdminEditScreen = ({ route }) => {
 		});
 
 		const getImage = () => {
-			getDownloadURL(ref(storage, organization + "/images/" + filename))
+			getDownloadURL(ref(storage, "Organizations/" + organization + "/images/" + filename))
 				.then((url) => {
 					//imagesrc = url.toString();
 					setImagesrc(url);
@@ -247,7 +247,7 @@ const AdminEditScreen = ({ route }) => {
 			setUploading(true);
 
 			try {
-				const storageRef = ref(storage, organization + "/images/" + filename);
+				const storageRef = ref(storage, "Organizations/" + organization + "/images/" + filename);
 				const result = await uploadBytes(storageRef, blob, metadata);
 
 				//console.log(metadata);
@@ -268,7 +268,7 @@ const AdminEditScreen = ({ route }) => {
 
 				//console.log(uuid);
 
-				const docRef = doc(db, organization, "Public", "foodItems", foodid);
+				const docRef = doc(db, "Organizations", organization, "foodItems", foodid);
 
 				// Add a new document in collection "cities"
 				await setDoc(docRef, {
@@ -279,7 +279,7 @@ const AdminEditScreen = ({ route }) => {
 					calories: calories,
 					location: location.split(" "),
 					lowercaseName: newFoodName.toLowerCase().split(" "),
-					imageFileName:  organization + "/images/" + filename,
+					imageFileName: filename,
 				});
 
 				getImage();

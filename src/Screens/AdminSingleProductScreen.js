@@ -89,14 +89,14 @@ function AdminSingleProductScreen({ route }) {
 	const deleteFoodItem = async () => {
 		const storage = getStorage();
 		//console.log("delete0");
-		const docRef = doc(db, organization, "Public", "foodItems", itemID);
+		const docRef = doc(db, "Organizations", organization, "foodItems", itemID);
 		//console.log("delete1");
 		const imageSnap = await getDoc(docRef);
 		const imageFileName = imageSnap.data().imageFileName;
 		//console.log("delete2");
-		console.log(organization);
-		const imageFile = organization + "/images/" + imageFileName;
-		console.log(imageFile);
+		//console.log(organization);
+		const imageFile = "Organizations/" + organization + "/images/" + imageFileName;
+		//console.log(imageFile);
 		const fileRef = ref(storage, imageFile);
 		console.log("delete3");
 		try {

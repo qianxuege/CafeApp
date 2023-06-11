@@ -89,7 +89,7 @@ const AdminMenuScreen = ({ route }) => {
 	};
 
 	const getFoodItems = async () => {
-		const foodRef = collection(db, organization, "Public", "foodItems");
+		const foodRef = collection(db, "Organizations", organization, "foodItems");
 		try {
 			//const q = query(foodRef, where("name", "==", newFoodName));
 			//console.log(newFoodName);
@@ -200,13 +200,13 @@ const AdminMenuScreen = ({ route }) => {
 	const deleteFoodItem = async (foodId) => {
 		const storage = getStorage();
 		//console.log("delete0");
-		const docRef = doc(db, organization, "Public", "foodItems", foodId);
+		const docRef = doc(db, "Organizations", organization, "foodItems", foodId);
 		//console.log("delete1");
 		const imageSnap = await getDoc(docRef);
 		const imageFileName = imageSnap.data().imageFileName;
 		//console.log("delete2");
 		console.log(organization);
-		const imageFile = organization + "/images/" + imageFileName;
+		const imageFile = "Organizations/" + organization + "/images/" + imageFileName;
 		console.log(imageFile);
 		const fileRef = ref(storage, imageFile);
 		console.log("delete3");
@@ -270,7 +270,7 @@ const AdminMenuScreen = ({ route }) => {
 						clearTextOnFocus
 					/>
 					<Box right={10}>
-						<TouchableOpacity onPress={() => setWord("")}>
+						<TouchableOpacity onPress={() => resetFilter()}>
 							<Feather name="x" size={24} color={Colors.deepestGray} />
 						</TouchableOpacity>
 					</Box>

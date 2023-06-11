@@ -83,7 +83,7 @@ function HomeScreen({route}) {
 	const search = async () => {
 		//console.log(word);
 
-		const foodRef = collection(db, organization, "Public", "foodItems");
+		const foodRef = collection(db, "Organizations", organization, "foodItems");
 		try {
 			if (word == "") {
 				const querySnapshot = await getDocs(foodRef);
@@ -173,7 +173,7 @@ function HomeScreen({route}) {
 						clearTextOnFocus
 					/>
 					<Box right={10}>
-						<TouchableOpacity onPress={() => setWord("")}> 
+						<TouchableOpacity onPress={() => resetFilter()}> 
 							<Feather name="x" size={24} color={Colors.deepestGray} />
 						</TouchableOpacity>
 					</Box>
