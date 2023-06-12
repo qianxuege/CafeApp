@@ -72,6 +72,7 @@ const AdminEditScreen = ({ route }) => {
 		{ label: "Hot meal", value: "hot meal" },
 		{ label: "Salad station", value: "salad station" },
 		{ label: "Snack Shack", value: "snack shack" },
+		{ label: "N/A", value: "N/A" },
 	]);
 
 	//const [filename, setFilename] = useState("");
@@ -472,6 +473,7 @@ const AdminEditScreen = ({ route }) => {
 							color: Colors.darkPink,
 							backgroundColor: Colors.morandiPink,
 						}}
+						placeholder="Select a location"
 					/>
 				</Box>
 

@@ -91,8 +91,6 @@ const AdminMenuScreen = ({ route }) => {
 	const getFoodItems = async () => {
 		const foodRef = collection(db, "Organizations", organization, "foodItems");
 		try {
-			//const q = query(foodRef, where("name", "==", newFoodName));
-			//console.log(newFoodName);
 			if (word == "") {
 				const querySnapshot = await getDocs(foodRef);
 				setDocSnap(querySnapshot.docs);
@@ -123,13 +121,6 @@ const AdminMenuScreen = ({ route }) => {
 						where("location", "array-contains", filter[i])
 					);
 					let querySnapshotL = await getDocs(qLocation);
-
-					// arrayDocs = [
-					// 	...querySnapshotN.docs,
-					// 	...querySnapshotI.docs,
-					// 	...querySnapshotT.docs,
-					// 	...querySnapshotL.docs,
-					// ];
 
 					arrayDocs.push(...querySnapshotN.docs);
 					arrayDocs.push(...querySnapshotI.docs);
@@ -343,7 +334,6 @@ const AdminMenuScreen = ({ route }) => {
 					justifyContent="space-between"
 					px={6}
 				>
-					{/* {"null is not an object --> need to fix docSnap"} */}
 					{docSnap != ""
 						? docSnap.map((doc) => (
 								<Pressable

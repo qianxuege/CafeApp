@@ -22,7 +22,14 @@ import {
 import firebase, { db, auth } from "../../firebase";
 import { Auth, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import DropDownPicker from "react-native-dropdown-picker";
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	setDoc,
+	updateDoc,
+} from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 import { Alert, RefreshControl } from "react-native";
 
@@ -52,6 +59,9 @@ function RegisterScreen({ navigation }) {
 	let dropDownArr = []; //map of items
 	let organizationsArr = []; //the value of items
 	let count = 0;
+
+	//for create user
+	const [userCreated, setUserCreated] = useState(false);
 
 	//refresh
 	const [refreshing, setRefreshing] = useState(false);
@@ -89,6 +99,7 @@ function RegisterScreen({ navigation }) {
 		setValue("");
 		setItems([]);
 		setOrgArrDB([]);
+		setUserCreated(false);
 		count = 0;
 	};
 
@@ -106,82 +117,74 @@ function RegisterScreen({ navigation }) {
 	};
 
 	const checkOrganizations = async (org) => {
-		console.log(count);
-		console.log(org);
 		getOrganizations();
-		console.log(orgArrDB);
 
 		if (orgArrDB != []) {
 			for (let i = 0; i < orgArrDB.length; i++) {
 				if (orgArrDB[i].value == org) {
-					count += 1;
-					console.log("found it");
+					count += 1; //indicates that the user's selected organization already exists
 				}
-			}
+			};
 
-			console.log(count);
-			console.log(isAdmin);
-			//console.log(organizationsArr);
 			if (count == 0) {
-				//if this organization is new
-				if (isAdmin == true) {
-					//if it is a new organization and isAdmin is true, update organizations collection
-					console.log(org);
-					//Proceed with creating the user
-					createUser();
-					const orgRef = doc(db, "Organizations", org);
-					await setDoc(orgRef, {
-						dropDown: { label: org, value: org },
-						adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
-					});
-					count = 0;
-					console.log("organization updated");
-					onRefresh();
+				if (isAdmin == true) { //if it is a new organization and isAdmin is true, update organizations collection					
+					createUser(0); //Proceed with creating the user
 				} else {
 					// if isAdmin is false but wants to create a new organization
 					alert(
 						"You can only create a new organization if you register as an admin"
 					);
-					onRefresh();
-					//will not create a new user
+					onRefresh(); //will not create a new user
 				}
 			} else {
 				//if this is an existing organization
 				if (isAdmin == true) {
 					// you cannot register as admin if there is already an admin
-					const orgRef = doc(db, "Organizations", org);
+					const orgRef = doc(db, "Organizations", organization);
 					const docSnap = await getDoc(orgRef);
 					const adminEmail = docSnap.data().adminEmail;
-					if (adminEmail == "") {
-						createUser();
-						const orgRef = doc(db, "Organizations", org);
-						await updateDoc(orgRef, {
-							adminEmail: email.split(" "), //transforms string to an array and sets this email as the first admin email
-						});
-						count = 0;
-						console.log("adminInfo updated");
-						onRefresh();
+					if (adminEmail == "") { //unless the previous admin deleted the admin account
+						createUser(1);
 					} else {
 						alert(
 							"This organization already exists, there can only be one admin at this time. Please ask the current admin for access."
 						);
 						count = 0;
 						onRefresh();
-					};
-					
-					
-				} else {
-					//if isAdmin is false
-					//proceed to creating the user as a regular user
-					console.log("regular user");
-					createUser();
+					}
+				} else { //if organization already exists and isAdmin is not clicked, proceed to creating a regular user
+					createUser(2);
 					onRefresh();
 				}
 			}
 		}
 	};
 
-	const createUser = () => {
+	const createAdmin = async () => {
+		// n == 0
+		const orgRef = doc(db, "Organizations", organization);
+		await setDoc(orgRef, {
+			dropDown: { label: organization, value: organization },
+			adminEmail: email, 
+		});
+		count = 0;
+		console.log("organization uploaded");
+		onRefresh();
+	};
+
+	const updateAdmin = async () => {
+		// n == 1
+		const orgRef = doc(db, "Organizations", organization);
+		await updateDoc(orgRef, {
+			adminEmail: email, 
+		});
+		count = 0;
+		console.log("adminInfo updated");
+		onRefresh();
+	};
+
+	const createUser = (n) => {
+		//n = a number passed as parameter from checkOrganizations
 		createUserWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				// Signed in
@@ -195,8 +198,15 @@ function RegisterScreen({ navigation }) {
 					}).catch((error) => {
 						const errorCode = error.code;
 						const errorMessage = error.message;
-						console.log(errorMessage);
+						setErrorText(errorMessage);
 					});
+					if (n == 0) {
+						createAdmin();
+					}
+					if (n == 1) {
+						updateAdmin();
+					};
+					setUserCreated(true);
 					Alert.alert("User Registered", "Please verify your email address!");
 				});
 

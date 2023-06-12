@@ -17,14 +17,17 @@ import ProfielTop from "../Components/ProfileTop";
 import Colors from "../color";
 import { RefreshControl, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
-import {
-	sendPasswordResetEmail,
-	signOut,
-	updatePassword,
-} from "firebase/auth";
+import { sendPasswordResetEmail, signOut, updatePassword } from "firebase/auth";
 import { useFocusEffect } from "@react-navigation/native";
-import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
-import { db, auth} from "../../firebase";
+import {
+	arrayUnion,
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	updateDoc,
+} from "firebase/firestore";
+import { db, auth } from "../../firebase";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const Inputs = [
@@ -137,12 +140,17 @@ function ProfileScreen({ navigation }) {
 	};
 
 	const addOrganizations = async () => {
-		const userRef = doc(db, "Users", auth.currentUser.uid);
-		await updateDoc(userRef, {
-			organization: arrayUnion(newOrganization),
-		});
-		alert("updated organization");
-		setShowModal(false);
+		if (newOrganization != null) {
+			const userRef = doc(db, "Users", auth.currentUser.uid);
+			await updateDoc(userRef, {
+				organization: arrayUnion(newOrganization),
+			});
+			alert("updated organization");
+			setShowModal(false);
+		} else {
+			alert("please select an organization to update your profile");
+			setShowModal(false);
+		}
 	};
 
 	function logOut() {
@@ -178,7 +186,6 @@ function ProfileScreen({ navigation }) {
 						<Modal.CloseButton />
 						<Modal.Header>Add Organization</Modal.Header>
 						<Modal.Body height="400px">
-
 							<DropDownPicker
 								open={open}
 								value={value}
@@ -312,7 +319,7 @@ function ProfileScreen({ navigation }) {
 							}}
 							_pressed={{ bg: Colors.deepGold }}
 							marginBottom={6}
-							onPress={()=> setShowModal(true)}
+							onPress={() => setShowModal(true)}
 						>
 							Add Organization
 						</Button>

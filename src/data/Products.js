@@ -3,7 +3,7 @@ const products = [
         _id: "1",
         name: "Acai Bowl",
         image:"https://yeahthatskosher.com/wp-content/uploads/2021/06/Sobol-Kosher-Acai-Bowls-Hewlett-Fruit-Granola-Coconut.jpg",
-        tags: ["dairy-free", "healthy", "fruits", "sweet"],
+        tags: ["healthy", "fruits", "sweet"],
         ingredients: "acai berries, coconut flakes, ...",
         calories: 270,
         price: 10,

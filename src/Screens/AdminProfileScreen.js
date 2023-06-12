@@ -163,13 +163,15 @@ function AdminProfileScreen({ navigation, route }) {
 		const docRef = doc(db, "Users", user.uid);
 		const orgRef = doc(db, "Organizations", organization);
 		await deleteDoc(docRef);
+		console.log("deleteA")
 		await updateDoc(orgRef, {
 			adminEmail: "",
 		});
+		console.log("deleteB")
 		deleteUser(user)
 			.then(() => {
 				// User deleted.
-				console.log(auth);
+				console.log("deleteC");
 				setUserProvidedPassword("");
 				alert("user deleted");
 				navigation.navigate("Login");

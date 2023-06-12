@@ -78,12 +78,9 @@ function LoginScreen({ navigation }) {
 	const getOrganizations = async () => {
 		const orgRef = collection(db, "Organizations");
 		const querySnapshot = await getDocs(orgRef);
-		// for (let i=0; i<querySnapshot.size; i++) {
-		// 	organizations.push(querySnapshot.docs[i].id)
-		// }
 		organizationsArr = querySnapshot.docs.map((doc) => doc.data().dropDown);
 		setItems(organizationsArr);
-		console.log(organizationsArr);
+		//console.log(organizationsArr);
 	};
 
 	// useFocusEffect(
