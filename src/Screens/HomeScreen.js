@@ -89,7 +89,7 @@ function HomeScreen({route}) {
 				const querySnapshot = await getDocs(foodRef);
 				setDocSnap(querySnapshot.docs);
 			} else {
-				//console.log(word);
+				
 				let filter = word.split(" ");
 				for (let i = 0; i < filter.length; i++) {
 					let qName = query(
@@ -115,7 +115,6 @@ function HomeScreen({route}) {
 						where("location", "array-contains", filter[i])
 					);
 					let querySnapshotL = await getDocs(qLocation);
-
 					arrayDocs.push(...querySnapshotN.docs);
 					arrayDocs.push(...querySnapshotI.docs);
 					arrayDocs.push(...querySnapshotT.docs);
@@ -128,14 +127,13 @@ function HomeScreen({route}) {
 							if (arrayDocs[i].id === arrayDocs[j].id) {
 								arrayDocs.splice(i, 1);
 								getUniqueList();
-								//console.log(arrayDocs.map((doc) => doc.data().name));
 							}
 						}
 					}
 				};
 
 				getUniqueList();
-
+                
 				setDocSnap(arrayDocs);
 			}
 		} catch (error) {

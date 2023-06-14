@@ -334,6 +334,7 @@ const AdminMenuScreen = ({ route }) => {
 					justifyContent="space-between"
 					px={6}
 				>
+
 					{docSnap != ""
 						? docSnap.map((doc) => (
 								<Pressable
