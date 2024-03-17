@@ -1,4 +1,14 @@
 # CafeApp
+Welcome to ChillCafé :D
+
+## Set Up
+Download XCode from the app store. Go into the XCode 'settings'->'platform,' and make sure that the iOS package is downloaded. From the xCode menu select 'Open Developer Tool' -> 'Simulator.' Then,'File' -> 'open simulator' -> 'iPohne 11.' Once an iOS simulator opens, check that the simulator does not have Expo Go installed. If it does, remove it from the simulator. Leave this simulator open while navigating to the terminal to open the app.
+
+To open the app, in terminal, cd to the CafeApp folder. Type `npm start` and press `i`. It is normal for the expo app to take a while to load. If you are a new user, first register on the app before logging in. Feel free to try out admin and user roles! However if you want to switch roles, be sure to delete the account first, since each email account can only be associated with one role. For example, first register as an admin for 'GHS'. Then verify email. Then log in through the login screen. Feel free to add food items in the edit screen. Before exiting the app, navigate to the profile screen to delete account. Next, register your email as a user and log in to see the user view of the app. Remember to delete your user account if you want to register again as an admin. 
+
+Note: This app was built using expo SDK 46.0.0, which requires using an iOS simulator instead of the expo app installed on a physical iOS device. The app has not been tested on an android simulator.
+
+## Introduction
 
 ChillCafé is a menu app aimed at creating a more seamless experience for users to check the availability and details of food items at an eatery or restaurant. It was created using React Native and Firebase. It was not published to the app store. 
 
