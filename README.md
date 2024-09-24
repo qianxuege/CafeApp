@@ -1,6 +1,8 @@
 # CafeApp
 Welcome to ChillCafé :D
 
+Here is a demo video: https://youtu.be/WgROdI7iwpE
+
 ## Set Up
 Download the zip file of the github repository. In your terminal, cd into the folder. Run `npm install` to install all dependencies of this project.
 
